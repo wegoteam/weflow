@@ -27,10 +27,12 @@ func newFlowDefInfo(db *gorm.DB, opts ...gen.DOOption) flowDefInfo {
 
 	tableName := _flowDefInfo.flowDefInfoDo.TableName()
 	_flowDefInfo.ALL = field.NewAsterisk(tableName)
-	_flowDefInfo.ID = field.NewInt32(tableName, "id")
-	_flowDefInfo.Name = field.NewString(tableName, "name")
+	_flowDefInfo.ID = field.NewInt64(tableName, "id")
 	_flowDefInfo.FlowDefID = field.NewString(tableName, "flow_def_id")
-	_flowDefInfo.State = field.NewInt32(tableName, "state")
+	_flowDefInfo.FlowDefName = field.NewString(tableName, "flow_def_name")
+	_flowDefInfo.Status = field.NewInt32(tableName, "status")
+	_flowDefInfo.Remark = field.NewString(tableName, "remark")
+	_flowDefInfo.StructData = field.NewString(tableName, "struct_data")
 	_flowDefInfo.CreateTime = field.NewTime(tableName, "create_time")
 	_flowDefInfo.CreateUser = field.NewString(tableName, "create_user")
 	_flowDefInfo.UpdateTime = field.NewTime(tableName, "update_time")
@@ -44,15 +46,17 @@ func newFlowDefInfo(db *gorm.DB, opts ...gen.DOOption) flowDefInfo {
 type flowDefInfo struct {
 	flowDefInfoDo flowDefInfoDo
 
-	ALL        field.Asterisk
-	ID         field.Int32  // 主键
-	Name       field.String // 流程定义名称
-	FlowDefID  field.String // 流程定义id
-	State      field.Int32  // 状态
-	CreateTime field.Time   // 创建时间
-	CreateUser field.String // 创建人
-	UpdateTime field.Time   // 更新时间
-	UpdateUser field.String // 更新人
+	ALL         field.Asterisk
+	ID          field.Int64  // 唯一id
+	FlowDefID   field.String // 流程定义id
+	FlowDefName field.String // 流程定义名称
+	Status      field.Int32  // 状态【1：草稿；2：发布可用；3：停用】
+	Remark      field.String // 描述
+	StructData  field.String // 流程结构化数据
+	CreateTime  field.Time   // 创建时间
+	CreateUser  field.String // 创建人
+	UpdateTime  field.Time   // 更新时间
+	UpdateUser  field.String // 更新人
 
 	fieldMap map[string]field.Expr
 }
@@ -69,10 +73,12 @@ func (f flowDefInfo) As(alias string) *flowDefInfo {
 
 func (f *flowDefInfo) updateTableName(table string) *flowDefInfo {
 	f.ALL = field.NewAsterisk(table)
-	f.ID = field.NewInt32(table, "id")
-	f.Name = field.NewString(table, "name")
+	f.ID = field.NewInt64(table, "id")
 	f.FlowDefID = field.NewString(table, "flow_def_id")
-	f.State = field.NewInt32(table, "state")
+	f.FlowDefName = field.NewString(table, "flow_def_name")
+	f.Status = field.NewInt32(table, "status")
+	f.Remark = field.NewString(table, "remark")
+	f.StructData = field.NewString(table, "struct_data")
 	f.CreateTime = field.NewTime(table, "create_time")
 	f.CreateUser = field.NewString(table, "create_user")
 	f.UpdateTime = field.NewTime(table, "update_time")
@@ -101,11 +107,13 @@ func (f *flowDefInfo) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (f *flowDefInfo) fillFieldMap() {
-	f.fieldMap = make(map[string]field.Expr, 8)
+	f.fieldMap = make(map[string]field.Expr, 10)
 	f.fieldMap["id"] = f.ID
-	f.fieldMap["name"] = f.Name
 	f.fieldMap["flow_def_id"] = f.FlowDefID
-	f.fieldMap["state"] = f.State
+	f.fieldMap["flow_def_name"] = f.FlowDefName
+	f.fieldMap["status"] = f.Status
+	f.fieldMap["remark"] = f.Remark
+	f.fieldMap["struct_data"] = f.StructData
 	f.fieldMap["create_time"] = f.CreateTime
 	f.fieldMap["create_user"] = f.CreateUser
 	f.fieldMap["update_time"] = f.UpdateTime
