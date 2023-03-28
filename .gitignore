@@ -20,3 +20,33 @@ vendor/
 .idea/
 *.iml
 .DS_Store
+
+# Log #
+logs/
+*.log
+
+node_modules/
+dist/
+
+
+# local env files
+.env.local
+.env.*.local
+
+# lock file
+-lock.*
+*.lock
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
