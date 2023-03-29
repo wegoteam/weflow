@@ -1,8 +1,8 @@
 package dal
 
 import (
-	"hello/biz/dal/mysql"
-	"hello/biz/dal/redis"
+	"github.com/wego2023/weflow/internal/biz/dal/mysql"
+	"github.com/wego2023/weflow/internal/biz/dal/redis"
 )
 
 func Init() {

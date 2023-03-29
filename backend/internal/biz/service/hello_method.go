@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	hello "hello/hertz_gen/hello"
+	hello "github.com/wego2023/weflow/internal/hertz_gen/hello"
 )
 
 type HelloMethodService struct {

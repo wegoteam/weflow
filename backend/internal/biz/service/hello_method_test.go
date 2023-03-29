@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/test/assert"
-	hello "hello/hertz_gen/hello"
+	hello "github.com/wego2023/weflow/internal/hertz_gen/hello"
 )
 
 func TestHelloMethodService_Run(t *testing.T) {

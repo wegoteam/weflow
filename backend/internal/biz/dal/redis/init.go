@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis/v8"
-	"hello/conf"
+	"github.com/wego2023/weflow/internal/conf"
 )
 
 var RedisClient *redis.Client

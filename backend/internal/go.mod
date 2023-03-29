@@ -1,4 +1,4 @@
-module hello
+module github.com/wego2023/weflow/internal
 
 go 1.20
 

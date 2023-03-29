@@ -5,9 +5,9 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"hello/biz/service"
-	"hello/biz/utils"
-	hello "hello/hertz_gen/hello"
+	"github.com/wego2023/weflow/internal/biz/service"
+	"github.com/wego2023/weflow/internal/biz/utils"
+	hello "github.com/wego2023/weflow/internal/hertz_gen/hello"
 )
 
 // HelloMethod .

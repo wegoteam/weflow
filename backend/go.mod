@@ -1,8 +1,10 @@
-module wego2023/weflow
+module github.com/wego2023/weflow
 
 go 1.20
 
 require (
+	github.com/cloudwego/hertz v0.6.1
+	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	gorm.io/gen v0.3.21
 	gorm.io/gorm v1.24.6
 	gorm.io/plugin/dbresolver v1.4.1

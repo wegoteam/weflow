@@ -4,7 +4,7 @@ package Hello
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	hello "hello/biz/handler/hello"
+	hello "github.com/wego2023/weflow/internal/biz/handler/hello"
 )
 
 /*
