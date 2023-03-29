@@ -4,7 +4,7 @@ package main
 
 import (
 	"context"
-	"wego2023/weflow/pkg/parser"
+	"github.com/wego2023/weflow/pkg/parser"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
@@ -17,9 +17,9 @@ import (
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
+	"github.com/wego2023/weflow/internal/biz/router"
+	"github.com/wego2023/weflow/internal/conf"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"hello/biz/router"
-	"hello/conf"
 )
 
 func main() {
@@ -30,8 +30,7 @@ func main() {
 
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
-		var flow = &parser.FlowParser{}
-		flow.Test()
+		parser.FlowParserServiceImpl.Test()
 		ctx.JSON(consts.StatusOK, utils.H{"ping": "pong"})
 	})
 

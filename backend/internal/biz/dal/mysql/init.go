@@ -1,9 +1,9 @@
 package mysql
 
 import (
+	"github.com/wego2023/weflow/internal/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"hello/conf"
 )
 
 var (
