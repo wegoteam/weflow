@@ -17,7 +17,7 @@ type FlowParserService interface {
 }
 
 func (receiver *FlowParser) Test() {
-	hlog.Info("hello world")
+	hlog.Error("parse yaml error - %v")
 }
 
 /*
