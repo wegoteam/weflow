@@ -1,6 +1,6 @@
 module github.com/wego2023/weflow
 
-go 1.20
+go 1.18
 
 require (
 	github.com/cloudwego/hertz v0.6.1

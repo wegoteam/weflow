@@ -101,4 +101,6 @@ type NodeModelBO struct {
 	HandlerList    string              `json:"handlerList,omitempty"`    // 处理人列表
 	MsgConfigList  string              `json:"msgConfigList,omitempty"`  // 消息配置列表
 	Children       [][]NodeModelEntity `json:"children,omitempty"`       // 子节点
+	Index          int                 `json:"index,omitempty"`          // 下标
+	BranchIndex    int                 `json:"branchIndex,omitempty"`    // 分支下标
 }
