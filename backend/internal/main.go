@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"github.com/wego2023/weflow/internal/biz/handler/hello"
 	"github.com/wego2023/weflow/pkg/parser"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -27,7 +28,7 @@ func main() {
 	// dal.Init()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
-
+	h.Use(hello.GlobalErrorHandler)
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
 		parser.FlowParserServiceImpl.Test()

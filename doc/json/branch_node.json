@@ -14,14 +14,14 @@
         "handlerList":"[{\"handlerId\":\"547\",\"handlerName\":\"xuch01\",\"handlerType\":1,\"handlerSort\":1}]"
     },
     {
-        "nodeModel":7,
-        "nodeName":"",
+        "nodeModel":6,
+        "nodeName":"分支节点",
         "nodeId":"1640993508049424384",
         "parentId":"",
         "children":[
             [
                 {
-                    "nodeModel":6,
+                    "nodeModel":5,
                     "nodeName":"条件1",
                     "nodeId":"1640993508049424385",
                     "parentId":"1640993508049424384"
@@ -37,7 +37,7 @@
             ],
             [
                 {
-                    "nodeModel":6,
+                    "nodeModel":5,
                     "nodeName":"条件2",
                     "nodeId":"1640993508049424386",
                     "parentId":"1640993508049424384"
@@ -54,7 +54,7 @@
         ]
     },
     {
-        "nodeModel":9,
+        "nodeModel":7,
         "nodeName":"分支汇聚",
         "nodeId":"1640993508053618688",
         "parentId":""
