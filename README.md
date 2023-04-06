@@ -7,7 +7,7 @@ Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN�
 
 #### 软件架构
 
-```json
+```text
 |-- bin # 二进制文件目录
 |-- cmd # 编译入口
 |   `-- app
@@ -43,6 +43,7 @@ Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN�
 |-- logs # 日志目录
 |-- pkg # 功能类库
 `-- proto # 第三方 proto 文件目录
+
 ```
 
 
