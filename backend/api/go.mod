@@ -1,4 +1,4 @@
-module github.com/wego2023/weflow/api
+module github.com/wegoteam/weflow/api
 
 go 1.18
 

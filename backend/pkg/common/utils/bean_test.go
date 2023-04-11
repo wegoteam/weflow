@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"bytes"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"reflect"
@@ -79,13 +77,13 @@ func BeanCopyPropertity(dst, src interface{}) (err error) {
 *
 小写变量，函数拷贝成功
 */
-func DeepCopy(dst, src interface{}) error {
-	var buf bytes.Buffer
-	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
-		return err
-	}
-	return gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(dst)
-}
-func TestDeepCopy(t *testing.T) {
-
-}
+//func DeepCopy(dst, src interface{}) error {
+//	var buf bytes.Buffer
+//	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
+//		return err
+//	}
+//	return gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(dst)
+//}
+//func TestDeepCopy(t *testing.T) {
+//
+//}

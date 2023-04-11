@@ -1,4 +1,4 @@
-module github.com/wego2023/weflow/internal
+module github.com/wegoteam/weflow/internal
 
 go 1.18
 

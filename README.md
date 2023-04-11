@@ -1,9 +1,8 @@
 # weflow
 
 #### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+
+工作流（golang版本的流程引擎、规则引擎、表单引擎）、表单编辑器、流程编辑器
 
 #### 软件架构
 
@@ -83,16 +82,16 @@ Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN�
 
 引入本地module
 ```go
-require "wego2023/weflow" v0.0.1
-replace "wego2023/weflow" => "../"
+require "github.com/wegoteam/weflow" v0.0.1
+replace "github.com/wegoteam/weflow" => "../"
 ```
 
 1.  cwgo语法
 ```shell
 cwgo  model --db_type mysql --out_file dao_gen.go --out_dir ./backend/pkg/dao --dsn "root:root@tcp(localhost:3306)/weflow?charset=utf8&parseTime=True&loc=Local"
 
-cwgo server --service hello --module github.com/wego2023/weflow/internal --type HTTP  --idl ./idl/hello.thrift
-cwgo server --service hello --module github.com/wego2023/weflow/internal --type RPC  --idl ./idl/hello.thrift
+cwgo server --service hello --module github.com/wegoteam/weflow/internal --type HTTP  --idl ./idl/flow.thrift
+cwgo server --service hello --module github.com/wegoteam/weflow/internal --type RPC  --idl ./idl/flow.thrift
 ```
 
 ```shell
