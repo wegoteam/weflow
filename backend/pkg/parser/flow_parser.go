@@ -1,12 +1,14 @@
 package parser
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/redis/go-redis/v9"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
+	"github.com/wegoteam/weflow/pkg/model"
 )
 
 var FlowParserServiceImpl = new(FlowParser)
@@ -52,7 +54,7 @@ func Parser(data string) *[]entity.NodeModelBO {
 			nextIds = append(nextIds, nodes[nodeInd+1].NodeId)
 			nodeBO.NextNodes = nextIds
 		}
-		if node.NodeModel == constant.BranchNodeModel {
+		if node.NodeModel == constant.BRANCH_NODE_MODEL {
 			//解析分支节点
 			parserBranchNodeModel(nodeBO, node.Children, &datas)
 			continue
@@ -73,7 +75,6 @@ func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
 	if err != nil {
 		hlog.Errorf("节点属性转换失败%v\n", err)
 	}
-	fmt.Printf("解析节点%v\n", bo.NodeName)
 	return bo
 }
 
@@ -82,7 +83,7 @@ func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
 节点：上节点、下节点、节点下标、尾节点等基础信息
 */
 func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeModelEntity, datas *[]entity.NodeModelBO) {
-	if nodeBO.NodeModel != constant.BranchNodeModel {
+	if nodeBO.NodeModel != constant.BRANCH_NODE_MODEL {
 		return
 	}
 	var branchIds = make([][]string, len(childs))
@@ -114,7 +115,7 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 				nextIds = append(nextIds, branchChilds[ind+1].NodeId)
 				childNode.NextNodes = nextIds
 			}
-			if child.NodeModel == constant.BranchNodeModel {
+			if child.NodeModel == constant.BRANCH_NODE_MODEL {
 				parserBranchNodeModel(childNode, child.Children, datas)
 				continue
 			}
@@ -123,4 +124,74 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 		branchIds[branch] = branchChildIds
 	}
 
+}
+
+/**
+在数据库中获取流程定义节点信息，部署到Redis中
+*/
+func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
+	var processDefKey = constant.REDIS_PROCESS_DEF_MODEL + processDefId
+	ctx := context.Background()
+	var processDefInfo = &model.ProcessDefInfo{}
+	dbErr := DB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: processDefId}).First(processDefInfo).Error
+	if dbErr != nil {
+		hlog.Warnf("获取流程定义模型失败，错误信息：%s", dbErr.Error())
+	}
+	if processDefInfo == nil {
+		return nil
+	}
+	//流程定义模型
+	var processDefModel = &entity.ProcessDefModel{}
+	nodes := Parser(processDefInfo.StructData)
+	processDefModel.NodeModels = nodes
+	var nodeModelMap = make(map[string]entity.NodeModelBO)
+	_, err := RedisCliet.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
+		for _, node := range *nodes {
+			if node.NodeModel == constant.START_NODE_MODEL {
+				processDefModel.StartNodeId = node.NodeId
+			}
+			nodeModelMap[node.NodeId] = node
+			nodeStr, _ := json.Marshal(node)
+			RedisCliet.HSet(ctx, processDefKey, node.NodeId, string(nodeStr))
+		}
+		return nil
+	})
+	if err != nil {
+		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+	}
+	processDefModel.ProcessDefId = processDefId
+	processDefModel.NodeModelMap = &nodeModelMap
+	return processDefModel
+}
+
+/**
+从Redis中获取流程定义的节点信息
+*/
+func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
+	var processDefKey = constant.REDIS_PROCESS_DEF_MODEL + processDefId
+	ctx := context.Background()
+	var nodeStrMap map[string]string
+	nodeStrMap, err := RedisCliet.HGetAll(ctx, processDefKey).Result()
+	if err != nil {
+		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+	}
+	var processDefModel = &entity.ProcessDefModel{}
+	var nodeModelMap = make(map[string]entity.NodeModelBO)
+	var nodes = make([]entity.NodeModelBO, 0)
+	for key, val := range nodeStrMap {
+		var node = &entity.NodeModelBO{}
+		err := json.Unmarshal([]byte(val), node)
+		if err != nil {
+			hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+		}
+		if node.NodeModel == constant.START_NODE_MODEL {
+			processDefModel.StartNodeId = node.NodeId
+		}
+		nodeModelMap[key] = *node
+		nodes = append(nodes, *node)
+	}
+	processDefModel.NodeModels = &nodes
+	processDefModel.NodeModelMap = &nodeModelMap
+	processDefModel.ProcessDefId = processDefId
+	return processDefModel
 }

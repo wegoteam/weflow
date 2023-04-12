@@ -12,24 +12,24 @@ const TableNameInstTaskDetail = "inst_task_detail"
 
 // InstTaskDetail mapped from table <inst_task_detail>
 type InstTaskDetail struct {
-	ID         int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
-	InstTaskID string    `gorm:"column:inst_task_id;not null" json:"inst_task_id"`                         // 实例任务id
-	FlowDefID  string    `gorm:"column:flow_def_id;not null" json:"flow_def_id"`                           // 流程定义id
-	ModelID    string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
-	FormDefID  string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id
-	VersionID  int64     `gorm:"column:version_id;not null" json:"version_id"`                             // 版本id
-	VersionNum string    `gorm:"column:version_num;not null" json:"version_num"`                           // 版本号
-	CreateSrc  int32     `gorm:"column:create_src;not null;default:1" json:"create_src"`                   // 创建来源【1：系统发起；2：API发起】
-	TaskName   string    `gorm:"column:task_name;not null" json:"task_name"`                               // 实例任务名称
-	Status     int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
-	Remark     string    `gorm:"column:remark;not null" json:"remark"`                                     // 描述
-	CreateTime time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
-	CreateUser string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人
-	UpdateTime time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`          // 更新时间
-	UpdateUser string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
-	StartTime  time.Time `gorm:"column:start_time;not null;default:CURRENT_TIMESTAMP" json:"start_time"`   // 发起时间
-	EndTime    time.Time `gorm:"column:end_time;not null;default:CURRENT_TIMESTAMP" json:"end_time"`       // 结束时间
-	SourceID   string    `gorm:"column:source_id;not null" json:"source_id"`                               // 来源id，界面发起人或者api对应的应用
+	ID           int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
+	InstTaskID   string    `gorm:"column:inst_task_id;not null" json:"inst_task_id"`                         // 实例任务id
+	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
+	ModelID      string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
+	FormDefID    string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id
+	VersionID    int64     `gorm:"column:version_id;not null" json:"version_id"`                             // 版本id
+	VersionNum   string    `gorm:"column:version_num;not null" json:"version_num"`                           // 版本号
+	CreateSrc    int32     `gorm:"column:create_src;not null;default:1" json:"create_src"`                   // 创建来源【1：系统发起；2：API发起】
+	TaskName     string    `gorm:"column:task_name;not null" json:"task_name"`                               // 实例任务名称
+	Status       int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
+	Remark       string    `gorm:"column:remark;not null" json:"remark"`                                     // 描述
+	CreateTime   time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
+	CreateUser   string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人
+	UpdateTime   time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`          // 更新时间
+	UpdateUser   string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
+	StartTime    time.Time `gorm:"column:start_time;not null;default:CURRENT_TIMESTAMP" json:"start_time"`   // 发起时间
+	EndTime      time.Time `gorm:"column:end_time;not null;default:CURRENT_TIMESTAMP" json:"end_time"`       // 结束时间
+	SourceID     string    `gorm:"column:source_id;not null" json:"source_id"`                               // 来源id，界面发起人或者api对应的应用
 }
 
 // TableName InstTaskDetail's table name

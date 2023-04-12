@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-const TableNameFlowDefNodeInfo = "flow_def_node_info"
+const TableNameProcessDefNodeInfo = "process_def_node_info"
 
-// FlowDefNodeInfo mapped from table <flow_def_node_info>
-type FlowDefNodeInfo struct {
+// ProcessDefNodeInfo mapped from table <process_def_node_info>
+type ProcessDefNodeInfo struct {
 	ID             int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
-	FlowDefID      string    `gorm:"column:flow_def_id;not null" json:"flow_def_id"`                           // 流程定义id
+	ProcessDefID   string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	NodeID         string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
 	NodeType       int32     `gorm:"column:node_type;not null;default:1" json:"node_type"`                     // 节点类型;1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点
 	NodeName       string    `gorm:"column:node_name;not null" json:"node_name"`                               // 节点名称
@@ -34,7 +34,7 @@ type FlowDefNodeInfo struct {
 	UpdateUser     string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
 }
 
-// TableName FlowDefNodeInfo's table name
-func (*FlowDefNodeInfo) TableName() string {
-	return TableNameFlowDefNodeInfo
+// TableName ProcessDefNodeInfo's table name
+func (*ProcessDefNodeInfo) TableName() string {
+	return TableNameProcessDefNodeInfo
 }

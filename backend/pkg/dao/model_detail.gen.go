@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"wego2023/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/model"
 )
 
 func newModelDetail(db *gorm.DB, opts ...gen.DOOption) modelDetail {
@@ -31,7 +31,7 @@ func newModelDetail(db *gorm.DB, opts ...gen.DOOption) modelDetail {
 	_modelDetail.ModelID = field.NewString(tableName, "model_id")
 	_modelDetail.ModelName = field.NewString(tableName, "model_name")
 	_modelDetail.ModelTitle = field.NewString(tableName, "model_title")
-	_modelDetail.FlowDefID = field.NewString(tableName, "flow_def_id")
+	_modelDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_modelDetail.FormDefID = field.NewString(tableName, "form_def_id")
 	_modelDetail.ModelGroupID = field.NewString(tableName, "model_group_id")
 	_modelDetail.Status = field.NewInt32(tableName, "status")
@@ -56,7 +56,7 @@ type modelDetail struct {
 	ModelID      field.String // 模板id
 	ModelName    field.String // 模板名称
 	ModelTitle   field.String // 模板标题
-	FlowDefID    field.String // 流程定义id
+	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
 	ModelGroupID field.String // 模版组id
 	Status       field.Int32  // 模板状态【1：草稿；2：发布；3：停用】
@@ -87,7 +87,7 @@ func (m *modelDetail) updateTableName(table string) *modelDetail {
 	m.ModelID = field.NewString(table, "model_id")
 	m.ModelName = field.NewString(table, "model_name")
 	m.ModelTitle = field.NewString(table, "model_title")
-	m.FlowDefID = field.NewString(table, "flow_def_id")
+	m.ProcessDefID = field.NewString(table, "process_def_id")
 	m.FormDefID = field.NewString(table, "form_def_id")
 	m.ModelGroupID = field.NewString(table, "model_group_id")
 	m.Status = field.NewInt32(table, "status")
@@ -127,7 +127,7 @@ func (m *modelDetail) fillFieldMap() {
 	m.fieldMap["model_id"] = m.ModelID
 	m.fieldMap["model_name"] = m.ModelName
 	m.fieldMap["model_title"] = m.ModelTitle
-	m.fieldMap["flow_def_id"] = m.FlowDefID
+	m.fieldMap["process_def_id"] = m.ProcessDefID
 	m.fieldMap["form_def_id"] = m.FormDefID
 	m.fieldMap["model_group_id"] = m.ModelGroupID
 	m.fieldMap["status"] = m.Status

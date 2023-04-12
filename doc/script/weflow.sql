@@ -5,7 +5,7 @@ create table model_detail(
                              `model_id` varchar(32) not null  default '' comment '模板id' ,
                              `model_name` varchar(128) not null  default '' comment '模板名称' ,
                              `model_title` varchar(256) not null  default '' comment '模板标题' ,
-                             `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                             `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                              `form_def_id` varchar(32) not null  default '' comment '表单定义id' ,
                              `model_group_id` varchar(32) not null  default '' comment '模版组id' ,
                              `status` tinyint not null  default 1 comment '模板状态【1：草稿；2：发布；3：停用】' ,
@@ -26,7 +26,7 @@ create table model_version(
                                 `version_id` varchar(32) not null  default '' comment '版本id' ,
                                 `version_num` varchar(32) not null  default '' comment '版本号' ,
                                 `model_title` varchar(256) not null  default '' comment '模板标题' ,
-                                `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                                `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                                 `form_def_id` varchar(32) not null  default '' comment '表单定义id' ,
                                 `table_info` varchar(1024) not null  default '' comment '表单数据库表' ,
                                 `use_status` tinyint not null  default 1 comment '使用状态【1：非当前使用；2：当前使用】' ,
@@ -51,13 +51,13 @@ create table model_auth(
                                   `update_time` timestamp null default current_timestamp on update current_timestamp comment '更新时间',
                                   `update_user` varchar(50) default '' comment '更新人',
                                   primary key (id)
-)engine=innodb default charset=utf8mb4 comment = '工单模板授权表';
+)engine=innodb default charset=utf8mb4 comment = '模板授权表';
 
-drop table if exists flow_def_info;
-create table flow_def_info(
+drop table if exists process_def_info;
+create table process_def_info(
                             `id` bigint not null auto_increment  comment '唯一id' ,
-                            `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
-                            `flow_def_name` varchar(128) not null  default '' comment '流程定义名称' ,
+                            `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                            `process_def_name` varchar(128) not null  default '' comment '流程定义名称' ,
                             `status` tinyint not null  default 1 comment '状态【1：草稿；2：发布可用；3：停用】' ,
                             `remark` varchar(512) not null  default '' comment '描述' ,
                             `struct_data` text  comment '流程结构化数据' ,
@@ -68,10 +68,10 @@ create table flow_def_info(
                             primary key (id)
 )engine=innodb default charset=utf8mb4 comment = '流程定义表';
 
-drop table if exists flow_def_node_info;
-create table flow_def_node_info(
+drop table if exists process_def_node_info;
+create table process_def_node_info(
                              `id` bigint not null auto_increment  comment '唯一id' ,
-                             `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                             `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                              `node_id` varchar(32) not null  default '' comment '节点id' ,
                              `node_type` tinyint not null  default 1 comment '节点类型;1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点' ,
                              `node_name` varchar(128) not null  default '' comment '节点名称' ,
@@ -93,10 +93,10 @@ create table flow_def_node_info(
                              primary key (id)
 ) engine=innodb default charset=utf8mb4 comment = '流程定义节点信息表';
 
-drop table if exists flow_def_node_handler;
-create table flow_def_node_handler(
+drop table if exists process_def_node_handler;
+create table process_def_node_handler(
                                 `id` bigint not null auto_increment  comment '唯一id' ,
-                                `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                                `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                                 `node_id` varchar(32) not null  default '' comment '节点id' ,
                                 `handler_name` varchar(128) not null  default '' comment '处理人名称' ,
                                 `handler_type` tinyint not null  default 1 comment '处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】' ,
@@ -148,7 +148,7 @@ drop table if exists inst_task_detail;
 create table inst_task_detail(
                              `id` bigint not null auto_increment  comment '唯一id' ,
                              `inst_task_id` varchar(32) not null  default '' comment '实例任务id' ,
-                             `flow_def_id` varchar(32) not null  default '' comment '流程定义id' ,
+                             `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                              `model_id` varchar(32) not null  default '' comment '模板id' ,
                              `form_def_id` varchar(32) not null  default '' comment '表单定义id' ,
                              `version_id` bigint not null  default 0 comment '版本id' ,
@@ -342,3 +342,6 @@ create table user_role_link(
                           `update_time` timestamp null default current_timestamp on update current_timestamp comment '更新时间',
                           primary key (id)
 ) engine=innodb default charset=utf8mb4 comment = '用户角色关联表';
+
+-- 流程定义
+INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, `remark`, `struct_data`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('1640993392605401001', '测试流程定义', 1, '测试流程定义', '[{\"nodeModel\":1,\"nodeName\":\"发起人\",\"nodeId\":\"1640993392605401088\",\"parentId\":\"\"},{\"nodeModel\":2,\"nodeName\":\"审批\",\"nodeId\":\"1640993449224310784\",\"parentId\":\"\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"2\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"},{\"nodeModel\":6,\"nodeName\":\"分支节点\",\"nodeId\":\"1640993508049424384\",\"parentId\":\"\",\"children\":[[{\"nodeModel\":5,\"nodeName\":\"条件1\",\"nodeId\":\"1640993508049424385\",\"parentId\":\"1640993508049424384\"},{\"nodeModel\":2,\"nodeName\":\"审批\",\"nodeId\":\"1640993526328201216\",\"parentId\":\"1640993508049424384\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"2\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"}],[{\"nodeModel\":5,\"nodeName\":\"条件2\",\"nodeId\":\"1640993508049424386\",\"parentId\":\"1640993508049424384\"},{\"nodeModel\":4,\"nodeName\":\"知会\",\"nodeId\":\"1640993535555670016\",\"parentId\":\"1640993508049424384\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"1\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"}]]},{\"nodeModel\":7,\"nodeName\":\"分支汇聚\",\"nodeId\":\"1640993508053618688\",\"parentId\":\"\"},{\"nodeModel\":8,\"nodeName\":\"流程结束\",\"nodeId\":\"1640993392605401089\",\"parentId\":\"\"}]', '2023-04-12 15:19:02', '', '2023-04-12 15:19:02', '');

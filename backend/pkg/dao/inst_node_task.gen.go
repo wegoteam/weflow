@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"wego2023/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/model"
 )
 
 func newInstNodeTask(db *gorm.DB, opts ...gen.DOOption) instNodeTask {

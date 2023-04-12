@@ -85,25 +85,25 @@ type NodeModelEntity struct {
 }
 
 type NodeModelBO struct {
-	NodeModel      int8       `json:"nodeModel"`                // 节点类型
-	NodeName       string     `json:"nodeName"`                 // 节点名称
-	NodeId         string     `json:"nodeId"`                   // 节点ID
-	ParentId       string     `json:"parentId"`                 // 父节点ID
-	ConnData       string     `json:"connData,omitempty"`       // 连接数据
-	Conditions     string     `json:"conditions,omitempty"`     // 条件
-	ForwardMode    int8       `json:"forwardMode,omitempty"`    // 转发模式
-	CompleteConn   int8       `json:"completeConn,omitempty"`   // 完成连接
-	PermissionMode int8       `json:"permissionMode,omitempty"` // 权限模式
-	AllowAdd       int8       `json:"allowAdd,omitempty"`       // 允许添加
-	ProcessMode    int8       `json:"processMode,omitempty"`    // 处理模式
-	TimeLimit      int8       `json:"timeLimit,omitempty"`      // 时限
-	PerData        string     `json:"perData,omitempty"`        // 权限数据
-	HandlerList    string     `json:"handlerList,omitempty"`    // 处理人列表
-	MsgConfigList  string     `json:"msgConfigList,omitempty"`  // 消息配置列表
-	ChildrenIds    [][]string `json:"childrenIds,omitempty"`    // 子节点ID
-	PreNodes       []string   `json:"preNodes,omitempty"`       //上节点ID
-	NextNodes      []string   `json:"nextNodes,omitempty"`      //下节点ID
-	LastNodes      []string   `json:"nextNodes,omitempty"`      //分支节点尾节点ID
-	Index          int        `json:"index,omitempty"`          // 下标
-	BranchIndex    int        `json:"branchIndex,omitempty"`    // 分支下标
+	NodeModel      int8       `json:"nodeModel",redis:"nodeModel"`                     // 节点类型
+	NodeName       string     `json:"nodeName",redis:"nodeName"`                       // 节点名称
+	NodeId         string     `json:"nodeId",redis:"nodeId"`                           // 节点ID
+	ParentId       string     `json:"parentId",redis:"parentId"`                       // 父节点ID
+	ConnData       string     `json:"connData,omitempty",redis:"connData"`             // 连接数据
+	Conditions     string     `json:"conditions,omitempty",redis:"conditions"`         // 条件
+	ForwardMode    int8       `json:"forwardMode,omitempty",redis:"forwardMode"`       // 转发模式
+	CompleteConn   int8       `json:"completeConn,omitempty",redis:"completeConn"`     // 完成连接
+	PermissionMode int8       `json:"permissionMode,omitempty",redis:"permissionMode"` // 权限模式
+	AllowAdd       int8       `json:"allowAdd,omitempty",redis:"allowAdd"`             // 允许添加
+	ProcessMode    int8       `json:"processMode,omitempty",redis:"processMode"`       // 处理模式
+	TimeLimit      int8       `json:"timeLimit,omitempty",redis:"timeLimit"`           // 时限
+	PerData        string     `json:"perData,omitempty",redis:"perData"`               // 权限数据
+	HandlerList    string     `json:"handlerList,omitempty",redis:"handlerList"`       // 处理人列表
+	MsgConfigList  string     `json:"msgConfigList,omitempty",redis:"msgConfigList"`   // 消息配置列表
+	ChildrenIds    [][]string `json:"childrenIds,omitempty",redis:"childrenIds"`       // 子节点ID
+	PreNodes       []string   `json:"preNodes,omitempty",redis:"preNodes"`             //上节点ID
+	NextNodes      []string   `json:"nextNodes,omitempty",redis:"nextNodes"`           //下节点ID
+	LastNodes      []string   `json:"nextNodes,omitempty",redis:"nextNodes"`           //分支节点尾节点ID
+	Index          int        `json:"index,omitempty",redis:"index"`                   // 下标
+	BranchIndex    int        `json:"branchIndex,omitempty",redis:"branchIndex"`       // 分支下标
 }

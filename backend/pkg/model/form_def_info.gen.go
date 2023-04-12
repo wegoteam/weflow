@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-const TableNameFormDefDetail = "form_def_detail"
+const TableNameFormDefInfo = "form_def_info"
 
-// FormDefDetail mapped from table <form_def_detail>
-type FormDefDetail struct {
+// FormDefInfo mapped from table <form_def_info>
+type FormDefInfo struct {
 	ID          int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	FormDefID   string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单模板id;唯一id
 	FormDefName string    `gorm:"column:form_def_name;not null" json:"form_def_name"`                       // 表单名称
@@ -25,7 +25,7 @@ type FormDefDetail struct {
 	UpdateUser  string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
 }
 
-// TableName FormDefDetail's table name
-func (*FormDefDetail) TableName() string {
-	return TableNameFormDefDetail
+// TableName FormDefInfo's table name
+func (*FormDefInfo) TableName() string {
+	return TableNameFormDefInfo
 }

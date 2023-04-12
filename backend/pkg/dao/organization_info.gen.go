@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"wego2023/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/model"
 )
 
 func newOrganizationInfo(db *gorm.DB, opts ...gen.DOOption) organizationInfo {

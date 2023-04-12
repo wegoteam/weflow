@@ -16,7 +16,7 @@ type ModelDetail struct {
 	ModelID      string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
 	ModelName    string    `gorm:"column:model_name;not null" json:"model_name"`                             // 模板名称
 	ModelTitle   string    `gorm:"column:model_title;not null" json:"model_title"`                           // 模板标题
-	FlowDefID    string    `gorm:"column:flow_def_id;not null" json:"flow_def_id"`                           // 流程定义id
+	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	FormDefID    string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id
 	ModelGroupID string    `gorm:"column:model_group_id;not null" json:"model_group_id"`                     // 模版组id
 	Status       int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 模板状态【1：草稿；2：发布；3：停用】

@@ -18,11 +18,8 @@ import (
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:                     db,
-		FlowDefInfo:            newFlowDefInfo(db, opts...),
-		FlowDefNodeHandler:     newFlowDefNodeHandler(db, opts...),
-		FlowDefNodeInfo:        newFlowDefNodeInfo(db, opts...),
-		FormDefDetail:          newFormDefDetail(db, opts...),
 		FormDefElement:         newFormDefElement(db, opts...),
+		FormDefInfo:            newFormDefInfo(db, opts...),
 		InstHandlerTask:        newInstHandlerTask(db, opts...),
 		InstHandlerTaskOpinion: newInstHandlerTaskOpinion(db, opts...),
 		InstNodeTask:           newInstNodeTask(db, opts...),
@@ -35,6 +32,9 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		ModelGroup:             newModelGroup(db, opts...),
 		ModelVersion:           newModelVersion(db, opts...),
 		OrganizationInfo:       newOrganizationInfo(db, opts...),
+		ProcessDefInfo:         newProcessDefInfo(db, opts...),
+		ProcessDefNodeHandler:  newProcessDefNodeHandler(db, opts...),
+		ProcessDefNodeInfo:     newProcessDefNodeInfo(db, opts...),
 		RoleInfo:               newRoleInfo(db, opts...),
 		UserInfo:               newUserInfo(db, opts...),
 		UserRoleLink:           newUserRoleLink(db, opts...),
@@ -44,11 +44,8 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
-	FlowDefInfo            flowDefInfo
-	FlowDefNodeHandler     flowDefNodeHandler
-	FlowDefNodeInfo        flowDefNodeInfo
-	FormDefDetail          formDefDetail
 	FormDefElement         formDefElement
+	FormDefInfo            formDefInfo
 	InstHandlerTask        instHandlerTask
 	InstHandlerTaskOpinion instHandlerTaskOpinion
 	InstNodeTask           instNodeTask
@@ -61,6 +58,9 @@ type Query struct {
 	ModelGroup             modelGroup
 	ModelVersion           modelVersion
 	OrganizationInfo       organizationInfo
+	ProcessDefInfo         processDefInfo
+	ProcessDefNodeHandler  processDefNodeHandler
+	ProcessDefNodeInfo     processDefNodeInfo
 	RoleInfo               roleInfo
 	UserInfo               userInfo
 	UserRoleLink           userRoleLink
@@ -71,11 +71,8 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:                     db,
-		FlowDefInfo:            q.FlowDefInfo.clone(db),
-		FlowDefNodeHandler:     q.FlowDefNodeHandler.clone(db),
-		FlowDefNodeInfo:        q.FlowDefNodeInfo.clone(db),
-		FormDefDetail:          q.FormDefDetail.clone(db),
 		FormDefElement:         q.FormDefElement.clone(db),
+		FormDefInfo:            q.FormDefInfo.clone(db),
 		InstHandlerTask:        q.InstHandlerTask.clone(db),
 		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.clone(db),
 		InstNodeTask:           q.InstNodeTask.clone(db),
@@ -88,6 +85,9 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		ModelGroup:             q.ModelGroup.clone(db),
 		ModelVersion:           q.ModelVersion.clone(db),
 		OrganizationInfo:       q.OrganizationInfo.clone(db),
+		ProcessDefInfo:         q.ProcessDefInfo.clone(db),
+		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.clone(db),
+		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.clone(db),
 		RoleInfo:               q.RoleInfo.clone(db),
 		UserInfo:               q.UserInfo.clone(db),
 		UserRoleLink:           q.UserRoleLink.clone(db),
@@ -105,11 +105,8 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:                     db,
-		FlowDefInfo:            q.FlowDefInfo.replaceDB(db),
-		FlowDefNodeHandler:     q.FlowDefNodeHandler.replaceDB(db),
-		FlowDefNodeInfo:        q.FlowDefNodeInfo.replaceDB(db),
-		FormDefDetail:          q.FormDefDetail.replaceDB(db),
 		FormDefElement:         q.FormDefElement.replaceDB(db),
+		FormDefInfo:            q.FormDefInfo.replaceDB(db),
 		InstHandlerTask:        q.InstHandlerTask.replaceDB(db),
 		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.replaceDB(db),
 		InstNodeTask:           q.InstNodeTask.replaceDB(db),
@@ -122,6 +119,9 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		ModelGroup:             q.ModelGroup.replaceDB(db),
 		ModelVersion:           q.ModelVersion.replaceDB(db),
 		OrganizationInfo:       q.OrganizationInfo.replaceDB(db),
+		ProcessDefInfo:         q.ProcessDefInfo.replaceDB(db),
+		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.replaceDB(db),
+		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.replaceDB(db),
 		RoleInfo:               q.RoleInfo.replaceDB(db),
 		UserInfo:               q.UserInfo.replaceDB(db),
 		UserRoleLink:           q.UserRoleLink.replaceDB(db),
@@ -129,11 +129,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
-	FlowDefInfo            *flowDefInfoDo
-	FlowDefNodeHandler     *flowDefNodeHandlerDo
-	FlowDefNodeInfo        *flowDefNodeInfoDo
-	FormDefDetail          *formDefDetailDo
 	FormDefElement         *formDefElementDo
+	FormDefInfo            *formDefInfoDo
 	InstHandlerTask        *instHandlerTaskDo
 	InstHandlerTaskOpinion *instHandlerTaskOpinionDo
 	InstNodeTask           *instNodeTaskDo
@@ -146,6 +143,9 @@ type queryCtx struct {
 	ModelGroup             *modelGroupDo
 	ModelVersion           *modelVersionDo
 	OrganizationInfo       *organizationInfoDo
+	ProcessDefInfo         *processDefInfoDo
+	ProcessDefNodeHandler  *processDefNodeHandlerDo
+	ProcessDefNodeInfo     *processDefNodeInfoDo
 	RoleInfo               *roleInfoDo
 	UserInfo               *userInfoDo
 	UserRoleLink           *userRoleLinkDo
@@ -153,11 +153,8 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		FlowDefInfo:            q.FlowDefInfo.WithContext(ctx),
-		FlowDefNodeHandler:     q.FlowDefNodeHandler.WithContext(ctx),
-		FlowDefNodeInfo:        q.FlowDefNodeInfo.WithContext(ctx),
-		FormDefDetail:          q.FormDefDetail.WithContext(ctx),
 		FormDefElement:         q.FormDefElement.WithContext(ctx),
+		FormDefInfo:            q.FormDefInfo.WithContext(ctx),
 		InstHandlerTask:        q.InstHandlerTask.WithContext(ctx),
 		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.WithContext(ctx),
 		InstNodeTask:           q.InstNodeTask.WithContext(ctx),
@@ -170,6 +167,9 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		ModelGroup:             q.ModelGroup.WithContext(ctx),
 		ModelVersion:           q.ModelVersion.WithContext(ctx),
 		OrganizationInfo:       q.OrganizationInfo.WithContext(ctx),
+		ProcessDefInfo:         q.ProcessDefInfo.WithContext(ctx),
+		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.WithContext(ctx),
+		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.WithContext(ctx),
 		RoleInfo:               q.RoleInfo.WithContext(ctx),
 		UserInfo:               q.UserInfo.WithContext(ctx),
 		UserRoleLink:           q.UserRoleLink.WithContext(ctx),

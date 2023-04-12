@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"wego2023/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/model"
 )
 
 func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
@@ -29,7 +29,7 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 	_instTaskDetail.ALL = field.NewAsterisk(tableName)
 	_instTaskDetail.ID = field.NewInt64(tableName, "id")
 	_instTaskDetail.InstTaskID = field.NewString(tableName, "inst_task_id")
-	_instTaskDetail.FlowDefID = field.NewString(tableName, "flow_def_id")
+	_instTaskDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_instTaskDetail.ModelID = field.NewString(tableName, "model_id")
 	_instTaskDetail.FormDefID = field.NewString(tableName, "form_def_id")
 	_instTaskDetail.VersionID = field.NewInt64(tableName, "version_id")
@@ -54,25 +54,25 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 type instTaskDetail struct {
 	instTaskDetailDo instTaskDetailDo
 
-	ALL        field.Asterisk
-	ID         field.Int64  // 唯一id
-	InstTaskID field.String // 实例任务id
-	FlowDefID  field.String // 流程定义id
-	ModelID    field.String // 模板id
-	FormDefID  field.String // 表单定义id
-	VersionID  field.Int64  // 版本id
-	VersionNum field.String // 版本号
-	CreateSrc  field.Int32  // 创建来源【1：系统发起；2：API发起】
-	TaskName   field.String // 实例任务名称
-	Status     field.Int32  // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
-	Remark     field.String // 描述
-	CreateTime field.Time   // 创建时间
-	CreateUser field.String // 创建人
-	UpdateTime field.Time   // 更新时间
-	UpdateUser field.String // 更新人
-	StartTime  field.Time   // 发起时间
-	EndTime    field.Time   // 结束时间
-	SourceID   field.String // 来源id，界面发起人或者api对应的应用
+	ALL          field.Asterisk
+	ID           field.Int64  // 唯一id
+	InstTaskID   field.String // 实例任务id
+	ProcessDefID field.String // 流程定义id
+	ModelID      field.String // 模板id
+	FormDefID    field.String // 表单定义id
+	VersionID    field.Int64  // 版本id
+	VersionNum   field.String // 版本号
+	CreateSrc    field.Int32  // 创建来源【1：系统发起；2：API发起】
+	TaskName     field.String // 实例任务名称
+	Status       field.Int32  // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
+	Remark       field.String // 描述
+	CreateTime   field.Time   // 创建时间
+	CreateUser   field.String // 创建人
+	UpdateTime   field.Time   // 更新时间
+	UpdateUser   field.String // 更新人
+	StartTime    field.Time   // 发起时间
+	EndTime      field.Time   // 结束时间
+	SourceID     field.String // 来源id，界面发起人或者api对应的应用
 
 	fieldMap map[string]field.Expr
 }
@@ -91,7 +91,7 @@ func (i *instTaskDetail) updateTableName(table string) *instTaskDetail {
 	i.ALL = field.NewAsterisk(table)
 	i.ID = field.NewInt64(table, "id")
 	i.InstTaskID = field.NewString(table, "inst_task_id")
-	i.FlowDefID = field.NewString(table, "flow_def_id")
+	i.ProcessDefID = field.NewString(table, "process_def_id")
 	i.ModelID = field.NewString(table, "model_id")
 	i.FormDefID = field.NewString(table, "form_def_id")
 	i.VersionID = field.NewInt64(table, "version_id")
@@ -134,7 +134,7 @@ func (i *instTaskDetail) fillFieldMap() {
 	i.fieldMap = make(map[string]field.Expr, 18)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
-	i.fieldMap["flow_def_id"] = i.FlowDefID
+	i.fieldMap["process_def_id"] = i.ProcessDefID
 	i.fieldMap["model_id"] = i.ModelID
 	i.fieldMap["form_def_id"] = i.FormDefID
 	i.fieldMap["version_id"] = i.VersionID
