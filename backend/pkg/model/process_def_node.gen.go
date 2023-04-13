@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-const TableNameProcessDefNodeInfo = "process_def_node_info"
+const TableNameProcessDefNode = "process_def_node"
 
-// ProcessDefNodeInfo mapped from table <process_def_node_info>
-type ProcessDefNodeInfo struct {
+// ProcessDefNode mapped from table <process_def_node>
+type ProcessDefNode struct {
 	ID             int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	ProcessDefID   string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	NodeID         string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
@@ -34,7 +34,7 @@ type ProcessDefNodeInfo struct {
 	UpdateUser     string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
 }
 
-// TableName ProcessDefNodeInfo's table name
-func (*ProcessDefNodeInfo) TableName() string {
-	return TableNameProcessDefNodeInfo
+// TableName ProcessDefNode's table name
+func (*ProcessDefNode) TableName() string {
+	return TableNameProcessDefNode
 }

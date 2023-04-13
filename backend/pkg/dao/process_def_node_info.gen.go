@@ -23,7 +23,7 @@ func newProcessDefNodeInfo(db *gorm.DB, opts ...gen.DOOption) processDefNodeInfo
 	_processDefNodeInfo := processDefNodeInfo{}
 
 	_processDefNodeInfo.processDefNodeInfoDo.UseDB(db, opts...)
-	_processDefNodeInfo.processDefNodeInfoDo.UseModel(&model.ProcessDefNodeInfo{})
+	_processDefNodeInfo.processDefNodeInfoDo.UseModel(&model.ProcessDefNode{})
 
 	tableName := _processDefNodeInfo.processDefNodeInfoDo.TableName()
 	_processDefNodeInfo.ALL = field.NewAsterisk(tableName)
@@ -268,57 +268,57 @@ func (p processDefNodeInfoDo) Unscoped() *processDefNodeInfoDo {
 	return p.withDO(p.DO.Unscoped())
 }
 
-func (p processDefNodeInfoDo) Create(values ...*model.ProcessDefNodeInfo) error {
+func (p processDefNodeInfoDo) Create(values ...*model.ProcessDefNode) error {
 	if len(values) == 0 {
 		return nil
 	}
 	return p.DO.Create(values)
 }
 
-func (p processDefNodeInfoDo) CreateInBatches(values []*model.ProcessDefNodeInfo, batchSize int) error {
+func (p processDefNodeInfoDo) CreateInBatches(values []*model.ProcessDefNode, batchSize int) error {
 	return p.DO.CreateInBatches(values, batchSize)
 }
 
 // Save : !!! underlying implementation is different with GORM
 // The method is equivalent to executing the statement: db.Clauses(clause.OnConflict{UpdateAll: true}).Create(values)
-func (p processDefNodeInfoDo) Save(values ...*model.ProcessDefNodeInfo) error {
+func (p processDefNodeInfoDo) Save(values ...*model.ProcessDefNode) error {
 	if len(values) == 0 {
 		return nil
 	}
 	return p.DO.Save(values)
 }
 
-func (p processDefNodeInfoDo) First() (*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) First() (*model.ProcessDefNode, error) {
 	if result, err := p.DO.First(); err != nil {
 		return nil, err
 	} else {
-		return result.(*model.ProcessDefNodeInfo), nil
+		return result.(*model.ProcessDefNode), nil
 	}
 }
 
-func (p processDefNodeInfoDo) Take() (*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) Take() (*model.ProcessDefNode, error) {
 	if result, err := p.DO.Take(); err != nil {
 		return nil, err
 	} else {
-		return result.(*model.ProcessDefNodeInfo), nil
+		return result.(*model.ProcessDefNode), nil
 	}
 }
 
-func (p processDefNodeInfoDo) Last() (*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) Last() (*model.ProcessDefNode, error) {
 	if result, err := p.DO.Last(); err != nil {
 		return nil, err
 	} else {
-		return result.(*model.ProcessDefNodeInfo), nil
+		return result.(*model.ProcessDefNode), nil
 	}
 }
 
-func (p processDefNodeInfoDo) Find() ([]*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) Find() ([]*model.ProcessDefNode, error) {
 	result, err := p.DO.Find()
-	return result.([]*model.ProcessDefNodeInfo), err
+	return result.([]*model.ProcessDefNode), err
 }
 
-func (p processDefNodeInfoDo) FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.ProcessDefNodeInfo, err error) {
-	buf := make([]*model.ProcessDefNodeInfo, 0, batchSize)
+func (p processDefNodeInfoDo) FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*model.ProcessDefNode, err error) {
+	buf := make([]*model.ProcessDefNode, 0, batchSize)
 	err = p.DO.FindInBatches(&buf, batchSize, func(tx gen.Dao, batch int) error {
 		defer func() { results = append(results, buf...) }()
 		return fc(tx, batch)
@@ -326,7 +326,7 @@ func (p processDefNodeInfoDo) FindInBatch(batchSize int, fc func(tx gen.Dao, bat
 	return results, err
 }
 
-func (p processDefNodeInfoDo) FindInBatches(result *[]*model.ProcessDefNodeInfo, batchSize int, fc func(tx gen.Dao, batch int) error) error {
+func (p processDefNodeInfoDo) FindInBatches(result *[]*model.ProcessDefNode, batchSize int, fc func(tx gen.Dao, batch int) error) error {
 	return p.DO.FindInBatches(result, batchSize, fc)
 }
 
@@ -352,23 +352,23 @@ func (p processDefNodeInfoDo) Preload(fields ...field.RelationField) *processDef
 	return &p
 }
 
-func (p processDefNodeInfoDo) FirstOrInit() (*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) FirstOrInit() (*model.ProcessDefNode, error) {
 	if result, err := p.DO.FirstOrInit(); err != nil {
 		return nil, err
 	} else {
-		return result.(*model.ProcessDefNodeInfo), nil
+		return result.(*model.ProcessDefNode), nil
 	}
 }
 
-func (p processDefNodeInfoDo) FirstOrCreate() (*model.ProcessDefNodeInfo, error) {
+func (p processDefNodeInfoDo) FirstOrCreate() (*model.ProcessDefNode, error) {
 	if result, err := p.DO.FirstOrCreate(); err != nil {
 		return nil, err
 	} else {
-		return result.(*model.ProcessDefNodeInfo), nil
+		return result.(*model.ProcessDefNode), nil
 	}
 }
 
-func (p processDefNodeInfoDo) FindByPage(offset int, limit int) (result []*model.ProcessDefNodeInfo, count int64, err error) {
+func (p processDefNodeInfoDo) FindByPage(offset int, limit int) (result []*model.ProcessDefNode, count int64, err error) {
 	result, err = p.Offset(offset).Limit(limit).Find()
 	if err != nil {
 		return
@@ -397,7 +397,7 @@ func (p processDefNodeInfoDo) Scan(result interface{}) (err error) {
 	return p.DO.Scan(result)
 }
 
-func (p processDefNodeInfoDo) Delete(models ...*model.ProcessDefNodeInfo) (result gen.ResultInfo, err error) {
+func (p processDefNodeInfoDo) Delete(models ...*model.ProcessDefNode) (result gen.ResultInfo, err error) {
 	return p.DO.Delete(models)
 }
 

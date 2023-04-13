@@ -68,8 +68,8 @@ create table process_def_info(
                             primary key (id)
 )engine=innodb default charset=utf8mb4 comment = '流程定义表';
 
-drop table if exists process_def_node_info;
-create table process_def_node_info(
+drop table if exists process_def_node;
+create table process_def_node(
                              `id` bigint not null auto_increment  comment '唯一id' ,
                              `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                              `node_id` varchar(32) not null  default '' comment '节点id' ,
@@ -110,8 +110,8 @@ create table process_def_node_handler(
                                 primary key (id)
 )  engine=innodb default charset=utf8mb4  comment = '流程定义节点处理人表';
 
-drop table if exists form_def_detail;
-create table form_def_detail(
+drop table if exists form_def_info;
+create table form_def_info(
                              `id` bigint not null auto_increment  comment '唯一id' ,
                              `form_def_id` varchar(32) not null  default '' comment '表单模板id;唯一id' ,
                              `form_def_name` varchar(128) not null  default '' comment '表单名称' ,
