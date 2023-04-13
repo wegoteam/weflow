@@ -9,16 +9,8 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
+	"time"
 )
-
-var FlowParserServiceImpl = new(FlowParser)
-
-type FlowParser struct {
-}
-
-type FlowParserService interface {
-	Parser(data string) []entity.NodeModelEntity
-}
 
 /*
 *
@@ -87,7 +79,9 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 		return
 	}
 	var branchIds = make([][]string, len(childs))
+	var branchLastIds = make([]string, len(childs))
 	nodeBO.ChildrenIds = branchIds
+	nodeBO.LastNodes = branchLastIds
 	*datas = append(*datas, *nodeBO)
 	if childs == nil {
 		return
@@ -104,7 +98,7 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 			var childNode = parserNodeModel(&child)
 			childNode.Index = ind
 			childNode.BranchIndex = branch
-			//设置上节点，下节点
+			//设置上节点，下节点，尾结点
 			if ind > 0 {
 				var preIds = make([]string, 0)
 				preIds = append(preIds, branchChilds[ind-1].NodeId)
@@ -114,6 +108,9 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 				var nextIds = make([]string, 0)
 				nextIds = append(nextIds, branchChilds[ind+1].NodeId)
 				childNode.NextNodes = nextIds
+			}
+			if ind == branchChildLen-1 {
+				branchLastIds[branch] = child.NodeId
 			}
 			if child.NodeModel == constant.BRANCH_NODE_MODEL {
 				parserBranchNodeModel(childNode, child.Children, datas)
@@ -151,11 +148,17 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 				processDefModel.StartNodeId = node.NodeId
 			}
 			nodeModelMap[node.NodeId] = node
-			nodeStr, _ := json.Marshal(node)
+			nodeStr, _ := json.Marshal(&node)
+			//设置key
 			RedisCliet.HSet(ctx, processDefKey, node.NodeId, string(nodeStr))
 		}
 		return nil
 	})
+	if err != nil {
+		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+	}
+	//设置过期时间
+	err = RedisCliet.Expire(ctx, processDefKey, time.Hour*72).Err()
 	if err != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
 	}

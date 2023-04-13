@@ -81,7 +81,7 @@ type NodeModelEntity struct {
 	PerData        string              `json:"perData,omitempty"`        // 权限数据
 	HandlerList    string              `json:"handlerList,omitempty"`    // 处理人列表
 	MsgConfigList  string              `json:"msgConfigList,omitempty"`  // 消息配置列表
-	Children       [][]NodeModelEntity `json:"children,omitempty"`       // 子节点
+	Children       [][]NodeModelEntity `json:"children"`                 // 子节点
 }
 
 type NodeModelBO struct {
@@ -103,7 +103,7 @@ type NodeModelBO struct {
 	ChildrenIds    [][]string `json:"childrenIds,omitempty",redis:"childrenIds"`       // 子节点ID
 	PreNodes       []string   `json:"preNodes,omitempty",redis:"preNodes"`             //上节点ID
 	NextNodes      []string   `json:"nextNodes,omitempty",redis:"nextNodes"`           //下节点ID
-	LastNodes      []string   `json:"nextNodes,omitempty",redis:"nextNodes"`           //分支节点尾节点ID
+	LastNodes      []string   `json:"lastNodes,omitempty",redis:"lastNodes"`           //分支节点尾节点ID
 	Index          int        `json:"index,omitempty",redis:"index"`                   // 下标
 	BranchIndex    int        `json:"branchIndex,omitempty",redis:"branchIndex"`       // 分支下标
 }
