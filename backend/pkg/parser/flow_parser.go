@@ -2,7 +2,7 @@ package parser
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/redis/go-redis/v9"
 	"github.com/wegoteam/weflow/pkg/common/constant"
@@ -24,7 +24,7 @@ func Parser(data string) *[]entity.NodeModelBO {
 		hlog.Info("节点json数据为空，无需解析")
 		return &datas
 	}
-	err := json.Unmarshal([]byte(data), &nodes)
+	err := sonic.Unmarshal([]byte(data), &nodes)
 	if err != nil {
 		hlog.Warnf("解析流程图失败，错误信息：%s", err.Error())
 	}
@@ -130,7 +130,7 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 	var processDefKey = constant.REDIS_PROCESS_DEF_MODEL + processDefId
 	ctx := context.Background()
 	var processDefInfo = &model.ProcessDefInfo{}
-	dbErr := DB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: processDefId}).First(processDefInfo).Error
+	dbErr := MysqlDB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: processDefId}).First(processDefInfo).Error
 	if dbErr != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", dbErr.Error())
 	}
@@ -148,7 +148,7 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 				processDefModel.StartNodeId = node.NodeId
 			}
 			nodeModelMap[node.NodeId] = node
-			nodeStr, _ := json.Marshal(&node)
+			nodeStr, _ := sonic.Marshal(&node)
 			//设置key
 			RedisCliet.HSet(ctx, processDefKey, node.NodeId, string(nodeStr))
 		}
@@ -183,7 +183,7 @@ func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
 	var nodes = make([]entity.NodeModelBO, 0)
 	for key, val := range nodeStrMap {
 		var node = &entity.NodeModelBO{}
-		err := json.Unmarshal([]byte(val), node)
+		err := sonic.Unmarshal([]byte(val), node)
 		if err != nil {
 			hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
 		}

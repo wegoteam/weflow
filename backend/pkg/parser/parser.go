@@ -19,7 +19,7 @@ import (
 */
 
 var (
-	DB         = config.DB
+	MysqlDB    = config.MysqlDB
 	RedisCliet = config.RedisCliet
 )
 

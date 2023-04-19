@@ -77,7 +77,7 @@ type NodeModelEntity struct {
 	PermissionMode int8                `json:"permissionMode,omitempty"` // 权限模式
 	AllowAdd       int8                `json:"allowAdd,omitempty"`       // 允许添加
 	ProcessMode    int8                `json:"processMode,omitempty"`    // 处理模式
-	TimeLimit      int8                `json:"timeLimit,omitempty"`      // 时限
+	TimeLimit      int64               `json:"timeLimit,omitempty"`      // 时限
 	PerData        string              `json:"perData,omitempty"`        // 权限数据
 	HandlerList    string              `json:"handlerList,omitempty"`    // 处理人列表
 	MsgConfigList  string              `json:"msgConfigList,omitempty"`  // 消息配置列表
@@ -96,7 +96,7 @@ type NodeModelBO struct {
 	PermissionMode int8       `json:"permissionMode,omitempty",redis:"permissionMode"` // 权限模式
 	AllowAdd       int8       `json:"allowAdd,omitempty",redis:"allowAdd"`             // 允许添加
 	ProcessMode    int8       `json:"processMode,omitempty",redis:"processMode"`       // 处理模式
-	TimeLimit      int8       `json:"timeLimit,omitempty",redis:"timeLimit"`           // 时限
+	TimeLimit      int64      `json:"timeLimit,omitempty",redis:"timeLimit"`           // 时限
 	PerData        string     `json:"perData,omitempty",redis:"perData"`               // 权限数据
 	HandlerList    string     `json:"handlerList,omitempty",redis:"handlerList"`       // 处理人列表
 	MsgConfigList  string     `json:"msgConfigList,omitempty",redis:"msgConfigList"`   // 消息配置列表
@@ -107,3 +107,19 @@ type NodeModelBO struct {
 	Index          int        `json:"index,omitempty",redis:"index"`                   // 下标
 	BranchIndex    int        `json:"branchIndex,omitempty",redis:"branchIndex"`       // 分支下标
 }
+
+//func (receiver NodeModelBO) MarshalBinary() (data []byte, err error) {
+//	var buf bytes.Buffer
+//	enc := gob.NewEncoder(&buf)
+//	err = enc.Encode(receiver)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return buf.Bytes(), nil
+//}
+//
+//func (receiver NodeModelBO) UnmarshalBinary(data []byte) error {
+//	buf := bytes.NewBuffer(data)
+//	dec := gob.NewDecoder(buf)
+//	return dec.Decode(&receiver)
+//}

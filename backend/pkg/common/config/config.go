@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	DB         *gorm.DB
+	MysqlDB    *gorm.DB
 	err        error
 	RedisCliet *redis.Client
 )
 
 func init() {
-	DB, err = gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:3306)/weflow?charset=utf8&parseTime=True&loc=Local"),
+	MysqlDB, err = gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:3306)/weflow?charset=utf8&parseTime=True&loc=Local"),
 		&gorm.Config{
 			PrepareStmt:            true,
 			SkipDefaultTransaction: true,

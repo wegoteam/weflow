@@ -2,10 +2,11 @@ package parser
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/redis/go-redis/v9"
+	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/model"
 	"testing"
 )
@@ -13,7 +14,7 @@ import (
 func TestParser(t *testing.T) {
 	var data = "[{\"nodeModel\":1,\"nodeName\":\"发起人\",\"nodeId\":\"1640993392605401088\",\"parentId\":\"\"},{\"nodeModel\":2,\"nodeName\":\"审批\",\"nodeId\":\"1640993449224310784\",\"parentId\":\"\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"2\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"},{\"nodeModel\":6,\"nodeName\":\"分支节点\",\"nodeId\":\"1640993508049424384\",\"parentId\":\"\",\"children\":[[{\"nodeModel\":5,\"nodeName\":\"条件1\",\"nodeId\":\"1640993508049424385\",\"parentId\":\"1640993508049424384\"},{\"nodeModel\":2,\"nodeName\":\"审批\",\"nodeId\":\"1640993526328201216\",\"parentId\":\"1640993508049424384\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"2\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"}],[{\"nodeModel\":5,\"nodeName\":\"条件2\",\"nodeId\":\"1640993508049424386\",\"parentId\":\"1640993508049424384\"},{\"nodeModel\":4,\"nodeName\":\"知会\",\"nodeId\":\"1640993535555670016\",\"parentId\":\"1640993508049424384\",\"perData\":\"{\\\\\\\"1640993433239818240\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"1640993434883985408\\\\\\\":\\\\\\\"1\\\\\\\"}\",\"handlerList\":\"[{\\\\\\\"handlerId\\\\\\\":\\\\\\\"547\\\\\\\",\\\\\\\"handlerName\\\\\\\":\\\\\\\"xuch01\\\\\\\",\\\\\\\"handlerType\\\\\\\":1,\\\\\\\"handlerSort\\\\\\\":1}]\"}]]},{\"nodeModel\":7,\"nodeName\":\"分支汇聚\",\"nodeId\":\"1640993508053618688\",\"parentId\":\"\"},{\"nodeModel\":8,\"nodeName\":\"流程结束\",\"nodeId\":\"1640993392605401089\",\"parentId\":\"\"}]"
 	nodes := Parser(data)
-	marshal, _ := json.Marshal(nodes)
+	marshal, _ := sonic.Marshal(nodes)
 
 	hlog.Infof("数据为%v", string(marshal))
 }
@@ -38,8 +39,8 @@ func TestRedis(t *testing.T) {
 func TestDB(t *testing.T) {
 	ctx := context.Background()
 	var flowdef = &model.ProcessDefInfo{}
-	DB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: "1640993392605401001"}).First(flowdef)
-	marshal, _ := json.Marshal(flowdef)
+	MysqlDB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: "1640993392605401001"}).First(flowdef)
+	marshal, _ := sonic.Marshal(flowdef)
 	fmt.Println(string(marshal))
 }
 
@@ -51,7 +52,7 @@ func TestGetProcessDefModel(t *testing.T) {
 
 	_, err := RedisCliet.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for _, node := range *nodes {
-			nodeStr, _ := json.Marshal(node)
+			nodeStr, _ := sonic.Marshal(node)
 			RedisCliet.HSet(ctx, "process_def", node.NodeId, string(nodeStr))
 		}
 		return nil
@@ -93,8 +94,21 @@ func TestGetProcessDefModel(t *testing.T) {
 func TestProcessDefModel(t *testing.T) {
 	processDefModel := GetProcessDefModel("1640993392605401001")
 
+	nodeMap := make(map[string]interface{})
+	for _, node := range *processDefModel.NodeModels {
+		nodeMap[node.NodeId] = node
+	}
+	for k, v := range nodeMap {
+		switch v.(type) {
+		case entity.NodeModelBO:
+			//ctx := context.Background()
+			//err := RedisCliet.Set(ctx, k, v, time.Second*100).Err()
+			//fmt.Println(err)
+			fmt.Println(k, v)
+		}
+	}
 	if processDefModel != nil {
-		marshal, _ := json.Marshal(processDefModel)
+		marshal, _ := sonic.Marshal(processDefModel)
 		fmt.Println(string(marshal))
 	}
 
