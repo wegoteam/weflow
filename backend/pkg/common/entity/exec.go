@@ -5,10 +5,10 @@ import "time"
 // Execution 执行对象
 type Execution struct {
 	InstTaskId       string                     `json:"instTaskId"`       //实例任务ID
-	InstStatus       int8                       `json:"instStatus"`       //实例状态
+	InstTaskStatus   int8                       `json:"instStatus"`       //实例任务状态
 	Now              time.Time                  `json:"now"`              //当前时间
 	InstTaskName     string                     `json:"instTaskName"`     //实例任务名称
-	ProcessDefModel  ProcessDefModel            `json:"processDefModel"`  //流程定义
+	ProcessDefModel  *ProcessDefModel           `json:"processDefModel"`  //流程定义
 	InstTaskParamMap *map[string]interface{}    `json:"instTaskParamMap"` //实例任务参数
 	ExecNodeTaskMap  *map[string]ExecNodeTaskBO `json:"execNodeTaskMap"`  //实例节点任务执行缓存数据
 	UserTasks        *[]UserTaskBO              `json:"userTasks"`        //用户任务
