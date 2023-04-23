@@ -8,17 +8,17 @@ import (
 	"time"
 )
 
-const TableNameProcessDefNodeHandler = "process_def_node_handler"
+const TableNameProcessDefNodeUser = "process_def_node_user"
 
-// ProcessDefNodeHandler mapped from table <process_def_node_handler>
-type ProcessDefNodeHandler struct {
+// ProcessDefNodeUser mapped from table <process_def_node_user>
+type ProcessDefNodeUser struct {
 	ID           int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	NodeID       string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
-	HandlerName  string    `gorm:"column:handler_name;not null" json:"handler_name"`                         // 处理人名称
-	HandlerType  int32     `gorm:"column:handler_type;not null;default:1" json:"handler_type"`               // 处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】
-	HandlerID    string    `gorm:"column:handler_id;not null" json:"handler_id"`                             // 处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等
-	HandlerSort  int32     `gorm:"column:handler_sort;not null;default:1" json:"handler_sort"`               // 处理人顺序;正序排序
+	UserName     string    `gorm:"column:user_name;not null" json:"user_name"`                               // 处理人名称
+	UserType     int32     `gorm:"column:user_type;not null;default:1" json:"user_type"`                     // 处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】
+	UserID       string    `gorm:"column:user_id;not null" json:"user_id"`                                   // 处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等
+	Sort         int32     `gorm:"column:sort;not null;default:1" json:"sort"`                               // 处理人顺序;正序排序
 	ObjData      string    `gorm:"column:obj_data;not null" json:"obj_data"`                                 // 对象数据;依据处理人类型取值，相对岗位和表单控件使用该字段存json数据
 	CreateTime   time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
 	CreateUser   string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人
@@ -26,7 +26,7 @@ type ProcessDefNodeHandler struct {
 	UpdateUser   string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
 }
 
-// TableName ProcessDefNodeHandler's table name
-func (*ProcessDefNodeHandler) TableName() string {
-	return TableNameProcessDefNodeHandler
+// TableName ProcessDefNodeUser's table name
+func (*ProcessDefNodeUser) TableName() string {
+	return TableNameProcessDefNodeUser
 }

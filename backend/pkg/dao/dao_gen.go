@@ -17,80 +17,80 @@ import (
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:                     db,
-		FormDefElement:         newFormDefElement(db, opts...),
-		FormDefInfo:            newFormDefInfo(db, opts...),
-		InstHandlerTask:        newInstHandlerTask(db, opts...),
-		InstHandlerTaskOpinion: newInstHandlerTaskOpinion(db, opts...),
-		InstNodeTask:           newInstNodeTask(db, opts...),
-		InstTaskDetail:         newInstTaskDetail(db, opts...),
-		InstTaskOpLog:          newInstTaskOpLog(db, opts...),
-		InstTaskParam:          newInstTaskParam(db, opts...),
-		InstTaskParamAttr:      newInstTaskParamAttr(db, opts...),
-		ModelAuth:              newModelAuth(db, opts...),
-		ModelDetail:            newModelDetail(db, opts...),
-		ModelGroup:             newModelGroup(db, opts...),
-		ModelVersion:           newModelVersion(db, opts...),
-		OrganizationInfo:       newOrganizationInfo(db, opts...),
-		ProcessDefInfo:         newProcessDefInfo(db, opts...),
-		ProcessDefNodeHandler:  newProcessDefNodeHandler(db, opts...),
-		ProcessDefNodeInfo:     newProcessDefNodeInfo(db, opts...),
-		RoleInfo:               newRoleInfo(db, opts...),
-		UserInfo:               newUserInfo(db, opts...),
-		UserRoleLink:           newUserRoleLink(db, opts...),
+		db:                  db,
+		FormDefElement:      newFormDefElement(db, opts...),
+		FormDefInfo:         newFormDefInfo(db, opts...),
+		InstNodeTask:        newInstNodeTask(db, opts...),
+		InstTaskDetail:      newInstTaskDetail(db, opts...),
+		InstTaskOpLog:       newInstTaskOpLog(db, opts...),
+		InstTaskParam:       newInstTaskParam(db, opts...),
+		InstTaskParamAttr:   newInstTaskParamAttr(db, opts...),
+		InstUserTask:        newInstUserTask(db, opts...),
+		InstUserTaskOpinion: newInstUserTaskOpinion(db, opts...),
+		ModelAuth:           newModelAuth(db, opts...),
+		ModelDetail:         newModelDetail(db, opts...),
+		ModelGroup:          newModelGroup(db, opts...),
+		ModelVersion:        newModelVersion(db, opts...),
+		OrganizationInfo:    newOrganizationInfo(db, opts...),
+		ProcessDefInfo:      newProcessDefInfo(db, opts...),
+		ProcessDefNode:      newProcessDefNode(db, opts...),
+		ProcessDefNodeUser:  newProcessDefNodeUser(db, opts...),
+		RoleInfo:            newRoleInfo(db, opts...),
+		UserInfo:            newUserInfo(db, opts...),
+		UserRoleLink:        newUserRoleLink(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	FormDefElement         formDefElement
-	FormDefInfo            formDefInfo
-	InstHandlerTask        instHandlerTask
-	InstHandlerTaskOpinion instHandlerTaskOpinion
-	InstNodeTask           instNodeTask
-	InstTaskDetail         instTaskDetail
-	InstTaskOpLog          instTaskOpLog
-	InstTaskParam          instTaskParam
-	InstTaskParamAttr      instTaskParamAttr
-	ModelAuth              modelAuth
-	ModelDetail            modelDetail
-	ModelGroup             modelGroup
-	ModelVersion           modelVersion
-	OrganizationInfo       organizationInfo
-	ProcessDefInfo         processDefInfo
-	ProcessDefNodeHandler  processDefNodeHandler
-	ProcessDefNodeInfo     processDefNodeInfo
-	RoleInfo               roleInfo
-	UserInfo               userInfo
-	UserRoleLink           userRoleLink
+	FormDefElement      formDefElement
+	FormDefInfo         formDefInfo
+	InstNodeTask        instNodeTask
+	InstTaskDetail      instTaskDetail
+	InstTaskOpLog       instTaskOpLog
+	InstTaskParam       instTaskParam
+	InstTaskParamAttr   instTaskParamAttr
+	InstUserTask        instUserTask
+	InstUserTaskOpinion instUserTaskOpinion
+	ModelAuth           modelAuth
+	ModelDetail         modelDetail
+	ModelGroup          modelGroup
+	ModelVersion        modelVersion
+	OrganizationInfo    organizationInfo
+	ProcessDefInfo      processDefInfo
+	ProcessDefNode      processDefNode
+	ProcessDefNodeUser  processDefNodeUser
+	RoleInfo            roleInfo
+	UserInfo            userInfo
+	UserRoleLink        userRoleLink
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:                     db,
-		FormDefElement:         q.FormDefElement.clone(db),
-		FormDefInfo:            q.FormDefInfo.clone(db),
-		InstHandlerTask:        q.InstHandlerTask.clone(db),
-		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.clone(db),
-		InstNodeTask:           q.InstNodeTask.clone(db),
-		InstTaskDetail:         q.InstTaskDetail.clone(db),
-		InstTaskOpLog:          q.InstTaskOpLog.clone(db),
-		InstTaskParam:          q.InstTaskParam.clone(db),
-		InstTaskParamAttr:      q.InstTaskParamAttr.clone(db),
-		ModelAuth:              q.ModelAuth.clone(db),
-		ModelDetail:            q.ModelDetail.clone(db),
-		ModelGroup:             q.ModelGroup.clone(db),
-		ModelVersion:           q.ModelVersion.clone(db),
-		OrganizationInfo:       q.OrganizationInfo.clone(db),
-		ProcessDefInfo:         q.ProcessDefInfo.clone(db),
-		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.clone(db),
-		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.clone(db),
-		RoleInfo:               q.RoleInfo.clone(db),
-		UserInfo:               q.UserInfo.clone(db),
-		UserRoleLink:           q.UserRoleLink.clone(db),
+		db:                  db,
+		FormDefElement:      q.FormDefElement.clone(db),
+		FormDefInfo:         q.FormDefInfo.clone(db),
+		InstNodeTask:        q.InstNodeTask.clone(db),
+		InstTaskDetail:      q.InstTaskDetail.clone(db),
+		InstTaskOpLog:       q.InstTaskOpLog.clone(db),
+		InstTaskParam:       q.InstTaskParam.clone(db),
+		InstTaskParamAttr:   q.InstTaskParamAttr.clone(db),
+		InstUserTask:        q.InstUserTask.clone(db),
+		InstUserTaskOpinion: q.InstUserTaskOpinion.clone(db),
+		ModelAuth:           q.ModelAuth.clone(db),
+		ModelDetail:         q.ModelDetail.clone(db),
+		ModelGroup:          q.ModelGroup.clone(db),
+		ModelVersion:        q.ModelVersion.clone(db),
+		OrganizationInfo:    q.OrganizationInfo.clone(db),
+		ProcessDefInfo:      q.ProcessDefInfo.clone(db),
+		ProcessDefNode:      q.ProcessDefNode.clone(db),
+		ProcessDefNodeUser:  q.ProcessDefNodeUser.clone(db),
+		RoleInfo:            q.RoleInfo.clone(db),
+		UserInfo:            q.UserInfo.clone(db),
+		UserRoleLink:        q.UserRoleLink.clone(db),
 	}
 }
 
@@ -104,75 +104,75 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:                     db,
-		FormDefElement:         q.FormDefElement.replaceDB(db),
-		FormDefInfo:            q.FormDefInfo.replaceDB(db),
-		InstHandlerTask:        q.InstHandlerTask.replaceDB(db),
-		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.replaceDB(db),
-		InstNodeTask:           q.InstNodeTask.replaceDB(db),
-		InstTaskDetail:         q.InstTaskDetail.replaceDB(db),
-		InstTaskOpLog:          q.InstTaskOpLog.replaceDB(db),
-		InstTaskParam:          q.InstTaskParam.replaceDB(db),
-		InstTaskParamAttr:      q.InstTaskParamAttr.replaceDB(db),
-		ModelAuth:              q.ModelAuth.replaceDB(db),
-		ModelDetail:            q.ModelDetail.replaceDB(db),
-		ModelGroup:             q.ModelGroup.replaceDB(db),
-		ModelVersion:           q.ModelVersion.replaceDB(db),
-		OrganizationInfo:       q.OrganizationInfo.replaceDB(db),
-		ProcessDefInfo:         q.ProcessDefInfo.replaceDB(db),
-		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.replaceDB(db),
-		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.replaceDB(db),
-		RoleInfo:               q.RoleInfo.replaceDB(db),
-		UserInfo:               q.UserInfo.replaceDB(db),
-		UserRoleLink:           q.UserRoleLink.replaceDB(db),
+		db:                  db,
+		FormDefElement:      q.FormDefElement.replaceDB(db),
+		FormDefInfo:         q.FormDefInfo.replaceDB(db),
+		InstNodeTask:        q.InstNodeTask.replaceDB(db),
+		InstTaskDetail:      q.InstTaskDetail.replaceDB(db),
+		InstTaskOpLog:       q.InstTaskOpLog.replaceDB(db),
+		InstTaskParam:       q.InstTaskParam.replaceDB(db),
+		InstTaskParamAttr:   q.InstTaskParamAttr.replaceDB(db),
+		InstUserTask:        q.InstUserTask.replaceDB(db),
+		InstUserTaskOpinion: q.InstUserTaskOpinion.replaceDB(db),
+		ModelAuth:           q.ModelAuth.replaceDB(db),
+		ModelDetail:         q.ModelDetail.replaceDB(db),
+		ModelGroup:          q.ModelGroup.replaceDB(db),
+		ModelVersion:        q.ModelVersion.replaceDB(db),
+		OrganizationInfo:    q.OrganizationInfo.replaceDB(db),
+		ProcessDefInfo:      q.ProcessDefInfo.replaceDB(db),
+		ProcessDefNode:      q.ProcessDefNode.replaceDB(db),
+		ProcessDefNodeUser:  q.ProcessDefNodeUser.replaceDB(db),
+		RoleInfo:            q.RoleInfo.replaceDB(db),
+		UserInfo:            q.UserInfo.replaceDB(db),
+		UserRoleLink:        q.UserRoleLink.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	FormDefElement         *formDefElementDo
-	FormDefInfo            *formDefInfoDo
-	InstHandlerTask        *instHandlerTaskDo
-	InstHandlerTaskOpinion *instHandlerTaskOpinionDo
-	InstNodeTask           *instNodeTaskDo
-	InstTaskDetail         *instTaskDetailDo
-	InstTaskOpLog          *instTaskOpLogDo
-	InstTaskParam          *instTaskParamDo
-	InstTaskParamAttr      *instTaskParamAttrDo
-	ModelAuth              *modelAuthDo
-	ModelDetail            *modelDetailDo
-	ModelGroup             *modelGroupDo
-	ModelVersion           *modelVersionDo
-	OrganizationInfo       *organizationInfoDo
-	ProcessDefInfo         *processDefInfoDo
-	ProcessDefNodeHandler  *processDefNodeHandlerDo
-	ProcessDefNodeInfo     *processDefNodeInfoDo
-	RoleInfo               *roleInfoDo
-	UserInfo               *userInfoDo
-	UserRoleLink           *userRoleLinkDo
+	FormDefElement      *formDefElementDo
+	FormDefInfo         *formDefInfoDo
+	InstNodeTask        *instNodeTaskDo
+	InstTaskDetail      *instTaskDetailDo
+	InstTaskOpLog       *instTaskOpLogDo
+	InstTaskParam       *instTaskParamDo
+	InstTaskParamAttr   *instTaskParamAttrDo
+	InstUserTask        *instUserTaskDo
+	InstUserTaskOpinion *instUserTaskOpinionDo
+	ModelAuth           *modelAuthDo
+	ModelDetail         *modelDetailDo
+	ModelGroup          *modelGroupDo
+	ModelVersion        *modelVersionDo
+	OrganizationInfo    *organizationInfoDo
+	ProcessDefInfo      *processDefInfoDo
+	ProcessDefNode      *processDefNodeDo
+	ProcessDefNodeUser  *processDefNodeUserDo
+	RoleInfo            *roleInfoDo
+	UserInfo            *userInfoDo
+	UserRoleLink        *userRoleLinkDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		FormDefElement:         q.FormDefElement.WithContext(ctx),
-		FormDefInfo:            q.FormDefInfo.WithContext(ctx),
-		InstHandlerTask:        q.InstHandlerTask.WithContext(ctx),
-		InstHandlerTaskOpinion: q.InstHandlerTaskOpinion.WithContext(ctx),
-		InstNodeTask:           q.InstNodeTask.WithContext(ctx),
-		InstTaskDetail:         q.InstTaskDetail.WithContext(ctx),
-		InstTaskOpLog:          q.InstTaskOpLog.WithContext(ctx),
-		InstTaskParam:          q.InstTaskParam.WithContext(ctx),
-		InstTaskParamAttr:      q.InstTaskParamAttr.WithContext(ctx),
-		ModelAuth:              q.ModelAuth.WithContext(ctx),
-		ModelDetail:            q.ModelDetail.WithContext(ctx),
-		ModelGroup:             q.ModelGroup.WithContext(ctx),
-		ModelVersion:           q.ModelVersion.WithContext(ctx),
-		OrganizationInfo:       q.OrganizationInfo.WithContext(ctx),
-		ProcessDefInfo:         q.ProcessDefInfo.WithContext(ctx),
-		ProcessDefNodeHandler:  q.ProcessDefNodeHandler.WithContext(ctx),
-		ProcessDefNodeInfo:     q.ProcessDefNodeInfo.WithContext(ctx),
-		RoleInfo:               q.RoleInfo.WithContext(ctx),
-		UserInfo:               q.UserInfo.WithContext(ctx),
-		UserRoleLink:           q.UserRoleLink.WithContext(ctx),
+		FormDefElement:      q.FormDefElement.WithContext(ctx),
+		FormDefInfo:         q.FormDefInfo.WithContext(ctx),
+		InstNodeTask:        q.InstNodeTask.WithContext(ctx),
+		InstTaskDetail:      q.InstTaskDetail.WithContext(ctx),
+		InstTaskOpLog:       q.InstTaskOpLog.WithContext(ctx),
+		InstTaskParam:       q.InstTaskParam.WithContext(ctx),
+		InstTaskParamAttr:   q.InstTaskParamAttr.WithContext(ctx),
+		InstUserTask:        q.InstUserTask.WithContext(ctx),
+		InstUserTaskOpinion: q.InstUserTaskOpinion.WithContext(ctx),
+		ModelAuth:           q.ModelAuth.WithContext(ctx),
+		ModelDetail:         q.ModelDetail.WithContext(ctx),
+		ModelGroup:          q.ModelGroup.WithContext(ctx),
+		ModelVersion:        q.ModelVersion.WithContext(ctx),
+		OrganizationInfo:    q.OrganizationInfo.WithContext(ctx),
+		ProcessDefInfo:      q.ProcessDefInfo.WithContext(ctx),
+		ProcessDefNode:      q.ProcessDefNode.WithContext(ctx),
+		ProcessDefNodeUser:  q.ProcessDefNodeUser.WithContext(ctx),
+		RoleInfo:            q.RoleInfo.WithContext(ctx),
+		UserInfo:            q.UserInfo.WithContext(ctx),
+		UserRoleLink:        q.UserRoleLink.WithContext(ctx),
 	}
 }
 

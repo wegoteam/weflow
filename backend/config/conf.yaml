@@ -15,3 +15,8 @@ mysql:
 redis:
   address: "127.0.0.1:6379"
   password: ""
+
+server:
+  address: ":8080"
+  profiles:
+    active: "dev"

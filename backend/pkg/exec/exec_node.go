@@ -7,7 +7,7 @@ import (
 )
 
 type IExecNode interface {
-	HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult
+	HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult
 }
 
 type ExecNode struct {
@@ -52,7 +52,7 @@ func GetExecNode(node *entity.NodeModelBO) IExecNode {
 	return exec
 }
 
-func Exec(currnode *entity.NodeModelBO, execution *Execution) {
+func Exec(currnode *entity.NodeModelBO, execution *entity.Execution) {
 	iexec := GetExecNode(currnode)
 	execNode := NewExecNode(currnode, iexec)
 	handleNodes := execNode.Exec.HandleNode(currnode, nil)
@@ -98,56 +98,56 @@ type ExecConvergenceNode struct {
 type ExecEndNode struct {
 }
 
-func (receiver *ExecStartNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecStartNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecStartNode 执行开始节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecApprovalNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecApprovalNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecApprovalNode 执行审批节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecNotifyNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecNotifyNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecNotifyNode 执行知会节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecCustomNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecCustomNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecCustomNode 执行自定义节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecConditionNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecConditionNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecConditionNode 执行条件节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecBranchNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecBranchNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecBranchNode 执行分支节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecConvergenceNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecConvergenceNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecConvergenceNode 执行汇聚节点")
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
 }
 
-func (receiver *ExecEndNode) HandleNode(node *entity.NodeModelBO, exec *Execution) ExecResult {
+func (receiver *ExecEndNode) HandleNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecEndNode 执行结束节点")
 
 	return ExecResult{

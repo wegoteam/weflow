@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-const TableNameInstHandlerTaskOpinion = "inst_handler_task_opinion"
+const TableNameInstUserTaskOpinion = "inst_user_task_opinion"
 
-// InstHandlerTaskOpinion mapped from table <inst_handler_task_opinion>
-type InstHandlerTaskOpinion struct {
+// InstUserTaskOpinion mapped from table <inst_user_task_opinion>
+type InstUserTaskOpinion struct {
 	ID          int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	InstTaskID  string    `gorm:"column:inst_task_id;not null" json:"inst_task_id"`                         // 实例任务id
 	NodeTaskID  string    `gorm:"column:node_task_id;not null" json:"node_task_id"`                         // 节点任务id
@@ -26,7 +26,7 @@ type InstHandlerTaskOpinion struct {
 	OpinionTime time.Time `gorm:"column:opinion_time;default:CURRENT_TIMESTAMP" json:"opinion_time"`        // 发表意见时间
 }
 
-// TableName InstHandlerTaskOpinion's table name
-func (*InstHandlerTaskOpinion) TableName() string {
-	return TableNameInstHandlerTaskOpinion
+// TableName InstUserTaskOpinion's table name
+func (*InstUserTaskOpinion) TableName() string {
+	return TableNameInstUserTaskOpinion
 }

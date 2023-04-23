@@ -93,22 +93,22 @@ create table process_def_node(
                              primary key (id)
 ) engine=innodb default charset=utf8mb4 comment = '流程定义节点信息表';
 
-drop table if exists process_def_node_handler;
-create table process_def_node_handler(
+drop table if exists process_def_node_user;
+create table process_def_node_user(
                                 `id` bigint not null auto_increment  comment '唯一id' ,
                                 `process_def_id` varchar(32) not null  default '' comment '流程定义id' ,
                                 `node_id` varchar(32) not null  default '' comment '节点id' ,
-                                `handler_name` varchar(128) not null  default '' comment '处理人名称' ,
-                                `handler_type` tinyint not null  default 1 comment '处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】' ,
-                                `handler_id` varchar(128) not null  default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等' ,
-                                `handler_sort` int not null  default 1 comment '处理人顺序;正序排序' ,
+                                `user_name` varchar(128) not null  default '' comment '处理人名称' ,
+                                `user_type` tinyint not null  default 1 comment '处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】' ,
+                                `user_id` varchar(128) not null  default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等' ,
+                                `sort` int not null  default 1 comment '处理人顺序;正序排序' ,
                                 `obj_data` varchar(3000) not null  default '' comment '对象数据;依据处理人类型取值，相对岗位和表单控件使用该字段存json数据' ,
                                 `create_time` timestamp not null default current_timestamp on update current_timestamp comment '创建时间',
                                 `create_user` varchar(50) not null default '' comment '创建人',
                                 `update_time` timestamp null default current_timestamp on update current_timestamp comment '更新时间',
                                 `update_user` varchar(50) default '' comment '更新人',
                                 primary key (id)
-)  engine=innodb default charset=utf8mb4  comment = '流程定义节点处理人表';
+)  engine=innodb default charset=utf8mb4  comment = '流程定义节点用户表';
 
 drop table if exists form_def_info;
 create table form_def_info(
@@ -190,16 +190,16 @@ create table inst_node_task(
                              primary key (id)
 ) engine=innodb default charset=utf8mb4  comment = '实例节点任务表';
 
-drop table if exists inst_handler_task;
-create table inst_handler_task(
+drop table if exists inst_user_task;
+create table inst_user_task(
                                 `id` bigint not null auto_increment  comment '唯一id' ,
                                 `inst_task_id` varchar(32) not null  default '' comment '实例任务id' ,
                                 `node_task_id` varchar(32) not null  default '' comment '节点任务id' ,
                                 `node_id` varchar(32) not null  default '' comment '节点任务id' ,
-                                `handler_task_id` varchar(32) not null  default '' comment '处理人任务id' ,
-                                `node_handler_id` varchar(32) not null  default '' comment '节点处理人id' ,
-                                `node_handler_name` varchar(128) not null  default '' comment '处理人名称' ,
-                                `node_handler_type` tinyint not null  default 1 comment '处理人类型【1：操作员；2：部门；3：相对岗位；4：表单控件；5：角色；6：岗位；7：组织；8：自定义】' ,
+                                `user_task_id` varchar(32) not null  default '' comment '处理人任务id' ,
+                                `node_user_id` varchar(32) not null  default '' comment '节点处理人id' ,
+                                `node_user_name` varchar(128) not null  default '' comment '处理人名称' ,
+                                `node_user_type` tinyint not null  default 1 comment '处理人类型【1：操作员；2：部门；3：相对岗位；4：表单控件；5：角色；6：岗位；7：组织；8：自定义】' ,
                                 `op_origin` tinyint not null  default 1 comment '操作来源【1：正常；2：加签】' ,
                                 `time_limit` bigint not null  default 0 comment '处理期限;格式：yyyymmddhhmm 可直接指定到期限的具体时间，期限支持到分钟； 0表示无期限' ,
                                 `status` tinyint not null  default 1 comment '任务状态【1：处理中；2：完成；3：回退；4：终止】' ,
@@ -212,10 +212,10 @@ create table inst_handler_task(
                                 `opinion` tinyint not null  default 1 comment '处理意见【1：未发表；2：已阅；3：同意；4：不同意】' ,
                                 `opinion_desc` varchar(3000) not null  default '' comment '处理意见描述' ,
                                 primary key (id)
-) engine=innodb default charset=utf8mb4 comment = '实例节点处理人任务表';
+) engine=innodb default charset=utf8mb4 comment = '实例用户任务表';
 
-drop table if exists inst_handler_task_opinion;
-create table inst_handler_task_opinion(
+drop table if exists inst_user_task_opinion;
+create table inst_user_task_opinion(
                                    `id` bigint not null auto_increment  comment '唯一id' ,
                                    `inst_task_id` varchar(32) not null  default '' comment '实例任务id' ,
                                    `node_task_id` varchar(32) not null  default '' comment '节点任务id' ,
@@ -229,7 +229,7 @@ create table inst_handler_task_opinion(
                                    `update_time` timestamp null default current_timestamp on update current_timestamp comment '更新时间',
                                    `opinion_time` timestamp null default current_timestamp on update current_timestamp comment '发表意见时间',
                                    primary key (id)
-) engine=innodb default charset=utf8mb4 comment = '实例节点处理人任务意见表';
+) engine=innodb default charset=utf8mb4 comment = '实例用户任务意见表';
 
 drop table if exists inst_task_param;
 create table inst_task_param(

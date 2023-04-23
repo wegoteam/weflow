@@ -9,6 +9,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/model"
 	"testing"
+	"time"
 )
 
 func TestParser(t *testing.T) {
@@ -101,9 +102,9 @@ func TestProcessDefModel(t *testing.T) {
 	for k, v := range nodeMap {
 		switch v.(type) {
 		case entity.NodeModelBO:
-			//ctx := context.Background()
-			//err := RedisCliet.Set(ctx, k, v, time.Second*100).Err()
-			//fmt.Println(err)
+			ctx := context.Background()
+			err := RedisCliet.Set(ctx, k, v, time.Second*100).Err()
+			fmt.Println(err)
 			fmt.Println(k, v)
 		}
 	}
