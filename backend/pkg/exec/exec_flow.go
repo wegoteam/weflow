@@ -8,7 +8,7 @@ import (
 type ExecFlow struct {
 }
 
-func StartInstTask() {
+func StartProcessInstTask(modelId string) {
 	processDefModel := parser.GetProcessDefModel("1640993392605401001")
 
 	execution := &entity.Execution{}
@@ -19,6 +19,6 @@ func StartInstTask() {
 
 	startNodeId := processDefModel.StartNodeId
 
-	startNode := (*processDefModel.NodeModelMap)[startNodeId]
+	startNode := processDefModel.NodeModelMap[startNodeId]
 	Exec(&startNode, execution)
 }

@@ -163,7 +163,7 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
 	}
 	processDefModel.ProcessDefId = processDefId
-	processDefModel.NodeModelMap = &nodeModelMap
+	processDefModel.NodeModelMap = nodeModelMap
 	return processDefModel
 }
 
@@ -194,7 +194,7 @@ func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
 		nodes = append(nodes, *node)
 	}
 	processDefModel.NodeModels = &nodes
-	processDefModel.NodeModelMap = &nodeModelMap
+	processDefModel.NodeModelMap = nodeModelMap
 	processDefModel.ProcessDefId = processDefId
 	return processDefModel
 }
