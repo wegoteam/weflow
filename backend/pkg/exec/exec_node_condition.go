@@ -3,14 +3,30 @@ package exec
 import (
 	"fmt"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/expr"
 )
 
 // ExecConditionNode 条件节点
 type ExecConditionNode struct {
 }
 
+/**
+执行条件节点，验证条件表达式
+*/
 func (receiver *ExecConditionNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecConditionNode 执行条件节点")
+
+	//条件
+	conditions := node.Conditions
+	//参数
+	paramMap := exec.InstTaskParamMap
+
+	//执行条件
+	flag := expr.ExecExpr(conditions, paramMap)
+	if !flag {
+		fmt.Println("条件不成立")
+		return ExecResult{}
+	}
 	processDefModel := exec.ProcessDefModel
 	nextNodes := receiver.NextNodes(node, processDefModel.NodeModelMap)
 	return ExecResult{

@@ -32,7 +32,7 @@ func newInstNodeTask(db *gorm.DB, opts ...gen.DOOption) instNodeTask {
 	_instNodeTask.NodeTaskID = field.NewString(tableName, "node_task_id")
 	_instNodeTask.NodeID = field.NewString(tableName, "node_id")
 	_instNodeTask.ParentID = field.NewString(tableName, "parent_id")
-	_instNodeTask.NodeType = field.NewInt32(tableName, "node_type")
+	_instNodeTask.NodeModel = field.NewInt32(tableName, "node_model")
 	_instNodeTask.NodeName = field.NewString(tableName, "node_name")
 	_instNodeTask.ForwardMode = field.NewInt32(tableName, "forward_mode")
 	_instNodeTask.CompleteConn = field.NewInt32(tableName, "complete_conn")
@@ -58,9 +58,9 @@ type instNodeTask struct {
 	ID             field.Int64  // 唯一id
 	InstTaskID     field.String // 实例任务id
 	NodeTaskID     field.String // 节点任务id
-	NodeID         field.String // 节点任务id
+	NodeID         field.String // 节点id
 	ParentID       field.String // 父节点id
-	NodeType       field.Int32  // 节点类型【1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点；6：分支节点】
+	NodeModel      field.Int32  // 节点模型【1：开始节点；2：审批节点；3：知会节点；4：自定义节点；5：条件节点；6：分支节点；7：汇聚节点；8：结束节点】
 	NodeName       field.String // 节点名称
 	ForwardMode    field.Int32  // 进行模式【1：并行 2：串行】
 	CompleteConn   field.Int32  // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成
@@ -94,7 +94,7 @@ func (i *instNodeTask) updateTableName(table string) *instNodeTask {
 	i.NodeTaskID = field.NewString(table, "node_task_id")
 	i.NodeID = field.NewString(table, "node_id")
 	i.ParentID = field.NewString(table, "parent_id")
-	i.NodeType = field.NewInt32(table, "node_type")
+	i.NodeModel = field.NewInt32(table, "node_model")
 	i.NodeName = field.NewString(table, "node_name")
 	i.ForwardMode = field.NewInt32(table, "forward_mode")
 	i.CompleteConn = field.NewInt32(table, "complete_conn")
@@ -137,7 +137,7 @@ func (i *instNodeTask) fillFieldMap() {
 	i.fieldMap["node_task_id"] = i.NodeTaskID
 	i.fieldMap["node_id"] = i.NodeID
 	i.fieldMap["parent_id"] = i.ParentID
-	i.fieldMap["node_type"] = i.NodeType
+	i.fieldMap["node_model"] = i.NodeModel
 	i.fieldMap["node_name"] = i.NodeName
 	i.fieldMap["forward_mode"] = i.ForwardMode
 	i.fieldMap["complete_conn"] = i.CompleteConn

@@ -9,6 +9,12 @@ import (
 type ExecConvergenceNode struct {
 }
 
+/**
+执行汇聚节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (receiver *ExecConvergenceNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecConvergenceNode 执行汇聚节点")
 	processDefModel := exec.ProcessDefModel

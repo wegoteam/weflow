@@ -12,6 +12,9 @@ type ExecBranchNode struct {
 /**
 执行分支节点
 分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
+生成实例节点任务
+执行任务
+下节点
 */
 func (receiver *ExecBranchNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecBranchNode 执行分支节点")

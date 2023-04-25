@@ -63,3 +63,7 @@ func TestExpr3(t *testing.T) {
 	}
 	fmt.Printf("%v\n", output)
 }
+
+func TestExecExpr(t *testing.T) {
+	ExecExpr("greet >= name", map[string]interface{}{"greet": 1, "name": 2})
+}

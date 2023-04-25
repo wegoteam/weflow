@@ -9,9 +9,16 @@ import (
 type ExecStartNode struct {
 }
 
+/**
+执行开始节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (receiver *ExecStartNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecStartNode 执行开始节点")
 
+	//entity.ExecNodeTaskBO{}
 	processDefModel := exec.ProcessDefModel
 	nextNodes := receiver.NextNodes(node, processDefModel.NodeModelMap)
 	return ExecResult{

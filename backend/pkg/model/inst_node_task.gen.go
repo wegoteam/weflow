@@ -15,9 +15,9 @@ type InstNodeTask struct {
 	ID             int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	InstTaskID     string    `gorm:"column:inst_task_id;not null" json:"inst_task_id"`                         // 实例任务id
 	NodeTaskID     string    `gorm:"column:node_task_id;not null" json:"node_task_id"`                         // 节点任务id
-	NodeID         string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点任务id
+	NodeID         string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
 	ParentID       string    `gorm:"column:parent_id;not null" json:"parent_id"`                               // 父节点id
-	NodeType       int32     `gorm:"column:node_type;not null;default:1" json:"node_type"`                     // 节点类型【1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点；6：分支节点】
+	NodeModel      int32     `gorm:"column:node_model;not null;default:1" json:"node_model"`                   // 节点模型【1：开始节点；2：审批节点；3：知会节点；4：自定义节点；5：条件节点；6：分支节点；7：汇聚节点；8：结束节点】
 	NodeName       string    `gorm:"column:node_name;not null" json:"node_name"`                               // 节点名称
 	ForwardMode    int32     `gorm:"column:forward_mode;not null;default:1" json:"forward_mode"`               // 进行模式【1：并行 2：串行】
 	CompleteConn   int32     `gorm:"column:complete_conn;not null" json:"complete_conn"`                       // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成

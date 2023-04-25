@@ -9,6 +9,13 @@ import (
 type ExecNotifyNode struct {
 }
 
+/**
+执行知会节点
+生成实例节点任务
+执行任务
+生成知会用户任务
+下节点
+*/
 func (receiver *ExecNotifyNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecNotifyNode 执行知会节点")
 	processDefModel := exec.ProcessDefModel

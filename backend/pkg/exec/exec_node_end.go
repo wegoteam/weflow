@@ -9,6 +9,12 @@ import (
 type ExecEndNode struct {
 }
 
+/**
+执行结束节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (receiver *ExecEndNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecEndNode 执行结束节点")
 

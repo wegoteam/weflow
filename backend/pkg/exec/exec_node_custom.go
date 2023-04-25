@@ -9,6 +9,12 @@ import (
 type ExecCustomNode struct {
 }
 
+/**
+执行自定义节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (receiver *ExecCustomNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecCustomNode 执行自定义节点")
 	processDefModel := exec.ProcessDefModel

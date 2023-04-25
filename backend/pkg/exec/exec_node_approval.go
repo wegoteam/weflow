@@ -9,6 +9,12 @@ import (
 type ExecApprovalNode struct {
 }
 
+/**
+执行审批节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (receiver *ExecApprovalNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
 	fmt.Println("ExecApprovalNode 执行审批节点")
 	processDefModel := exec.ProcessDefModel
