@@ -3,6 +3,7 @@ package exec
 import (
 	"fmt"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/wepkg/snowflake"
 )
 
 // ExecApprovalNode 审批节点
@@ -16,8 +17,23 @@ type ExecApprovalNode struct {
 下节点
 */
 func (receiver *ExecApprovalNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	fmt.Println("ExecApprovalNode 执行审批节点")
 	processDefModel := exec.ProcessDefModel
+	nodeTaskId := snowflake.GetSnowflakeId()
+
+	//生成执行节点任务
+	var execNodeTask = &entity.ExecNodeTaskBO{
+		NodeTaskID: nodeTaskId,
+		NodeModel:  node.NodeModel,
+		NodeID:     node.NodeId,
+		Status:     2,
+	}
+	exec.ExecNodeTaskMap[node.NodeId] = *execNodeTask
+
+	//生成实例节点任务
+	var instNodeTask = entity.InstNodeTask{}
+	instNodeTasks := *exec.InstNodeTasks
+	instNodeTasks = append(instNodeTasks, instNodeTask)
+
 	nextNodes := receiver.NextNodes(node, processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,

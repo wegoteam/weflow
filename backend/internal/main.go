@@ -4,26 +4,24 @@ package main
 
 import (
 	"context"
+	test "github.com/wegoteam/weflow/pkg/common/config"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
-	"github.com/hertz-contrib/logger/accesslog"
-	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/conf"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
 	// init dal
 	// dal.Init()
+	test.InitConfig()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 
@@ -51,21 +49,21 @@ func registerMiddleware(h *server.Hertz) {
 		h.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 
-	// access log
-	if conf.GetConf().Hertz.EnableAccessLog {
-		h.Use(accesslog.New())
-	}
-
-	// log
-	logger := hertzlogrus.NewLogger()
-	hlog.SetLogger(logger)
-	hlog.SetLevel(conf.LogLevel())
-	hlog.SetOutput(&lumberjack.Logger{
-		Filename:   conf.GetConf().Hertz.LogFileName,
-		MaxSize:    conf.GetConf().Hertz.LogMaxSize,
-		MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
-		MaxAge:     conf.GetConf().Hertz.LogMaxAge,
-	})
+	//// access log
+	//if conf.GetConf().Hertz.EnableAccessLog {
+	//	h.Use(accesslog.New())
+	//}
+	//
+	//// log
+	//logger := hertzlogrus.NewLogger()
+	//hlog.SetLogger(logger)
+	//hlog.SetLevel(conf.LogLevel())
+	//hlog.SetOutput(&lumberjack.Logger{
+	//	Filename:   conf.GetConf().Hertz.LogFileName,
+	//	MaxSize:    conf.GetConf().Hertz.LogMaxSize,
+	//	MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
+	//	MaxAge:     conf.GetConf().Hertz.LogMaxAge,
+	//})
 
 	// recovery
 	h.Use(recovery.Recovery())

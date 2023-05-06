@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"fmt"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/parser"
 )
@@ -21,4 +22,5 @@ func StartProcessInstTask(modelId string) {
 
 	startNode := processDefModel.NodeModelMap[startNodeId]
 	Exec(&startNode, execution)
+	fmt.Println(execution)
 }

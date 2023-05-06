@@ -107,19 +107,3 @@ type NodeModelBO struct {
 	Index          int        `json:"index,omitempty",redis:"index"`                   // 下标
 	BranchIndex    int        `json:"branchIndex,omitempty",redis:"branchIndex"`       // 分支下标
 }
-
-//func (receiver NodeModelBO) MarshalBinary() (data []byte, err error) {
-//	var buf bytes.Buffer
-//	enc := gob.NewEncoder(&buf)
-//	err = enc.Encode(receiver)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return buf.Bytes(), nil
-//}
-//
-//func (receiver NodeModelBO) UnmarshalBinary(data []byte) error {
-//	buf := bytes.NewBuffer(data)
-//	dec := gob.NewDecoder(buf)
-//	return dec.Decode(&receiver)
-//}

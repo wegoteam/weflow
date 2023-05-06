@@ -86,8 +86,8 @@ replace "github.com/wegoteam/weflow" => "../"
 ```shell
 cwgo  model --db_type mysql --out_file dao_gen.go --out_dir ./backend/pkg/dao --dsn "root:root@tcp(localhost:3306)/weflow?charset=utf8&parseTime=True&loc=Local"
 
-cwgo server --service hello --module github.com/wegoteam/weflow/internal --type HTTP  --idl ./idl/flow.thrift
-cwgo server --service hello --module github.com/wegoteam/weflow/internal --type RPC  --idl ./idl/flow.thrift
+cwgo server --service flow --module github.com/wegoteam/weflow/internal --type HTTP  --idl ./idl/flow.thrift
+cwgo server --service flow --module github.com/wegoteam/weflow/api --type RPC  --idl ./idl/flow.thrift
 ```
 
 ```shell
