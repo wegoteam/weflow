@@ -60,23 +60,35 @@ func initSlogConfig() {
 		f.EnableColor = true
 	})
 	defer slog.MustFlush()
-	logFile := "./log/welow.log"
-	config := handler.NewEmptyConfig(
-		handler.WithLogfile(logFile),
-		handler.WithBuffMode(handler.BuffModeLine),
-		handler.WithBuffSize(1024*16),
-		handler.WithCompress(false),
-		handler.WithMaxSize(rotatefile.OneMByte*10),
-		handler.WithLogLevels(slog.NormalLevels),
-		handler.WithBuffMode(handler.BuffModeBite),
-		handler.WithRotateTime(rotatefile.EveryDay),
-	)
-	config.BackupTime = rotatefile.DefaultBackTime
-	config.BackupNum = 100
-
-	h, err := config.CreateHandler()
+	logFile := "./log/weflow.log"
+	fileHandler, err := handler.NewRotateFileHandler(logFile, rotatefile.EveryDay, handler.WithLogLevels(slog.NormalLevels), handler.WithBackupNum(200))
 	if err != nil {
 		panic(err)
 	}
-	slog.PushHandler(h)
+	slog.PushHandler(fileHandler)
+
+	//slog.Configure(func(logger *slog.SugaredLogger) {
+	//	f := logger.Formatter.(*slog.TextFormatter)
+	//	f.EnableColor = true
+	//})
+	//defer slog.MustFlush()
+	//logFile := "./log/weflow.log"
+	//config := handler.NewEmptyConfig(
+	//	handler.WithLogfile(logFile),
+	//	handler.WithBuffMode(handler.BuffModeLine),
+	//	handler.WithBuffSize(1024*16),
+	//	handler.WithCompress(false),
+	//	handler.WithMaxSize(rotatefile.OneMByte*10),
+	//	handler.WithLogLevels(slog.AllLevels),
+	//	handler.WithBuffMode(handler.BuffModeBite),
+	//	handler.WithRotateTime(rotatefile.EveryDay),
+	//)
+	//config.BackupTime = rotatefile.DefaultBackTime
+	//config.BackupNum = 100
+	//
+	//h, err := config.CreateHandler()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//slog.PushHandler(h)
 }

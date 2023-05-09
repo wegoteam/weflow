@@ -12,7 +12,7 @@ type Execution struct {
 	InstTaskParamMap map[string]interface{}    `json:"instTaskParamMap"` //实例任务参数
 	ExecNodeTaskMap  map[string]ExecNodeTaskBO `json:"execNodeTaskMap"`  //实例节点任务执行缓存数据
 	UserTasks        *[]UserTaskBO             `json:"userTasks"`        //用户任务
-	InstNodeTasks    *[]InstNodeTask           `json:"instNodeTasks"`    //实例节点任务
+	InstNodeTasks    *[]InstNodeTaskBO         `json:"instNodeTasks"`    //实例节点任务
 }
 
 // ExecNodeTaskBO 执行的节点任务，执行流转任务
@@ -46,8 +46,8 @@ type UserTaskBO struct {
 
 }
 
-// InstNodeTask 实例节点任务
-type InstNodeTask struct {
+// InstNodeTaskBO 实例节点任务
+type InstNodeTaskBO struct {
 	InstTaskID     string    // 实例任务id
 	NodeTaskID     string    // 节点任务id
 	NodeID         string    // 节点id

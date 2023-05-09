@@ -1,7 +1,7 @@
 package exec
 
 import (
-	"fmt"
+	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 )
 
@@ -17,7 +17,7 @@ type ExecBranchNode struct {
 下节点
 */
 func (receiver *ExecBranchNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	fmt.Println("ExecBranchNode 执行分支节点")
+	slog.Infof("ExecBranchNode 执行分支节点")
 	var branchNodes = make([]entity.NodeModelBO, 0)
 
 	execNodeTaskMap := exec.ExecNodeTaskMap
@@ -25,14 +25,14 @@ func (receiver *ExecBranchNode) ExecCurrNode(node *entity.NodeModelBO, exec *ent
 	nodeModelMap := processDefModel.NodeModelMap
 	_, ok := execNodeTaskMap[node.NodeId]
 	if !ok {
-		fmt.Println("分支节点未执行")
+		slog.Infof("节点[%s]的分支节点未执行", node.NodeId)
 		for _, childBranchs := range node.ChildrenIds {
 			if childBranchs == nil {
 				continue
 			}
 			bo, hasNode := nodeModelMap[childBranchs[0]]
 			if !hasNode {
-				fmt.Println("分支节点不存在")
+				slog.Infof("节点[%v]的分支节点不存在", node.NodeId)
 			}
 			branchNodes = append(branchNodes, bo)
 		}
@@ -57,7 +57,7 @@ func (receiver *ExecBranchNode) PreNodes(node *entity.NodeModelBO, nodeModelMap 
 	for _, val := range node.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("上节点不存在")
+			slog.Infof("节点[%v]的上节点不存在", node.NodeId)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -72,7 +72,7 @@ func (receiver *ExecBranchNode) NextNodes(node *entity.NodeModelBO, nodeModelMap
 	for _, val := range node.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("下节点不存在")
+			slog.Infof("节点[%v]的下节点不存在", node.NodeId)
 		}
 		nextNodes = append(nextNodes, next)
 	}

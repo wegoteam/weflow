@@ -1,7 +1,7 @@
 package exec
 
 import (
-	"fmt"
+	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 )
 
@@ -16,7 +16,7 @@ type ExecConvergenceNode struct {
 下节点
 */
 func (receiver *ExecConvergenceNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	fmt.Println("ExecConvergenceNode 执行汇聚节点")
+	slog.Infof("ExecConvergenceNode 执行汇聚节点")
 	processDefModel := exec.ProcessDefModel
 	nextNodes := receiver.NextNodes(node, processDefModel.NodeModelMap)
 	return ExecResult{
@@ -32,7 +32,7 @@ func (receiver *ExecConvergenceNode) PreNodes(node *entity.NodeModelBO, nodeMode
 	for _, val := range node.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("上节点不存在")
+			slog.Infof("节点[%v]的上节点不存在", node.NodeId)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -47,7 +47,7 @@ func (receiver *ExecConvergenceNode) NextNodes(node *entity.NodeModelBO, nodeMod
 	for _, val := range node.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("下节点不存在")
+			slog.Infof("节点[%v]的下节点不存在", node.NodeId)
 		}
 		nextNodes = append(nextNodes, next)
 	}

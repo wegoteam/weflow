@@ -4,7 +4,11 @@ package main
 
 import (
 	"context"
-	test "github.com/wegoteam/weflow/pkg/common/config"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/hertz-contrib/logger/accesslog"
+	pkgconf "github.com/wegoteam/weflow/pkg/common/config"
+	"github.com/wegoteam/weflow/pkg/exec"
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
@@ -13,6 +17,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
+	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/conf"
@@ -21,13 +26,14 @@ import (
 func main() {
 	// init dal
 	// dal.Init()
-	test.InitConfig()
+	pkgconf.InitConfig()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
 		ctx.JSON(consts.StatusOK, utils.H{"ping": "pong"})
+		exec.StartProcessInstTask("")
 	})
 
 	router.GeneratedRegister(h)
@@ -49,21 +55,21 @@ func registerMiddleware(h *server.Hertz) {
 		h.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 
-	//// access log
-	//if conf.GetConf().Hertz.EnableAccessLog {
-	//	h.Use(accesslog.New())
-	//}
-	//
-	//// log
-	//logger := hertzlogrus.NewLogger()
-	//hlog.SetLogger(logger)
-	//hlog.SetLevel(conf.LogLevel())
-	//hlog.SetOutput(&lumberjack.Logger{
-	//	Filename:   conf.GetConf().Hertz.LogFileName,
-	//	MaxSize:    conf.GetConf().Hertz.LogMaxSize,
-	//	MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
-	//	MaxAge:     conf.GetConf().Hertz.LogMaxAge,
-	//})
+	// access log
+	if conf.GetConf().Hertz.EnableAccessLog {
+		h.Use(accesslog.New())
+	}
+
+	// log
+	logger := hertzlogrus.NewLogger()
+	hlog.SetLogger(logger)
+	hlog.SetLevel(conf.LogLevel())
+	hlog.SetOutput(&lumberjack.Logger{
+		Filename:   conf.GetConf().Hertz.LogFileName,
+		MaxSize:    conf.GetConf().Hertz.LogMaxSize,
+		MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
+		MaxAge:     conf.GetConf().Hertz.LogMaxAge,
+	})
 
 	// recovery
 	h.Use(recovery.Recovery())

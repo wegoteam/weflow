@@ -21,6 +21,20 @@ func StartProcessInstTask(modelId string) {
 	startNodeId := processDefModel.StartNodeId
 
 	startNode := processDefModel.NodeModelMap[startNodeId]
+
+	//实例任务参数
+	var instTaskParamMap = make(map[string]interface{})
+	execution.InstTaskParamMap = instTaskParamMap
+	//实例节点任务执行缓存数据
+	var execNodeTaskMap = make(map[string]entity.ExecNodeTaskBO)
+	execution.ExecNodeTaskMap = execNodeTaskMap
+	//用户任务
+	var userTasks = make([]entity.UserTaskBO, 0)
+	execution.UserTasks = &userTasks
+	//实例节点任务
+	var instNodeTasks = make([]entity.InstNodeTaskBO, 0)
+	execution.InstNodeTasks = &instNodeTasks
+
 	Exec(&startNode, execution)
 	fmt.Println(execution)
 }

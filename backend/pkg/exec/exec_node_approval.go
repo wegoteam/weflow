@@ -1,7 +1,7 @@
 package exec
 
 import (
-	"fmt"
+	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 )
@@ -30,9 +30,13 @@ func (receiver *ExecApprovalNode) ExecCurrNode(node *entity.NodeModelBO, exec *e
 	exec.ExecNodeTaskMap[node.NodeId] = *execNodeTask
 
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTask{}
+	var instNodeTask = entity.InstNodeTaskBO{}
 	instNodeTasks := *exec.InstNodeTasks
 	instNodeTasks = append(instNodeTasks, instNodeTask)
+
+	//生成用户任务
+
+	//执行任务
 
 	nextNodes := receiver.NextNodes(node, processDefModel.NodeModelMap)
 	return ExecResult{
@@ -48,7 +52,7 @@ func (receiver *ExecApprovalNode) PreNodes(node *entity.NodeModelBO, nodeModelMa
 	for _, val := range node.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("上节点不存在")
+			slog.Infof("节点[%v]的上节点不存在", node.NodeId)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -63,7 +67,7 @@ func (receiver *ExecApprovalNode) NextNodes(node *entity.NodeModelBO, nodeModelM
 	for _, val := range node.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			fmt.Println("下节点不存在")
+			slog.Infof("节点[%v]的下节点不存在", node.NodeId)
 		}
 		nextNodes = append(nextNodes, next)
 	}
