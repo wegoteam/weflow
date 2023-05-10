@@ -30,15 +30,13 @@ func newProcessDefNodeUser(db *gorm.DB, opts ...gen.DOOption) processDefNodeUser
 	_processDefNodeUser.ID = field.NewInt64(tableName, "id")
 	_processDefNodeUser.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_processDefNodeUser.NodeID = field.NewString(tableName, "node_id")
-	_processDefNodeUser.UserName = field.NewString(tableName, "user_name")
-	_processDefNodeUser.UserType = field.NewInt32(tableName, "user_type")
-	_processDefNodeUser.UserID = field.NewString(tableName, "user_id")
+	_processDefNodeUser.Type = field.NewInt32(tableName, "type")
+	_processDefNodeUser.Strategy = field.NewInt32(tableName, "strategy")
+	_processDefNodeUser.NodeUserName = field.NewString(tableName, "node_user_name")
+	_processDefNodeUser.NodeUserID = field.NewString(tableName, "node_user_id")
 	_processDefNodeUser.Sort = field.NewInt32(tableName, "sort")
-	_processDefNodeUser.ObjData = field.NewString(tableName, "obj_data")
-	_processDefNodeUser.CreateTime = field.NewTime(tableName, "create_time")
-	_processDefNodeUser.CreateUser = field.NewString(tableName, "create_user")
-	_processDefNodeUser.UpdateTime = field.NewTime(tableName, "update_time")
-	_processDefNodeUser.UpdateUser = field.NewString(tableName, "update_user")
+	_processDefNodeUser.Obj = field.NewString(tableName, "obj")
+	_processDefNodeUser.Relative = field.NewString(tableName, "relative")
 
 	_processDefNodeUser.fillFieldMap()
 
@@ -52,15 +50,13 @@ type processDefNodeUser struct {
 	ID           field.Int64  // 唯一id
 	ProcessDefID field.String // 流程定义id
 	NodeID       field.String // 节点id
-	UserName     field.String // 处理人名称
-	UserType     field.Int32  // 处理人类型【1：用户；2：部门；3：相对岗位；4：表单控件；5：部门岗位】
-	UserID       field.String // 处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等
+	Type         field.Int32  // 常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+	Strategy     field.Int32  // 处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
+	NodeUserName field.String // 处理人名称
+	NodeUserID   field.String // 处理人id
 	Sort         field.Int32  // 处理人顺序;正序排序
-	ObjData      field.String // 对象数据;依据处理人类型取值，相对岗位和表单控件使用该字段存json数据
-	CreateTime   field.Time   // 创建时间
-	CreateUser   field.String // 创建人
-	UpdateTime   field.Time   // 更新时间
-	UpdateUser   field.String // 更新人
+	Obj          field.String // 扩展字段，设计中可忽略
+	Relative     field.String // 相对发起人的直属主管，设计中可忽略
 
 	fieldMap map[string]field.Expr
 }
@@ -80,15 +76,13 @@ func (p *processDefNodeUser) updateTableName(table string) *processDefNodeUser {
 	p.ID = field.NewInt64(table, "id")
 	p.ProcessDefID = field.NewString(table, "process_def_id")
 	p.NodeID = field.NewString(table, "node_id")
-	p.UserName = field.NewString(table, "user_name")
-	p.UserType = field.NewInt32(table, "user_type")
-	p.UserID = field.NewString(table, "user_id")
+	p.Type = field.NewInt32(table, "type")
+	p.Strategy = field.NewInt32(table, "strategy")
+	p.NodeUserName = field.NewString(table, "node_user_name")
+	p.NodeUserID = field.NewString(table, "node_user_id")
 	p.Sort = field.NewInt32(table, "sort")
-	p.ObjData = field.NewString(table, "obj_data")
-	p.CreateTime = field.NewTime(table, "create_time")
-	p.CreateUser = field.NewString(table, "create_user")
-	p.UpdateTime = field.NewTime(table, "update_time")
-	p.UpdateUser = field.NewString(table, "update_user")
+	p.Obj = field.NewString(table, "obj")
+	p.Relative = field.NewString(table, "relative")
 
 	p.fillFieldMap()
 
@@ -113,19 +107,17 @@ func (p *processDefNodeUser) GetFieldByName(fieldName string) (field.OrderExpr, 
 }
 
 func (p *processDefNodeUser) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 12)
+	p.fieldMap = make(map[string]field.Expr, 10)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["process_def_id"] = p.ProcessDefID
 	p.fieldMap["node_id"] = p.NodeID
-	p.fieldMap["user_name"] = p.UserName
-	p.fieldMap["user_type"] = p.UserType
-	p.fieldMap["user_id"] = p.UserID
+	p.fieldMap["type"] = p.Type
+	p.fieldMap["strategy"] = p.Strategy
+	p.fieldMap["node_user_name"] = p.NodeUserName
+	p.fieldMap["node_user_id"] = p.NodeUserID
 	p.fieldMap["sort"] = p.Sort
-	p.fieldMap["obj_data"] = p.ObjData
-	p.fieldMap["create_time"] = p.CreateTime
-	p.fieldMap["create_user"] = p.CreateUser
-	p.fieldMap["update_time"] = p.UpdateTime
-	p.fieldMap["update_user"] = p.UpdateUser
+	p.fieldMap["obj"] = p.Obj
+	p.fieldMap["relative"] = p.Relative
 }
 
 func (p processDefNodeUser) clone(db *gorm.DB) processDefNodeUser {

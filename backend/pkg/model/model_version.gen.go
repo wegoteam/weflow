@@ -14,9 +14,8 @@ const TableNameModelVersion = "model_version"
 type ModelVersion struct {
 	ID           int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	ModelID      string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
+	ModelTitle   string    `gorm:"column:model_title;not null" json:"model_title"`                           // 模板版本标题
 	VersionID    string    `gorm:"column:version_id;not null" json:"version_id"`                             // 版本id
-	VersionNum   string    `gorm:"column:version_num;not null" json:"version_num"`                           // 版本号
-	ModelTitle   string    `gorm:"column:model_title;not null" json:"model_title"`                           // 模板标题
 	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	FormDefID    string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id
 	TableInfo    string    `gorm:"column:table_info;not null" json:"table_info"`                             // 表单数据库表

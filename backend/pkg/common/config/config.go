@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
 	"github.com/gookit/slog/rotatefile"
@@ -25,8 +26,8 @@ func InitConfig() {
 	once.Do(func() {
 		initMysqlConfig()
 		initRedisConfig()
-		initSlogConfig()
-		slog.Info("MySQL、Redis、slog初始化成功")
+		//initSlogConfig()
+		hlog.Info("MySQL、Redis、slog初始化成功")
 	})
 }
 

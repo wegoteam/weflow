@@ -52,7 +52,8 @@
                     "parentId":"1640993392605401003",
                     "level":0,
                     "conditionGroup":"",
-                    "conditionExpr":""
+                    "conditionExpr":"",
+                    "conditionVal":""
                 },
                 {
                     "nodeModel":3,
@@ -92,7 +93,8 @@
                     "parentId":"1640993392605401003",
                     "level":0,
                     "conditionGroup":"",
-                    "conditionExpr":""
+                    "conditionExpr":"",
+                    "conditionVal":""
                 },
                 {
                     "nodeModel":4,

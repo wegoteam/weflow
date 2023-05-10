@@ -32,18 +32,19 @@ func newInstUserTask(db *gorm.DB, opts ...gen.DOOption) instUserTask {
 	_instUserTask.NodeTaskID = field.NewString(tableName, "node_task_id")
 	_instUserTask.NodeID = field.NewString(tableName, "node_id")
 	_instUserTask.UserTaskID = field.NewString(tableName, "user_task_id")
-	_instUserTask.NodeUserID = field.NewString(tableName, "node_user_id")
+	_instUserTask.Type = field.NewInt32(tableName, "type")
+	_instUserTask.Strategy = field.NewInt32(tableName, "strategy")
 	_instUserTask.NodeUserName = field.NewString(tableName, "node_user_name")
-	_instUserTask.NodeUserType = field.NewInt32(tableName, "node_user_type")
-	_instUserTask.OpOrigin = field.NewInt32(tableName, "op_origin")
-	_instUserTask.TimeLimit = field.NewInt64(tableName, "time_limit")
+	_instUserTask.NodeUserID = field.NewString(tableName, "node_user_id")
+	_instUserTask.Sort = field.NewInt32(tableName, "sort")
+	_instUserTask.Obj = field.NewString(tableName, "obj")
+	_instUserTask.Relative = field.NewString(tableName, "relative")
 	_instUserTask.Status = field.NewInt32(tableName, "status")
 	_instUserTask.CreateTime = field.NewTime(tableName, "create_time")
 	_instUserTask.UpdateTime = field.NewTime(tableName, "update_time")
 	_instUserTask.HandleTime = field.NewTime(tableName, "handle_time")
 	_instUserTask.OpUserID = field.NewString(tableName, "op_user_id")
 	_instUserTask.OpUserName = field.NewString(tableName, "op_user_name")
-	_instUserTask.HandlerSort = field.NewInt32(tableName, "handler_sort")
 	_instUserTask.Opinion = field.NewInt32(tableName, "opinion")
 	_instUserTask.OpinionDesc = field.NewString(tableName, "opinion_desc")
 
@@ -61,18 +62,19 @@ type instUserTask struct {
 	NodeTaskID   field.String // 节点任务id
 	NodeID       field.String // 节点任务id
 	UserTaskID   field.String // 处理人任务id
-	NodeUserID   field.String // 节点处理人id
+	Type         field.Int32  // 常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+	Strategy     field.Int32  // 处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
 	NodeUserName field.String // 处理人名称
-	NodeUserType field.Int32  // 处理人类型【1：操作员；2：部门；3：相对岗位；4：表单控件；5：角色；6：岗位；7：组织；8：自定义】
-	OpOrigin     field.Int32  // 操作来源【1：正常；2：加签】
-	TimeLimit    field.Int64  // 处理期限;格式：yyyymmddhhmm 可直接指定到期限的具体时间，期限支持到分钟； 0表示无期限
+	NodeUserID   field.String // 处理人id
+	Sort         field.Int32  // 处理人顺序;正序排序
+	Obj          field.String // 扩展字段，设计中可忽略
+	Relative     field.String // 相对发起人的直属主管，设计中可忽略
 	Status       field.Int32  // 任务状态【1：处理中；2：完成；3：回退；4：终止】
 	CreateTime   field.Time   // 创建时间
 	UpdateTime   field.Time   // 更新时间
 	HandleTime   field.Time   // 处理时间
 	OpUserID     field.String // 操作用户id
 	OpUserName   field.String // 操作用户名称
-	HandlerSort  field.Int32  // 处理人排序;处理人当前的处理排序
 	Opinion      field.Int32  // 处理意见【1：未发表；2：已阅；3：同意；4：不同意】
 	OpinionDesc  field.String // 处理意见描述
 
@@ -96,18 +98,19 @@ func (i *instUserTask) updateTableName(table string) *instUserTask {
 	i.NodeTaskID = field.NewString(table, "node_task_id")
 	i.NodeID = field.NewString(table, "node_id")
 	i.UserTaskID = field.NewString(table, "user_task_id")
-	i.NodeUserID = field.NewString(table, "node_user_id")
+	i.Type = field.NewInt32(table, "type")
+	i.Strategy = field.NewInt32(table, "strategy")
 	i.NodeUserName = field.NewString(table, "node_user_name")
-	i.NodeUserType = field.NewInt32(table, "node_user_type")
-	i.OpOrigin = field.NewInt32(table, "op_origin")
-	i.TimeLimit = field.NewInt64(table, "time_limit")
+	i.NodeUserID = field.NewString(table, "node_user_id")
+	i.Sort = field.NewInt32(table, "sort")
+	i.Obj = field.NewString(table, "obj")
+	i.Relative = field.NewString(table, "relative")
 	i.Status = field.NewInt32(table, "status")
 	i.CreateTime = field.NewTime(table, "create_time")
 	i.UpdateTime = field.NewTime(table, "update_time")
 	i.HandleTime = field.NewTime(table, "handle_time")
 	i.OpUserID = field.NewString(table, "op_user_id")
 	i.OpUserName = field.NewString(table, "op_user_name")
-	i.HandlerSort = field.NewInt32(table, "handler_sort")
 	i.Opinion = field.NewInt32(table, "opinion")
 	i.OpinionDesc = field.NewString(table, "opinion_desc")
 
@@ -134,24 +137,25 @@ func (i *instUserTask) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (i *instUserTask) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 19)
+	i.fieldMap = make(map[string]field.Expr, 20)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
 	i.fieldMap["node_task_id"] = i.NodeTaskID
 	i.fieldMap["node_id"] = i.NodeID
 	i.fieldMap["user_task_id"] = i.UserTaskID
-	i.fieldMap["node_user_id"] = i.NodeUserID
+	i.fieldMap["type"] = i.Type
+	i.fieldMap["strategy"] = i.Strategy
 	i.fieldMap["node_user_name"] = i.NodeUserName
-	i.fieldMap["node_user_type"] = i.NodeUserType
-	i.fieldMap["op_origin"] = i.OpOrigin
-	i.fieldMap["time_limit"] = i.TimeLimit
+	i.fieldMap["node_user_id"] = i.NodeUserID
+	i.fieldMap["sort"] = i.Sort
+	i.fieldMap["obj"] = i.Obj
+	i.fieldMap["relative"] = i.Relative
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["create_time"] = i.CreateTime
 	i.fieldMap["update_time"] = i.UpdateTime
 	i.fieldMap["handle_time"] = i.HandleTime
 	i.fieldMap["op_user_id"] = i.OpUserID
 	i.fieldMap["op_user_name"] = i.OpUserName
-	i.fieldMap["handler_sort"] = i.HandlerSort
 	i.fieldMap["opinion"] = i.Opinion
 	i.fieldMap["opinion_desc"] = i.OpinionDesc
 }

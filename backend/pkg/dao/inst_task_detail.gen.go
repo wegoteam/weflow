@@ -29,12 +29,10 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 	_instTaskDetail.ALL = field.NewAsterisk(tableName)
 	_instTaskDetail.ID = field.NewInt64(tableName, "id")
 	_instTaskDetail.InstTaskID = field.NewString(tableName, "inst_task_id")
-	_instTaskDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_instTaskDetail.ModelID = field.NewString(tableName, "model_id")
+	_instTaskDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_instTaskDetail.FormDefID = field.NewString(tableName, "form_def_id")
 	_instTaskDetail.VersionID = field.NewInt64(tableName, "version_id")
-	_instTaskDetail.VersionNum = field.NewString(tableName, "version_num")
-	_instTaskDetail.CreateSrc = field.NewInt32(tableName, "create_src")
 	_instTaskDetail.TaskName = field.NewString(tableName, "task_name")
 	_instTaskDetail.Status = field.NewInt32(tableName, "status")
 	_instTaskDetail.Remark = field.NewString(tableName, "remark")
@@ -44,7 +42,6 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 	_instTaskDetail.UpdateUser = field.NewString(tableName, "update_user")
 	_instTaskDetail.StartTime = field.NewTime(tableName, "start_time")
 	_instTaskDetail.EndTime = field.NewTime(tableName, "end_time")
-	_instTaskDetail.SourceID = field.NewString(tableName, "source_id")
 
 	_instTaskDetail.fillFieldMap()
 
@@ -57,12 +54,10 @@ type instTaskDetail struct {
 	ALL          field.Asterisk
 	ID           field.Int64  // 唯一id
 	InstTaskID   field.String // 实例任务id
-	ProcessDefID field.String // 流程定义id
 	ModelID      field.String // 模板id
+	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
 	VersionID    field.Int64  // 版本id
-	VersionNum   field.String // 版本号
-	CreateSrc    field.Int32  // 创建来源【1：系统发起；2：API发起】
 	TaskName     field.String // 实例任务名称
 	Status       field.Int32  // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
 	Remark       field.String // 描述
@@ -72,7 +67,6 @@ type instTaskDetail struct {
 	UpdateUser   field.String // 更新人
 	StartTime    field.Time   // 发起时间
 	EndTime      field.Time   // 结束时间
-	SourceID     field.String // 来源id，界面发起人或者api对应的应用
 
 	fieldMap map[string]field.Expr
 }
@@ -91,12 +85,10 @@ func (i *instTaskDetail) updateTableName(table string) *instTaskDetail {
 	i.ALL = field.NewAsterisk(table)
 	i.ID = field.NewInt64(table, "id")
 	i.InstTaskID = field.NewString(table, "inst_task_id")
-	i.ProcessDefID = field.NewString(table, "process_def_id")
 	i.ModelID = field.NewString(table, "model_id")
+	i.ProcessDefID = field.NewString(table, "process_def_id")
 	i.FormDefID = field.NewString(table, "form_def_id")
 	i.VersionID = field.NewInt64(table, "version_id")
-	i.VersionNum = field.NewString(table, "version_num")
-	i.CreateSrc = field.NewInt32(table, "create_src")
 	i.TaskName = field.NewString(table, "task_name")
 	i.Status = field.NewInt32(table, "status")
 	i.Remark = field.NewString(table, "remark")
@@ -106,7 +98,6 @@ func (i *instTaskDetail) updateTableName(table string) *instTaskDetail {
 	i.UpdateUser = field.NewString(table, "update_user")
 	i.StartTime = field.NewTime(table, "start_time")
 	i.EndTime = field.NewTime(table, "end_time")
-	i.SourceID = field.NewString(table, "source_id")
 
 	i.fillFieldMap()
 
@@ -131,15 +122,13 @@ func (i *instTaskDetail) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (i *instTaskDetail) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 18)
+	i.fieldMap = make(map[string]field.Expr, 15)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
-	i.fieldMap["process_def_id"] = i.ProcessDefID
 	i.fieldMap["model_id"] = i.ModelID
+	i.fieldMap["process_def_id"] = i.ProcessDefID
 	i.fieldMap["form_def_id"] = i.FormDefID
 	i.fieldMap["version_id"] = i.VersionID
-	i.fieldMap["version_num"] = i.VersionNum
-	i.fieldMap["create_src"] = i.CreateSrc
 	i.fieldMap["task_name"] = i.TaskName
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["remark"] = i.Remark
@@ -149,7 +138,6 @@ func (i *instTaskDetail) fillFieldMap() {
 	i.fieldMap["update_user"] = i.UpdateUser
 	i.fieldMap["start_time"] = i.StartTime
 	i.fieldMap["end_time"] = i.EndTime
-	i.fieldMap["source_id"] = i.SourceID
 }
 
 func (i instTaskDetail) clone(db *gorm.DB) instTaskDetail {

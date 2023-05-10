@@ -4,34 +4,32 @@
 
 package model
 
-import (
-	"time"
-)
-
 const TableNameProcessDefNode = "process_def_node"
 
 // ProcessDefNode mapped from table <process_def_node>
 type ProcessDefNode struct {
-	ID             int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
-	ProcessDefID   string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
-	NodeID         string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
-	NodeType       int32     `gorm:"column:node_type;not null;default:1" json:"node_type"`                     // 节点类型;1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点
-	NodeName       string    `gorm:"column:node_name;not null" json:"node_name"`                               // 节点名称
-	ForwardMode    int32     `gorm:"column:forward_mode;not null;default:1" json:"forward_mode"`               // 进行模式【1：并行 2：串行】
-	CompleteConn   int32     `gorm:"column:complete_conn;not null" json:"complete_conn"`                       // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成
-	PermissionMode int32     `gorm:"column:permission_mode;not null;default:1" json:"permission_mode"`         // 权限模式【1：协同 2：知会 3：审批】
-	AllowAdd       int32     `gorm:"column:allow_add;not null;default:1" json:"allow_add"`                     // 允许加签【1：不能加签；2：允许加签】
-	ProcessMode    int32     `gorm:"column:process_mode;not null;default:1" json:"process_mode"`               // 处理模式【1：人工； 2：自动】
-	BusID          string    `gorm:"column:bus_id;not null" json:"bus_id"`                                     // 业务id
-	BusType        string    `gorm:"column:bus_type;not null" json:"bus_type"`                                 // 业务类型
-	TimeLimit      int32     `gorm:"column:time_limit;not null" json:"time_limit"`                             // 处理期限时长;单位秒，0表示无期限；
-	ConnData       string    `gorm:"column:conn_data;not null" json:"conn_data"`                               // 条件表达式;条件节点才有条件表达式
-	FormPerData    string    `gorm:"column:form_per_data;not null" json:"form_per_data"`                       // 表单权限数据;节点表单权限配置，json格式
-	Remark         string    `gorm:"column:remark;not null" json:"remark"`                                     // 节点描述
-	CreateTime     time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
-	CreateUser     string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人
-	UpdateTime     time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`          // 更新时间
-	UpdateUser     string    `gorm:"column:update_user" json:"update_user"`                                    // 更新人
+	ID             int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`          // 唯一id
+	ProcessDefID   string `gorm:"column:process_def_id;not null" json:"process_def_id"`       // 流程定义id
+	NodeID         string `gorm:"column:node_id;not null" json:"node_id"`                     // 节点id
+	NodeModel      int32  `gorm:"column:node_model;not null;default:1" json:"node_model"`     // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
+	NodeName       string `gorm:"column:node_name;not null" json:"node_name"`                 // 节点名称
+	ParentID       string `gorm:"column:parent_id;not null" json:"parent_id"`                 // 节点父ID
+	ApproveType    int32  `gorm:"column:approve_type;not null;default:1" json:"approve_type"` // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+	NoneHandler    int32  `gorm:"column:none_handler;not null;default:1" json:"none_handler"` // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+	AppointHandler string `gorm:"column:appoint_handler;not null" json:"appoint_handler"`     // 审批人为空时指定审批人ID
+	HandleMode     int32  `gorm:"column:handle_mode;not null;default:2" json:"handle_mode"`   // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	FinishMode     int32  `gorm:"column:finish_mode;not null" json:"finish_mode"`             // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
+	BranchMode     int32  `gorm:"column:branch_mode;not null;default:2" json:"branch_mode"`   // 分支执行方式【单分支：1；多分支：2】默认多分支2
+	DefaultBranch  int32  `gorm:"column:default_branch;not null" json:"default_branch"`       // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标
+	BranchLevel    int32  `gorm:"column:branch_level;not null" json:"branch_level"`           // 优先级，分支执行方式为多分支处理方式无优先级应为0
+	ConditionGroup string `gorm:"column:condition_group;not null" json:"condition_group"`     // 条件组前端描述展示条件组
+	ConditionExpr  string `gorm:"column:condition_expr;not null" json:"condition_expr"`       // 条件组解析后的表达式
+	Remark         string `gorm:"column:remark;not null" json:"remark"`                       // 节点描述
+	PreNodes       string `gorm:"column:pre_nodes;not null" json:"pre_nodes"`                 // 上节点ID集合,多个用逗号隔开
+	NextNodes      string `gorm:"column:next_nodes;not null" json:"next_nodes"`               // 下节点ID集合,多个用逗号隔开
+	LastNodes      string `gorm:"column:last_nodes;not null" json:"last_nodes"`               // 尾节点ID集合,多个用逗号隔开
+	Index          int32  `gorm:"column:index;not null" json:"index"`                         // 节点下标
+	BranchIndex    int32  `gorm:"column:branch_index;not null" json:"branch_index"`           // 分支节点下标
 }
 
 // TableName ProcessDefNode's table name

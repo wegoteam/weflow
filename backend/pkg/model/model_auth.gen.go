@@ -14,7 +14,7 @@ const TableNameModelAuth = "model_auth"
 type ModelAuth struct {
 	ID          int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	ModelID     string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
-	AuthObjType int32     `gorm:"column:auth_obj_type;not null;default:1" json:"auth_obj_type"`             // 授权对象类型【1：操作员；2：部门（包含子部门）；3：部门（不含子部门）】
+	AuthObjType int32     `gorm:"column:auth_obj_type;not null;default:1" json:"auth_obj_type"`             // 授权对象类型【人员：1；部门（包含子部门）：2；部门（不含子部门）：3；角色（包含子角色）：4；角色（不包含子角色）：5】
 	ObjID       string    `gorm:"column:obj_id;not null" json:"obj_id"`                                     // 授权对象id;根据授权对象类型取值
 	CreateTime  time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
 	CreateUser  string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人

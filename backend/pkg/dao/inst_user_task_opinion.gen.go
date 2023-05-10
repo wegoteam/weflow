@@ -30,6 +30,7 @@ func newInstUserTaskOpinion(db *gorm.DB, opts ...gen.DOOption) instUserTaskOpini
 	_instUserTaskOpinion.ID = field.NewInt64(tableName, "id")
 	_instUserTaskOpinion.InstTaskID = field.NewString(tableName, "inst_task_id")
 	_instUserTaskOpinion.NodeTaskID = field.NewString(tableName, "node_task_id")
+	_instUserTaskOpinion.UserTaskID = field.NewString(tableName, "user_task_id")
 	_instUserTaskOpinion.NodeID = field.NewString(tableName, "node_id")
 	_instUserTaskOpinion.OpinionID = field.NewString(tableName, "opinion_id")
 	_instUserTaskOpinion.Opinion = field.NewInt32(tableName, "opinion")
@@ -52,6 +53,7 @@ type instUserTaskOpinion struct {
 	ID          field.Int64  // 唯一id
 	InstTaskID  field.String // 实例任务id
 	NodeTaskID  field.String // 节点任务id
+	UserTaskID  field.String // 用户任务id
 	NodeID      field.String // 节点id
 	OpinionID   field.String // 意见id
 	Opinion     field.Int32  // 处理意见【1：未处理；2：已阅；3：同意；4：不同意；5：回退；6：终止】
@@ -80,6 +82,7 @@ func (i *instUserTaskOpinion) updateTableName(table string) *instUserTaskOpinion
 	i.ID = field.NewInt64(table, "id")
 	i.InstTaskID = field.NewString(table, "inst_task_id")
 	i.NodeTaskID = field.NewString(table, "node_task_id")
+	i.UserTaskID = field.NewString(table, "user_task_id")
 	i.NodeID = field.NewString(table, "node_id")
 	i.OpinionID = field.NewString(table, "opinion_id")
 	i.Opinion = field.NewInt32(table, "opinion")
@@ -113,10 +116,11 @@ func (i *instUserTaskOpinion) GetFieldByName(fieldName string) (field.OrderExpr,
 }
 
 func (i *instUserTaskOpinion) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 12)
+	i.fieldMap = make(map[string]field.Expr, 13)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
 	i.fieldMap["node_task_id"] = i.NodeTaskID
+	i.fieldMap["user_task_id"] = i.UserTaskID
 	i.fieldMap["node_id"] = i.NodeID
 	i.fieldMap["opinion_id"] = i.OpinionID
 	i.fieldMap["opinion"] = i.Opinion

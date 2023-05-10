@@ -38,12 +38,12 @@ func Parser(data string) *[]entity.NodeModelBO {
 		//设置上节点，下节点
 		if nodeInd > 0 {
 			var preIds = make([]string, 0)
-			preIds = append(preIds, nodes[nodeInd-1].NodeId)
+			preIds = append(preIds, nodes[nodeInd-1].NodeID)
 			nodeBO.PreNodes = preIds
 		}
 		if nodeInd+1 < nodeLen {
 			var nextIds = make([]string, 0)
-			nextIds = append(nextIds, nodes[nodeInd+1].NodeId)
+			nextIds = append(nextIds, nodes[nodeInd+1].NodeID)
 			nodeBO.NextNodes = nextIds
 		}
 		if node.NodeModel == constant.BRANCH_NODE_MODEL {
@@ -62,12 +62,30 @@ func Parser(data string) *[]entity.NodeModelBO {
 节点：上节点、下节点、节点下标、尾节点等基础信息
 */
 func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
-	var bo = &entity.NodeModelBO{}
-	err := utils.BeanCopy(bo, node)
-	if err != nil {
-		hlog.Errorf("节点属性转换失败%v\n", err)
+	//var bo = &entity.NodeModelBO{}
+	//err := utils.BeanCopy(bo, node)
+	//if err != nil {
+	//	hlog.Errorf("节点属性转换失败%v\n", err)
+	//}
+	//return bo
+	return &entity.NodeModelBO{
+		NodeID:         node.NodeID,
+		NodeName:       node.NodeName,
+		NodeModel:      node.NodeModel,
+		ApproveType:    node.ApproveType,
+		FormPer:        node.FormPer,
+		NodeSetting:    node.NodeSetting,
+		NodeHandler:    node.NodeHandler,
+		NoneHandler:    node.NoneHandler,
+		AppointHandler: node.AppointHandler,
+		HandleMode:     node.HandleMode,
+		FinishMode:     node.FinishMode,
+		Level:          node.Level,
+		ConditionGroup: node.ConditionGroup,
+		ConditionExpr:  node.ConditionExpr,
+		BranchMode:     node.BranchMode,
+		DefaultBranch:  node.DefaultBranch,
 	}
-	return bo
 }
 
 /**
@@ -80,7 +98,7 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 	}
 	var branchIds = make([][]string, len(childs))
 	var branchLastIds = make([]string, len(childs))
-	nodeBO.ChildrenIds = branchIds
+	nodeBO.ChildrenIDs = branchIds
 	nodeBO.LastNodes = branchLastIds
 	*datas = append(*datas, *nodeBO)
 	if childs == nil {
@@ -94,23 +112,23 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 		var branchChildIds = make([]string, len(branchChilds))
 		var branchChildLen = len(branchChilds)
 		for ind, child := range branchChilds {
-			branchChildIds[ind] = child.NodeId
+			branchChildIds[ind] = child.NodeID
 			var childNode = parserNodeModel(&child)
 			childNode.Index = ind
 			childNode.BranchIndex = branch
 			//设置上节点，下节点，尾结点
 			if ind > 0 {
 				var preIds = make([]string, 0)
-				preIds = append(preIds, branchChilds[ind-1].NodeId)
+				preIds = append(preIds, branchChilds[ind-1].NodeID)
 				childNode.PreNodes = preIds
 			}
 			if ind+1 < branchChildLen {
 				var nextIds = make([]string, 0)
-				nextIds = append(nextIds, branchChilds[ind+1].NodeId)
+				nextIds = append(nextIds, branchChilds[ind+1].NodeID)
 				childNode.NextNodes = nextIds
 			}
 			if ind == branchChildLen-1 {
-				branchLastIds[branch] = child.NodeId
+				branchLastIds[branch] = child.NodeID
 			}
 			if child.NodeModel == constant.BRANCH_NODE_MODEL {
 				parserBranchNodeModel(childNode, child.Children, datas)
@@ -145,12 +163,12 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 	_, err := RedisCliet.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for _, node := range *nodes {
 			if node.NodeModel == constant.START_NODE_MODEL {
-				processDefModel.StartNodeId = node.NodeId
+				processDefModel.StartNodeId = node.NodeID
 			}
-			nodeModelMap[node.NodeId] = node
+			nodeModelMap[node.NodeID] = node
 			nodeStr, _ := sonic.Marshal(&node)
 			//设置key
-			RedisCliet.HSet(ctx, processDefKey, node.NodeId, string(nodeStr))
+			RedisCliet.HSet(ctx, processDefKey, node.NodeID, string(nodeStr))
 		}
 		return nil
 	})
@@ -188,7 +206,7 @@ func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
 			hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
 		}
 		if node.NodeModel == constant.START_NODE_MODEL {
-			processDefModel.StartNodeId = node.NodeId
+			processDefModel.StartNodeId = node.NodeID
 		}
 		nodeModelMap[key] = *node
 		nodes = append(nodes, *node)

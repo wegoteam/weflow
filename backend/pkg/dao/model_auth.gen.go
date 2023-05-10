@@ -47,7 +47,7 @@ type modelAuth struct {
 	ALL         field.Asterisk
 	ID          field.Int64  // 唯一id
 	ModelID     field.String // 模板id
-	AuthObjType field.Int32  // 授权对象类型【1：操作员；2：部门（包含子部门）；3：部门（不含子部门）】
+	AuthObjType field.Int32  // 授权对象类型【人员：1；部门（包含子部门）：2；部门（不含子部门）：3；角色（包含子角色）：4；角色（不包含子角色）：5】
 	ObjID       field.String // 授权对象id;根据授权对象类型取值
 	CreateTime  field.Time   // 创建时间
 	CreateUser  field.String // 创建人

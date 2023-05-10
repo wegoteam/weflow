@@ -34,14 +34,13 @@ func newModelDetail(db *gorm.DB, opts ...gen.DOOption) modelDetail {
 	_modelDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_modelDetail.FormDefID = field.NewString(tableName, "form_def_id")
 	_modelDetail.ModelGroupID = field.NewString(tableName, "model_group_id")
+	_modelDetail.IconURL = field.NewString(tableName, "icon_url")
 	_modelDetail.Status = field.NewInt32(tableName, "status")
 	_modelDetail.Remark = field.NewString(tableName, "remark")
 	_modelDetail.CreateTime = field.NewTime(tableName, "create_time")
 	_modelDetail.CreateUser = field.NewString(tableName, "create_user")
 	_modelDetail.UpdateTime = field.NewTime(tableName, "update_time")
 	_modelDetail.UpdateUser = field.NewString(tableName, "update_user")
-	_modelDetail.NoticeURL = field.NewString(tableName, "notice_url")
-	_modelDetail.TitleProps = field.NewString(tableName, "title_props")
 
 	_modelDetail.fillFieldMap()
 
@@ -59,14 +58,13 @@ type modelDetail struct {
 	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
 	ModelGroupID field.String // 模版组id
-	Status       field.Int32  // 模板状态【1：草稿；2：发布；3：停用】
+	IconURL      field.String // icon图标地址
+	Status       field.Int32  // 模板状态【1：草稿；2：发布；3：停用】默认草稿
 	Remark       field.String // 描述
 	CreateTime   field.Time   // 创建时间
 	CreateUser   field.String // 创建人
 	UpdateTime   field.Time   // 更新时间
 	UpdateUser   field.String // 更新人
-	NoticeURL    field.String // 回调通知推送url
-	TitleProps   field.String // 标题配置
 
 	fieldMap map[string]field.Expr
 }
@@ -90,14 +88,13 @@ func (m *modelDetail) updateTableName(table string) *modelDetail {
 	m.ProcessDefID = field.NewString(table, "process_def_id")
 	m.FormDefID = field.NewString(table, "form_def_id")
 	m.ModelGroupID = field.NewString(table, "model_group_id")
+	m.IconURL = field.NewString(table, "icon_url")
 	m.Status = field.NewInt32(table, "status")
 	m.Remark = field.NewString(table, "remark")
 	m.CreateTime = field.NewTime(table, "create_time")
 	m.CreateUser = field.NewString(table, "create_user")
 	m.UpdateTime = field.NewTime(table, "update_time")
 	m.UpdateUser = field.NewString(table, "update_user")
-	m.NoticeURL = field.NewString(table, "notice_url")
-	m.TitleProps = field.NewString(table, "title_props")
 
 	m.fillFieldMap()
 
@@ -122,7 +119,7 @@ func (m *modelDetail) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *modelDetail) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 15)
+	m.fieldMap = make(map[string]field.Expr, 14)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["model_id"] = m.ModelID
 	m.fieldMap["model_name"] = m.ModelName
@@ -130,14 +127,13 @@ func (m *modelDetail) fillFieldMap() {
 	m.fieldMap["process_def_id"] = m.ProcessDefID
 	m.fieldMap["form_def_id"] = m.FormDefID
 	m.fieldMap["model_group_id"] = m.ModelGroupID
+	m.fieldMap["icon_url"] = m.IconURL
 	m.fieldMap["status"] = m.Status
 	m.fieldMap["remark"] = m.Remark
 	m.fieldMap["create_time"] = m.CreateTime
 	m.fieldMap["create_user"] = m.CreateUser
 	m.fieldMap["update_time"] = m.UpdateTime
 	m.fieldMap["update_user"] = m.UpdateUser
-	m.fieldMap["notice_url"] = m.NoticeURL
-	m.fieldMap["title_props"] = m.TitleProps
 }
 
 func (m modelDetail) clone(db *gorm.DB) modelDetail {

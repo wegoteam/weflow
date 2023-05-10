@@ -29,9 +29,8 @@ func newModelVersion(db *gorm.DB, opts ...gen.DOOption) modelVersion {
 	_modelVersion.ALL = field.NewAsterisk(tableName)
 	_modelVersion.ID = field.NewInt64(tableName, "id")
 	_modelVersion.ModelID = field.NewString(tableName, "model_id")
-	_modelVersion.VersionID = field.NewString(tableName, "version_id")
-	_modelVersion.VersionNum = field.NewString(tableName, "version_num")
 	_modelVersion.ModelTitle = field.NewString(tableName, "model_title")
+	_modelVersion.VersionID = field.NewString(tableName, "version_id")
 	_modelVersion.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_modelVersion.FormDefID = field.NewString(tableName, "form_def_id")
 	_modelVersion.TableInfo = field.NewString(tableName, "table_info")
@@ -55,9 +54,8 @@ type modelVersion struct {
 	ALL          field.Asterisk
 	ID           field.Int64  // 唯一id
 	ModelID      field.String // 模板id
+	ModelTitle   field.String // 模板版本标题
 	VersionID    field.String // 版本id
-	VersionNum   field.String // 版本号
-	ModelTitle   field.String // 模板标题
 	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
 	TableInfo    field.String // 表单数据库表
@@ -87,9 +85,8 @@ func (m *modelVersion) updateTableName(table string) *modelVersion {
 	m.ALL = field.NewAsterisk(table)
 	m.ID = field.NewInt64(table, "id")
 	m.ModelID = field.NewString(table, "model_id")
-	m.VersionID = field.NewString(table, "version_id")
-	m.VersionNum = field.NewString(table, "version_num")
 	m.ModelTitle = field.NewString(table, "model_title")
+	m.VersionID = field.NewString(table, "version_id")
 	m.ProcessDefID = field.NewString(table, "process_def_id")
 	m.FormDefID = field.NewString(table, "form_def_id")
 	m.TableInfo = field.NewString(table, "table_info")
@@ -125,12 +122,11 @@ func (m *modelVersion) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (m *modelVersion) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 16)
+	m.fieldMap = make(map[string]field.Expr, 15)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["model_id"] = m.ModelID
-	m.fieldMap["version_id"] = m.VersionID
-	m.fieldMap["version_num"] = m.VersionNum
 	m.fieldMap["model_title"] = m.ModelTitle
+	m.fieldMap["version_id"] = m.VersionID
 	m.fieldMap["process_def_id"] = m.ProcessDefID
 	m.fieldMap["form_def_id"] = m.FormDefID
 	m.fieldMap["table_info"] = m.TableInfo

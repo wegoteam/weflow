@@ -4,7 +4,7 @@ import "time"
 
 // Execution 执行对象
 type Execution struct {
-	InstTaskId       string                    `json:"instTaskId"`       //实例任务ID
+	InstTaskID       string                    `json:"instTaskId"`       //实例任务ID
 	InstTaskStatus   int8                      `json:"instStatus"`       //实例任务状态
 	Now              time.Time                 `json:"now"`              //当前时间
 	InstTaskName     string                    `json:"instTaskName"`     //实例任务名称
@@ -20,7 +20,7 @@ type ExecNodeTaskBO struct {
 	NodeTaskID string // 节点任务id
 	NodeID     string // 节点id
 	Status     int8   // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
-	NodeModel  int8   // 节点模型【1：开始节点；2：审批节点；3：知会节点；4：自定义节点；5：条件节点；6：分支节点；7：汇聚节点；8：结束节点】
+	NodeModel  int8   // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 }
 
 // UserTaskBO 用户任务
@@ -29,18 +29,19 @@ type UserTaskBO struct {
 	NodeTaskID   string    // 节点任务id
 	NodeID       string    // 节点任务id
 	UserTaskID   string    // 处理人任务id
-	NodeUserID   string    // 节点处理人id
+	Type         int32     // 常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+	Strategy     int32     // 处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
 	NodeUserName string    // 处理人名称
-	NodeUserType int32     // 处理人类型【1：操作员；2：部门；3：相对岗位；4：表单控件；5：角色；6：岗位；7：组织；8：自定义】
-	OpOrigin     int32     // 操作来源【1：正常；2：加签】
-	TimeLimit    int64     // 处理期限;格式：yyyymmddhhmm 可直接指定到期限的具体时间，期限支持到分钟； 0表示无期限
+	NodeUserID   string    // 处理人id
+	Sort         int32     // 处理人顺序;正序排序
+	Obj          string    // 扩展字段，设计中可忽略
+	Relative     string    // 相对发起人的直属主管，设计中可忽略
 	Status       int32     // 任务状态【1：处理中；2：完成；3：回退；4：终止】
 	CreateTime   time.Time // 创建时间
 	UpdateTime   time.Time // 更新时间
 	HandleTime   time.Time // 处理时间
 	OpUserID     string    // 操作用户id
 	OpUserName   string    // 操作用户名称
-	HandlerSort  int32     // 处理人排序;处理人当前的处理排序
 	Opinion      int32     // 处理意见【1：未发表；2：已阅；3：同意；4：不同意】
 	OpinionDesc  string    // 处理意见描述
 
@@ -52,17 +53,20 @@ type InstNodeTaskBO struct {
 	NodeTaskID     string    // 节点任务id
 	NodeID         string    // 节点id
 	ParentID       string    // 父节点id
-	NodeModel      int8      //节点模型【1：开始节点；2：审批节点；3：知会节点；4：自定义节点；5：条件节点；6：分支节点；7：汇聚节点；8：结束节点】
+	NodeModel      int32     // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 	NodeName       string    // 节点名称
-	ForwardMode    int8      // 进行模式【1：并行 2：串行】
-	CompleteConn   int32     // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成
-	PermissionMode int8      // 权限模式【1：协同 2：知会 3：审批；4：业务】
-	AllowAdd       int8      // 允许加签【1：不能加签；2：允许加签】
-	ProcessMode    int8      // 处理模式【1：人工； 2：自动；3：自动转人工】
-	TimeLimit      int64     // 处理期限
-	ConnData       string    // 条件数据
-	FormPerData    string    // 表单权限数据
-	Status         int8      // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
+	ApproveType    int32     // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+	NoneHandler    int32     // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+	AppointHandler string    // 审批人为空时指定审批人ID
+	HandleMode     int32     // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	FinishMode     int32     // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
+	BranchMode     int32     // 分支执行方式【单分支：1；多分支：2】默认多分支2
+	DefaultBranch  int32     // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标
+	BranchLevel    int32     // 优先级，分支执行方式为多分支处理方式无优先级应为0
+	ConditionGroup string    // 条件组前端描述展示条件组
+	ConditionExpr  string    // 条件组解析后的表达式
+	Remark         string    // 节点描述
+	Status         int32     // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
 	CreateTime     time.Time // 创建时间
 	UpdateTime     time.Time // 更新时间
 }

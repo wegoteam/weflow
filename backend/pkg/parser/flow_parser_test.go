@@ -54,7 +54,7 @@ func TestGetProcessDefModel(t *testing.T) {
 	_, err := RedisCliet.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for _, node := range *nodes {
 			nodeStr, _ := sonic.Marshal(node)
-			RedisCliet.HSet(ctx, "process_def", node.NodeId, string(nodeStr))
+			RedisCliet.HSet(ctx, "process_def", node.NodeID, string(nodeStr))
 		}
 		return nil
 	})
@@ -97,7 +97,7 @@ func TestProcessDefModel(t *testing.T) {
 
 	nodeMap := make(map[string]interface{})
 	for _, node := range *processDefModel.NodeModels {
-		nodeMap[node.NodeId] = node
+		nodeMap[node.NodeID] = node
 	}
 	for k, v := range nodeMap {
 		switch v.(type) {

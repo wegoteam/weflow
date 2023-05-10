@@ -30,23 +30,25 @@ func newProcessDefNode(db *gorm.DB, opts ...gen.DOOption) processDefNode {
 	_processDefNode.ID = field.NewInt64(tableName, "id")
 	_processDefNode.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_processDefNode.NodeID = field.NewString(tableName, "node_id")
-	_processDefNode.NodeType = field.NewInt32(tableName, "node_type")
+	_processDefNode.NodeModel = field.NewInt32(tableName, "node_model")
 	_processDefNode.NodeName = field.NewString(tableName, "node_name")
-	_processDefNode.ForwardMode = field.NewInt32(tableName, "forward_mode")
-	_processDefNode.CompleteConn = field.NewInt32(tableName, "complete_conn")
-	_processDefNode.PermissionMode = field.NewInt32(tableName, "permission_mode")
-	_processDefNode.AllowAdd = field.NewInt32(tableName, "allow_add")
-	_processDefNode.ProcessMode = field.NewInt32(tableName, "process_mode")
-	_processDefNode.BusID = field.NewString(tableName, "bus_id")
-	_processDefNode.BusType = field.NewString(tableName, "bus_type")
-	_processDefNode.TimeLimit = field.NewInt32(tableName, "time_limit")
-	_processDefNode.ConnData = field.NewString(tableName, "conn_data")
-	_processDefNode.FormPerData = field.NewString(tableName, "form_per_data")
+	_processDefNode.ParentID = field.NewString(tableName, "parent_id")
+	_processDefNode.ApproveType = field.NewInt32(tableName, "approve_type")
+	_processDefNode.NoneHandler = field.NewInt32(tableName, "none_handler")
+	_processDefNode.AppointHandler = field.NewString(tableName, "appoint_handler")
+	_processDefNode.HandleMode = field.NewInt32(tableName, "handle_mode")
+	_processDefNode.FinishMode = field.NewInt32(tableName, "finish_mode")
+	_processDefNode.BranchMode = field.NewInt32(tableName, "branch_mode")
+	_processDefNode.DefaultBranch = field.NewInt32(tableName, "default_branch")
+	_processDefNode.BranchLevel = field.NewInt32(tableName, "branch_level")
+	_processDefNode.ConditionGroup = field.NewString(tableName, "condition_group")
+	_processDefNode.ConditionExpr = field.NewString(tableName, "condition_expr")
 	_processDefNode.Remark = field.NewString(tableName, "remark")
-	_processDefNode.CreateTime = field.NewTime(tableName, "create_time")
-	_processDefNode.CreateUser = field.NewString(tableName, "create_user")
-	_processDefNode.UpdateTime = field.NewTime(tableName, "update_time")
-	_processDefNode.UpdateUser = field.NewString(tableName, "update_user")
+	_processDefNode.PreNodes = field.NewString(tableName, "pre_nodes")
+	_processDefNode.NextNodes = field.NewString(tableName, "next_nodes")
+	_processDefNode.LastNodes = field.NewString(tableName, "last_nodes")
+	_processDefNode.Index = field.NewInt32(tableName, "index")
+	_processDefNode.BranchIndex = field.NewInt32(tableName, "branch_index")
 
 	_processDefNode.fillFieldMap()
 
@@ -60,23 +62,25 @@ type processDefNode struct {
 	ID             field.Int64  // 唯一id
 	ProcessDefID   field.String // 流程定义id
 	NodeID         field.String // 节点id
-	NodeType       field.Int32  // 节点类型;1：正常节点；2：开始节点；3：结束节点；4：汇聚节点；5：条件节点
+	NodeModel      field.Int32  // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 	NodeName       field.String // 节点名称
-	ForwardMode    field.Int32  // 进行模式【1：并行 2：串行】
-	CompleteConn   field.Int32  // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成
-	PermissionMode field.Int32  // 权限模式【1：协同 2：知会 3：审批】
-	AllowAdd       field.Int32  // 允许加签【1：不能加签；2：允许加签】
-	ProcessMode    field.Int32  // 处理模式【1：人工； 2：自动】
-	BusID          field.String // 业务id
-	BusType        field.String // 业务类型
-	TimeLimit      field.Int32  // 处理期限时长;单位秒，0表示无期限；
-	ConnData       field.String // 条件表达式;条件节点才有条件表达式
-	FormPerData    field.String // 表单权限数据;节点表单权限配置，json格式
+	ParentID       field.String // 节点父ID
+	ApproveType    field.Int32  // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+	NoneHandler    field.Int32  // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+	AppointHandler field.String // 审批人为空时指定审批人ID
+	HandleMode     field.Int32  // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	FinishMode     field.Int32  // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
+	BranchMode     field.Int32  // 分支执行方式【单分支：1；多分支：2】默认多分支2
+	DefaultBranch  field.Int32  // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标
+	BranchLevel    field.Int32  // 优先级，分支执行方式为多分支处理方式无优先级应为0
+	ConditionGroup field.String // 条件组前端描述展示条件组
+	ConditionExpr  field.String // 条件组解析后的表达式
 	Remark         field.String // 节点描述
-	CreateTime     field.Time   // 创建时间
-	CreateUser     field.String // 创建人
-	UpdateTime     field.Time   // 更新时间
-	UpdateUser     field.String // 更新人
+	PreNodes       field.String // 上节点ID集合,多个用逗号隔开
+	NextNodes      field.String // 下节点ID集合,多个用逗号隔开
+	LastNodes      field.String // 尾节点ID集合,多个用逗号隔开
+	Index          field.Int32  // 节点下标
+	BranchIndex    field.Int32  // 分支节点下标
 
 	fieldMap map[string]field.Expr
 }
@@ -96,23 +100,25 @@ func (p *processDefNode) updateTableName(table string) *processDefNode {
 	p.ID = field.NewInt64(table, "id")
 	p.ProcessDefID = field.NewString(table, "process_def_id")
 	p.NodeID = field.NewString(table, "node_id")
-	p.NodeType = field.NewInt32(table, "node_type")
+	p.NodeModel = field.NewInt32(table, "node_model")
 	p.NodeName = field.NewString(table, "node_name")
-	p.ForwardMode = field.NewInt32(table, "forward_mode")
-	p.CompleteConn = field.NewInt32(table, "complete_conn")
-	p.PermissionMode = field.NewInt32(table, "permission_mode")
-	p.AllowAdd = field.NewInt32(table, "allow_add")
-	p.ProcessMode = field.NewInt32(table, "process_mode")
-	p.BusID = field.NewString(table, "bus_id")
-	p.BusType = field.NewString(table, "bus_type")
-	p.TimeLimit = field.NewInt32(table, "time_limit")
-	p.ConnData = field.NewString(table, "conn_data")
-	p.FormPerData = field.NewString(table, "form_per_data")
+	p.ParentID = field.NewString(table, "parent_id")
+	p.ApproveType = field.NewInt32(table, "approve_type")
+	p.NoneHandler = field.NewInt32(table, "none_handler")
+	p.AppointHandler = field.NewString(table, "appoint_handler")
+	p.HandleMode = field.NewInt32(table, "handle_mode")
+	p.FinishMode = field.NewInt32(table, "finish_mode")
+	p.BranchMode = field.NewInt32(table, "branch_mode")
+	p.DefaultBranch = field.NewInt32(table, "default_branch")
+	p.BranchLevel = field.NewInt32(table, "branch_level")
+	p.ConditionGroup = field.NewString(table, "condition_group")
+	p.ConditionExpr = field.NewString(table, "condition_expr")
 	p.Remark = field.NewString(table, "remark")
-	p.CreateTime = field.NewTime(table, "create_time")
-	p.CreateUser = field.NewString(table, "create_user")
-	p.UpdateTime = field.NewTime(table, "update_time")
-	p.UpdateUser = field.NewString(table, "update_user")
+	p.PreNodes = field.NewString(table, "pre_nodes")
+	p.NextNodes = field.NewString(table, "next_nodes")
+	p.LastNodes = field.NewString(table, "last_nodes")
+	p.Index = field.NewInt32(table, "index")
+	p.BranchIndex = field.NewInt32(table, "branch_index")
 
 	p.fillFieldMap()
 
@@ -137,27 +143,29 @@ func (p *processDefNode) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (p *processDefNode) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 20)
+	p.fieldMap = make(map[string]field.Expr, 22)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["process_def_id"] = p.ProcessDefID
 	p.fieldMap["node_id"] = p.NodeID
-	p.fieldMap["node_type"] = p.NodeType
+	p.fieldMap["node_model"] = p.NodeModel
 	p.fieldMap["node_name"] = p.NodeName
-	p.fieldMap["forward_mode"] = p.ForwardMode
-	p.fieldMap["complete_conn"] = p.CompleteConn
-	p.fieldMap["permission_mode"] = p.PermissionMode
-	p.fieldMap["allow_add"] = p.AllowAdd
-	p.fieldMap["process_mode"] = p.ProcessMode
-	p.fieldMap["bus_id"] = p.BusID
-	p.fieldMap["bus_type"] = p.BusType
-	p.fieldMap["time_limit"] = p.TimeLimit
-	p.fieldMap["conn_data"] = p.ConnData
-	p.fieldMap["form_per_data"] = p.FormPerData
+	p.fieldMap["parent_id"] = p.ParentID
+	p.fieldMap["approve_type"] = p.ApproveType
+	p.fieldMap["none_handler"] = p.NoneHandler
+	p.fieldMap["appoint_handler"] = p.AppointHandler
+	p.fieldMap["handle_mode"] = p.HandleMode
+	p.fieldMap["finish_mode"] = p.FinishMode
+	p.fieldMap["branch_mode"] = p.BranchMode
+	p.fieldMap["default_branch"] = p.DefaultBranch
+	p.fieldMap["branch_level"] = p.BranchLevel
+	p.fieldMap["condition_group"] = p.ConditionGroup
+	p.fieldMap["condition_expr"] = p.ConditionExpr
 	p.fieldMap["remark"] = p.Remark
-	p.fieldMap["create_time"] = p.CreateTime
-	p.fieldMap["create_user"] = p.CreateUser
-	p.fieldMap["update_time"] = p.UpdateTime
-	p.fieldMap["update_user"] = p.UpdateUser
+	p.fieldMap["pre_nodes"] = p.PreNodes
+	p.fieldMap["next_nodes"] = p.NextNodes
+	p.fieldMap["last_nodes"] = p.LastNodes
+	p.fieldMap["index"] = p.Index
+	p.fieldMap["branch_index"] = p.BranchIndex
 }
 
 func (p processDefNode) clone(db *gorm.DB) processDefNode {

@@ -34,14 +34,17 @@ func newInstNodeTask(db *gorm.DB, opts ...gen.DOOption) instNodeTask {
 	_instNodeTask.ParentID = field.NewString(tableName, "parent_id")
 	_instNodeTask.NodeModel = field.NewInt32(tableName, "node_model")
 	_instNodeTask.NodeName = field.NewString(tableName, "node_name")
-	_instNodeTask.ForwardMode = field.NewInt32(tableName, "forward_mode")
-	_instNodeTask.CompleteConn = field.NewInt32(tableName, "complete_conn")
-	_instNodeTask.PermissionMode = field.NewInt32(tableName, "permission_mode")
-	_instNodeTask.AllowAdd = field.NewInt32(tableName, "allow_add")
-	_instNodeTask.ProcessMode = field.NewInt32(tableName, "process_mode")
-	_instNodeTask.TimeLimit = field.NewInt64(tableName, "time_limit")
-	_instNodeTask.ConnData = field.NewString(tableName, "conn_data")
-	_instNodeTask.FormPerData = field.NewString(tableName, "form_per_data")
+	_instNodeTask.ApproveType = field.NewInt32(tableName, "approve_type")
+	_instNodeTask.NoneHandler = field.NewInt32(tableName, "none_handler")
+	_instNodeTask.AppointHandler = field.NewString(tableName, "appoint_handler")
+	_instNodeTask.HandleMode = field.NewInt32(tableName, "handle_mode")
+	_instNodeTask.FinishMode = field.NewInt32(tableName, "finish_mode")
+	_instNodeTask.BranchMode = field.NewInt32(tableName, "branch_mode")
+	_instNodeTask.DefaultBranch = field.NewInt32(tableName, "default_branch")
+	_instNodeTask.BranchLevel = field.NewInt32(tableName, "branch_level")
+	_instNodeTask.ConditionGroup = field.NewString(tableName, "condition_group")
+	_instNodeTask.ConditionExpr = field.NewString(tableName, "condition_expr")
+	_instNodeTask.Remark = field.NewString(tableName, "remark")
 	_instNodeTask.Status = field.NewInt32(tableName, "status")
 	_instNodeTask.CreateTime = field.NewTime(tableName, "create_time")
 	_instNodeTask.UpdateTime = field.NewTime(tableName, "update_time")
@@ -60,16 +63,19 @@ type instNodeTask struct {
 	NodeTaskID     field.String // 节点任务id
 	NodeID         field.String // 节点id
 	ParentID       field.String // 父节点id
-	NodeModel      field.Int32  // 节点模型【1：开始节点；2：审批节点；3：知会节点；4：自定义节点；5：条件节点；6：分支节点；7：汇聚节点；8：结束节点】
+	NodeModel      field.Int32  // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 	NodeName       field.String // 节点名称
-	ForwardMode    field.Int32  // 进行模式【1：并行 2：串行】
-	CompleteConn   field.Int32  // 节点完成条件;通过的人数，0表示所有人通过，节点才算完成
-	PermissionMode field.Int32  // 权限模式【1：协同 2：知会 3：审批；4：业务】
-	AllowAdd       field.Int32  // 允许加签【1：不能加签；2：允许加签】
-	ProcessMode    field.Int32  // 处理模式【1：人工； 2：自动；3：自动转人工】
-	TimeLimit      field.Int64  // 处理期限;格式：yyyymmddhhmm 可直接指定到期限的具体时间，期限支持到分钟； 0表示无期限
-	ConnData       field.String // 条件数据;前端生成，json格式
-	FormPerData    field.String // 表单权限数据;节点表单权限配置，json格式
+	ApproveType    field.Int32  // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+	NoneHandler    field.Int32  // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+	AppointHandler field.String // 审批人为空时指定审批人ID
+	HandleMode     field.Int32  // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	FinishMode     field.Int32  // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
+	BranchMode     field.Int32  // 分支执行方式【单分支：1；多分支：2】默认多分支2
+	DefaultBranch  field.Int32  // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标
+	BranchLevel    field.Int32  // 优先级，分支执行方式为多分支处理方式无优先级应为0
+	ConditionGroup field.String // 条件组前端描述展示条件组
+	ConditionExpr  field.String // 条件组解析后的表达式
+	Remark         field.String // 节点描述
 	Status         field.Int32  // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
 	CreateTime     field.Time   // 创建时间
 	UpdateTime     field.Time   // 更新时间
@@ -96,14 +102,17 @@ func (i *instNodeTask) updateTableName(table string) *instNodeTask {
 	i.ParentID = field.NewString(table, "parent_id")
 	i.NodeModel = field.NewInt32(table, "node_model")
 	i.NodeName = field.NewString(table, "node_name")
-	i.ForwardMode = field.NewInt32(table, "forward_mode")
-	i.CompleteConn = field.NewInt32(table, "complete_conn")
-	i.PermissionMode = field.NewInt32(table, "permission_mode")
-	i.AllowAdd = field.NewInt32(table, "allow_add")
-	i.ProcessMode = field.NewInt32(table, "process_mode")
-	i.TimeLimit = field.NewInt64(table, "time_limit")
-	i.ConnData = field.NewString(table, "conn_data")
-	i.FormPerData = field.NewString(table, "form_per_data")
+	i.ApproveType = field.NewInt32(table, "approve_type")
+	i.NoneHandler = field.NewInt32(table, "none_handler")
+	i.AppointHandler = field.NewString(table, "appoint_handler")
+	i.HandleMode = field.NewInt32(table, "handle_mode")
+	i.FinishMode = field.NewInt32(table, "finish_mode")
+	i.BranchMode = field.NewInt32(table, "branch_mode")
+	i.DefaultBranch = field.NewInt32(table, "default_branch")
+	i.BranchLevel = field.NewInt32(table, "branch_level")
+	i.ConditionGroup = field.NewString(table, "condition_group")
+	i.ConditionExpr = field.NewString(table, "condition_expr")
+	i.Remark = field.NewString(table, "remark")
 	i.Status = field.NewInt32(table, "status")
 	i.CreateTime = field.NewTime(table, "create_time")
 	i.UpdateTime = field.NewTime(table, "update_time")
@@ -131,7 +140,7 @@ func (i *instNodeTask) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (i *instNodeTask) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 18)
+	i.fieldMap = make(map[string]field.Expr, 21)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
 	i.fieldMap["node_task_id"] = i.NodeTaskID
@@ -139,14 +148,17 @@ func (i *instNodeTask) fillFieldMap() {
 	i.fieldMap["parent_id"] = i.ParentID
 	i.fieldMap["node_model"] = i.NodeModel
 	i.fieldMap["node_name"] = i.NodeName
-	i.fieldMap["forward_mode"] = i.ForwardMode
-	i.fieldMap["complete_conn"] = i.CompleteConn
-	i.fieldMap["permission_mode"] = i.PermissionMode
-	i.fieldMap["allow_add"] = i.AllowAdd
-	i.fieldMap["process_mode"] = i.ProcessMode
-	i.fieldMap["time_limit"] = i.TimeLimit
-	i.fieldMap["conn_data"] = i.ConnData
-	i.fieldMap["form_per_data"] = i.FormPerData
+	i.fieldMap["approve_type"] = i.ApproveType
+	i.fieldMap["none_handler"] = i.NoneHandler
+	i.fieldMap["appoint_handler"] = i.AppointHandler
+	i.fieldMap["handle_mode"] = i.HandleMode
+	i.fieldMap["finish_mode"] = i.FinishMode
+	i.fieldMap["branch_mode"] = i.BranchMode
+	i.fieldMap["default_branch"] = i.DefaultBranch
+	i.fieldMap["branch_level"] = i.BranchLevel
+	i.fieldMap["condition_group"] = i.ConditionGroup
+	i.fieldMap["condition_expr"] = i.ConditionExpr
+	i.fieldMap["remark"] = i.Remark
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["create_time"] = i.CreateTime
 	i.fieldMap["update_time"] = i.UpdateTime
