@@ -7,17 +7,11 @@ import (
 )
 
 type IExecNode interface {
-	//执行当前节点
-	ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult
-	//执行当前节点
+	// ExecCurrNodeModel 执行当前节点
 	ExecCurrNodeModel(exec *entity.Execution) ExecResult
-	//获取下一节点
-	ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO
-	//获取下一节点
+	// ExecNextNodeModels 获取下一节点
 	ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO
-	//获取上一节点
-	ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO
-	//获取上一节点
+	// ExecPreNodeModels 获取上一节点
 	ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO
 }
 

@@ -65,30 +65,6 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(exec *entity.Execu
 	}
 }
 
-/**
-执行条件节点，验证条件表达式
-*/
-func (execConditionNode *ExecConditionNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	slog.Infof("ExecConditionNode 执行条件节点")
-
-	//条件
-	conditions := node.ConditionExpr
-	//参数
-	paramMap := exec.InstTaskParamMap
-
-	//执行条件
-	flag := expr.ExecExpr(conditions, paramMap)
-	if !flag {
-		slog.Infof("节点[%v]的条件不成立", node.NodeID)
-		return ExecResult{}
-	}
-	processDefModel := exec.ProcessDefModel
-	nextNodes := execConditionNode.ExecNextNodes(node, processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
-}
-
 func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConditionNode.PreNodes == nil {
@@ -104,21 +80,6 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 	return &preNodes
 }
 
-func (execConditionNode *ExecConditionNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
 func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execConditionNode.NextNodes == nil {
@@ -128,21 +89,6 @@ func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execConditionNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execConditionNode *ExecConditionNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

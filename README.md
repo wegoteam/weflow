@@ -4,6 +4,8 @@
 
 工作流（golang版本的流程引擎、规则引擎、表单引擎）、表单编辑器、流程编辑器
 
+Workflow (a Golang-based flow engine, rule engine, form engine), form editor, process editor.
+
 ## 软件架构
 
 ```text
@@ -88,10 +90,10 @@ https://www.processon.com/view/link/6459ef517ca03d041ea38cba
 
 节点字段描述：
 
-节点模型：nodeModel
-节点名称：nodeName
-节点ID：nodeId
-父节点ID：parentId
+- 节点模型：nodeModel
+- 节点名称：nodeName
+- 节点ID：nodeId
+- 父节点ID：parentId
 
 
 

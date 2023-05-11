@@ -93,7 +93,8 @@ func TestGetProcessDefModel(t *testing.T) {
 }
 
 func TestProcessDefModel(t *testing.T) {
-	processDefModel := GetProcessDefModel("1640993392605401001")
+	//processDefModel := GetProcessDefModel("1640993392605401001")
+	processDefModel := GetProcessDefModel("1640993392605401002")
 
 	nodeMap := make(map[string]interface{})
 	for _, node := range *processDefModel.NodeModels {

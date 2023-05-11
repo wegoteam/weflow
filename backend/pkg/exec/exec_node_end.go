@@ -37,21 +37,13 @@ func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
 	}
 }
 
-func (execEndNode *ExecEndNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecEndNode 执行结束节点")
-
-	return ExecResult{
-		NextNodes: &[]entity.NodeModelBO{},
-	}
-}
-
 /**
 执行结束节点
 生成实例节点任务
 执行任务
 下节点
 */
-func (execEndNode *ExecEndNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
+func (execEndNode *ExecEndNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
 	slog.Infof("ExecEndNode 执行结束节点")
 
 	return ExecResult{
@@ -74,21 +66,6 @@ func (execEndNode *ExecEndNode) ExecPreNodeModels(nodeModelMap map[string]entity
 	return &preNodes
 }
 
-func (execEndNode *ExecEndNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
 func (execEndNode *ExecEndNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execEndNode.NextNodes == nil {
@@ -98,21 +75,6 @@ func (execEndNode *ExecEndNode) ExecNextNodeModels(nodeModelMap map[string]entit
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execEndNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execEndNode *ExecEndNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

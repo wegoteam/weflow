@@ -43,6 +43,13 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 	}
 }
 
+/**
+执行分支节点
+分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
+生成实例节点任务
+执行任务
+下节点
+*/
 func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
 	slog.Infof("ExecBranchNode 执行分支节点")
 	var branchNodes = make([]entity.NodeModelBO, 0)
@@ -76,45 +83,6 @@ func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(exec *entity.Execution) 
 	}
 }
 
-/**
-执行分支节点
-分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
-生成实例节点任务
-执行任务
-下节点
-*/
-func (execBranchNode *ExecBranchNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	slog.Infof("ExecBranchNode 执行分支节点")
-	var branchNodes = make([]entity.NodeModelBO, 0)
-
-	execNodeTaskMap := exec.ExecNodeTaskMap
-	processDefModel := exec.ProcessDefModel
-	nodeModelMap := processDefModel.NodeModelMap
-	_, ok := execNodeTaskMap[node.NodeID]
-	if !ok {
-		slog.Infof("节点[%s]的分支节点未执行", node.NodeID)
-		for _, childBranchs := range node.ChildrenIDs {
-			if childBranchs == nil {
-				continue
-			}
-			bo, hasNode := nodeModelMap[childBranchs[0]]
-			if !hasNode {
-				slog.Infof("节点[%v]的分支节点不存在", node.NodeID)
-			}
-			branchNodes = append(branchNodes, bo)
-		}
-
-		return ExecResult{
-			NextNodes: &branchNodes,
-		}
-	}
-
-	//判断内存信息分支节点未执行
-
-	return ExecResult{
-		NextNodes: &branchNodes,
-	}
-}
 func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execBranchNode.PreNodes == nil {
@@ -124,20 +92,6 @@ func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的上节点不存在", execBranchNode.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-func (execBranchNode *ExecBranchNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -153,21 +107,6 @@ func (execBranchNode *ExecBranchNode) ExecNextNodeModels(nodeModelMap map[string
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execBranchNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execBranchNode *ExecBranchNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

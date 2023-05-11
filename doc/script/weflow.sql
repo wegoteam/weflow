@@ -224,6 +224,20 @@ create table `inst_node_task` (
                                   key `inst_node_task_id_index` (`inst_task_id`,`node_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='实例节点任务表';
 
+drop table if exists inst_node_task_formper;
+create table `inst_node_task_formper` (
+                                            `id` bigint(20) not null auto_increment comment '唯一id',
+                                            `inst_task_id` varchar(32) not null default '' comment '实例任务id',
+                                            `node_task_id` varchar(32) not null default '' comment '节点任务id',
+                                            `node_id` varchar(32) not null default '' comment '节点id',
+                                            `elemId` varchar(128) not null default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等',
+                                            `elemPId` varchar(128) not null default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等',
+                                            `per` int(11) not null default '1' comment '处理人顺序;正序排序',
+
+                                            primary key (`id`),
+                                            key `process_def_id_index` (`inst_task_id`,`node_task_id`)
+) engine=innodb default charset=utf8mb4 comment='实例节点任务表单权限表';
+
 drop table if exists inst_user_task;
 create table `inst_user_task` (
                                   `id` bigint(20) not null auto_increment comment '唯一id',
@@ -414,7 +428,7 @@ INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, 
             "timeout":""
         },
         "nodeHandler": {
-            "type": "1",
+            "type": 1,
             "handlers": [{
                 "id": "547",
                 "name": "xuch01",
@@ -462,7 +476,7 @@ INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, 
                         "timeout":""
                     },
                     "nodeHandler": {
-                        "type": "1",
+                        "type": 1,
                         "handlers": [{
                             "id": "547",
                             "name": "xuch01",
@@ -503,7 +517,147 @@ INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, 
                         "allowNotify":""
                     },
                     "nodeHandler": {
-                        "type": "1",
+                        "type": 1,
+                        "handlers": [{
+                            "id": "547",
+                            "name": "xuch01",
+                            "sort": 1
+                        }],
+                        "strategy":1,
+                        "obj": "",
+                        "relative":""
+                    }
+                }
+            ]
+        ]
+    },
+    {
+        "nodeModel":8,
+        "nodeName":"分支汇聚",
+        "nodeId":"1640993392605401008",
+        "parentId":""
+    },
+    {
+        "nodeModel":9,
+        "nodeName":"流程结束",
+        "nodeId":"1640993392605401009",
+        "parentId":""
+    }
+]', '2023-04-12 15:19:02', '', '2023-04-12 15:19:02', '');
+
+INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, `remark`, `struct_data`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('1640993392605401002', '测试流程定义2', 1, '测试流程定义2', '[
+    {
+        "nodeModel":1,
+        "nodeName":"发起人",
+        "nodeId":"1640993392605401001",
+        "parentId":""
+    },
+    {
+        "nodeModel":2,
+        "nodeName":"审批节点1",
+        "nodeId":"1640993392605401002",
+        "parentId":"",
+        "formPer":[{
+            "elemId": "param1",
+            "elemPId": "",
+            "per": 1
+        }],
+        "approveType": 1,
+        "nodeSetting":{
+            "execCheck":"",
+            "timeout":""
+        },
+        "nodeHandler": {
+            "type": 1,
+            "handlers": [{
+                "id": "547",
+                "name": "xuch01",
+                "sort": 1
+            }],
+            "strategy":1,
+            "obj": "",
+            "relative":""
+        },
+        "noneHandler":1,
+        "appointHandler":"",
+        "handleMode":2,
+        "finishMode":0
+    },
+    {
+        "nodeModel":7,
+        "nodeName":"分支节点",
+        "nodeId":"1640993392605401003",
+        "parentId":"",
+        "branchMode":2,
+        "defaultBranch":0,
+        "children":[
+            [
+                {
+                    "nodeModel":6,
+                    "nodeName":"条件1",
+                    "nodeId":"1640993392605401004",
+                    "parentId":"1640993392605401003",
+                    "level":0,
+                    "conditionGroup":"",
+                    "conditionExpr":"",
+                    "conditionVal":""
+                },
+                {
+                    "nodeModel":3,
+                    "nodeName":"办理节点1",
+                    "nodeId":"1640993392605401005",
+                    "parentId":"1640993392605401003",
+                    "formPer":[{
+                        "elemId": "param1",
+                        "elemPId": "",
+                        "per": 1
+                    }],
+                    "nodeSetting":{
+                        "timeout":""
+                    },
+                    "nodeHandler": {
+                        "type": 1,
+                        "handlers": [{
+                            "id": "547",
+                            "name": "xuch01",
+                            "sort": 1
+                        }],
+                        "strategy":1,
+                        "obj": "",
+                        "relative":""
+                    },
+                    "noneHandler":1,
+                    "appointHandler":"",
+                    "handleMode":2,
+                    "finishMode":0
+                }
+            ],
+            [
+                {
+                    "nodeModel":6,
+                    "nodeName":"条件2",
+                    "nodeId":"1640993392605401006",
+                    "parentId":"1640993392605401003",
+                    "level":0,
+                    "conditionGroup":"",
+                    "conditionExpr":"",
+                    "conditionVal":""
+                },
+                {
+                    "nodeModel":4,
+                    "nodeName":"抄送节点1",
+                    "nodeId":"1640993392605401007",
+                    "parentId":"1640993392605401003",
+                    "formPer":[{
+                        "elemId": "param1",
+                        "elemPId": "",
+                        "per": 1
+                    }],
+                    "nodeSetting":{
+                        "allowNotify":""
+                    },
+                    "nodeHandler": {
+                        "type": 1,
                         "handlers": [{
                             "id": "547",
                             "name": "xuch01",

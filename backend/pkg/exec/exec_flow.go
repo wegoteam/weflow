@@ -1,8 +1,11 @@
 package exec
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/parser"
+	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 func StartProcessInstTask(modelId string) {
@@ -10,10 +13,10 @@ func StartProcessInstTask(modelId string) {
 
 	execution := &entity.Execution{}
 	execution.ProcessDefModel = processDefModel
-	execution.InstTaskID = "1640993392605400001"
+	execution.InstTaskID = snowflake.GetSnowflakeId()
 	execution.InstTaskName = "测试流程"
 	execution.InstTaskStatus = 1
-
+	execution.Now = time.Now()
 	startNodeId := processDefModel.StartNodeId
 
 	startNode := processDefModel.NodeModelMap[startNodeId]
@@ -32,4 +35,6 @@ func StartProcessInstTask(modelId string) {
 	execution.InstNodeTasks = &instNodeTasks
 
 	Exec(&startNode, execution)
+
+	hlog.Infof("执行结果%+v", execution)
 }

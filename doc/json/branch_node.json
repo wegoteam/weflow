@@ -21,7 +21,7 @@
             "timeout":""
         },
         "nodeHandler": {
-            "type": "1",
+            "type": 1,
             "handlers": [{
                 "id": "547",
                 "name": "xuch01",
@@ -69,7 +69,7 @@
                         "timeout":""
                     },
                     "nodeHandler": {
-                        "type": "1",
+                        "type": 1,
                         "handlers": [{
                             "id": "547",
                             "name": "xuch01",
@@ -110,7 +110,7 @@
                         "allowNotify":""
                     },
                     "nodeHandler": {
-                        "type": "1",
+                        "type": 1,
                         "handlers": [{
                             "id": "547",
                             "name": "xuch01",

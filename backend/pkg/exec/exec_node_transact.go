@@ -50,8 +50,17 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 		BranchIndex: node.BranchIndex,
 	}
 }
-func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	processDefModel := exec.ProcessDefModel
+
+/**
+执行节点
+生成实例节点任务
+执行任务
+下节点
+*/
+func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+
+	slog.Infof("ExecTransactNode 执行办理节点")
+	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
 	//生成执行节点任务
@@ -61,14 +70,17 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(exec *entity.Executi
 		NodeID:     execTransactNode.NodeID,
 		Status:     2,
 	}
-	exec.ExecNodeTaskMap[execTransactNode.NodeID] = *execNodeTask
+	execution.ExecNodeTaskMap[execTransactNode.NodeID] = *execNodeTask
 
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
+	instNodeTasks := *execution.InstNodeTasks
 	instNodeTasks = append(instNodeTasks, instNodeTask)
 
 	//生成用户任务
+	var userTask = entity.UserTaskBO{}
+	userTasks := *execution.UserTasks
+	userTasks = append(userTasks, userTask)
 
 	//执行任务
 
@@ -78,39 +90,6 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(exec *entity.Executi
 	}
 }
 
-/**
-执行审批节点
-生成实例节点任务
-执行任务
-下节点
-*/
-func (execTransactNode *ExecTransactNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	processDefModel := exec.ProcessDefModel
-	nodeTaskId := snowflake.GetSnowflakeId()
-
-	//生成执行节点任务
-	var execNodeTask = &entity.ExecNodeTaskBO{
-		NodeTaskID: nodeTaskId,
-		NodeModel:  node.NodeModel,
-		NodeID:     node.NodeID,
-		Status:     2,
-	}
-	exec.ExecNodeTaskMap[node.NodeID] = *execNodeTask
-
-	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
-
-	//生成用户任务
-
-	//执行任务
-
-	nextNodes := execTransactNode.ExecNextNodes(node, processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
-}
 func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execTransactNode.PreNodes == nil {
@@ -126,21 +105,6 @@ func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[str
 	return &preNodes
 }
 
-func (execTransactNode *ExecTransactNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
 func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execTransactNode.NextNodes == nil {
@@ -150,21 +114,6 @@ func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[st
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execTransactNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execTransactNode *ExecTransactNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

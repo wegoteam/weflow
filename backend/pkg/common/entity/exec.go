@@ -5,6 +5,8 @@ import "time"
 // Execution 执行对象
 type Execution struct {
 	InstTaskID       string                    `json:"instTaskId"`       //实例任务ID
+	ProcessDefId     string                    `json:"processDefId"`     //流程定义ID
+	FormDefId        string                    `json:"formDefId"`        //表单定义ID
 	InstTaskStatus   int8                      `json:"instStatus"`       //实例任务状态
 	Now              time.Time                 `json:"now"`              //当前时间
 	InstTaskName     string                    `json:"instTaskName"`     //实例任务名称

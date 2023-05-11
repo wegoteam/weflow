@@ -1,9 +1,10 @@
 package exec
 
 import (
-	"github.com/gookit/slog"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecApprovalNode 审批节点
@@ -54,8 +55,8 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 }
 
 // ExecCurrNodeModel 执行当前节点
-func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	processDefModel := exec.ProcessDefModel
+func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
 	//生成执行节点任务
@@ -63,19 +64,21 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(exec *entity.Executi
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execApprovalNode.NodeModel,
 		NodeID:     execApprovalNode.NodeID,
-		Status:     2,
+		Status:     1,
 	}
-	exec.ExecNodeTaskMap[execApprovalNode.NodeID] = *execNodeTask
+	execution.ExecNodeTaskMap[execApprovalNode.NodeID] = *execNodeTask
 
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execApprovalNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
 	//生成用户任务
+	userTasks := execution.UserTasks
+	addUserTasks := GetUserTask(instNodeTask, execApprovalNode.NodeHandler)
+	*userTasks = append(*userTasks, addUserTasks...)
 
 	//执行任务
-
 	nextNodes := execApprovalNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
@@ -83,54 +86,27 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(exec *entity.Executi
 }
 
 /**
-ExecCurrNode 执行当前节点
-执行审批节点
-生成实例节点任务
-执行任务
-下节点
+获取实例节点任务
 */
-func (execApprovalNode *ExecApprovalNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	processDefModel := exec.ProcessDefModel
-	nodeTaskId := snowflake.GetSnowflakeId()
-
-	//生成执行节点任务
-	var execNodeTask = &entity.ExecNodeTaskBO{
-		NodeTaskID: nodeTaskId,
-		NodeModel:  node.NodeModel,
-		NodeID:     node.NodeID,
-		Status:     2,
-	}
-	exec.ExecNodeTaskMap[node.NodeID] = *execNodeTask
-
+func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
-
-	//生成用户任务
-
-	//执行任务
-
-	nextNodes := execApprovalNode.ExecNextNodes(node, processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID:     instTaskID,
+		NodeTaskID:     nodeTaskID,
+		ParentID:       execApprovalNode.ParentID,
+		NodeModel:      int32(execApprovalNode.NodeModel),
+		NodeName:       execApprovalNode.NodeName,
+		ApproveType:    int32(execApprovalNode.ApproveType),
+		NoneHandler:    int32(execApprovalNode.NoneHandler),
+		AppointHandler: execApprovalNode.AppointHandler,
+		HandleMode:     int32(execApprovalNode.HandleMode),
+		FinishMode:     int32(execApprovalNode.FinishMode),
+		Status:         1,
+		CreateTime:     now,
+		UpdateTime:     now,
 	}
-}
 
-// ExecPreNodes 获取上一节点
-func (execApprovalNode *ExecApprovalNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
+	return instNodeTask
 }
 
 // ExecPreNodeModels 获取上一节点
@@ -142,27 +118,11 @@ func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[str
 	for _, val := range execApprovalNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execApprovalNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execApprovalNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
 	return &preNodes
-}
-
-// ExecNextNodes 获取下一节点
-func (execApprovalNode *ExecApprovalNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
 }
 
 // ExecNextNodeModels 获取下一节点
@@ -174,7 +134,7 @@ func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[st
 	for _, val := range execApprovalNode.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execApprovalNode.NodeID)
+			hlog.Infof("节点[%v]的下节点不存在", execApprovalNode.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

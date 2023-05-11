@@ -37,6 +37,12 @@ func NewConvergenceNode(node *entity.NodeModelBO) *ExecConvergenceNode {
 	}
 }
 
+/**
+执行汇聚节点
+生成实例节点任务
+执行任务
+下节点
+*/
 func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
 	slog.Infof("ExecConvergenceNode 执行汇聚节点")
 	processDefModel := exec.ProcessDefModel
@@ -46,20 +52,6 @@ func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(exec *entity.E
 	}
 }
 
-/**
-执行汇聚节点
-生成实例节点任务
-执行任务
-下节点
-*/
-func (execConvergenceNode *ExecConvergenceNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	slog.Infof("ExecConvergenceNode 执行汇聚节点")
-	processDefModel := exec.ProcessDefModel
-	nextNodes := execConvergenceNode.ExecNextNodes(node, processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
-}
 func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConvergenceNode.PreNodes == nil {
@@ -75,21 +67,6 @@ func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap m
 	return &preNodes
 }
 
-func (execConvergenceNode *ExecConvergenceNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
 func (execConvergenceNode *ExecConvergenceNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execConvergenceNode.NextNodes == nil {
@@ -99,21 +76,6 @@ func (execConvergenceNode *ExecConvergenceNode) ExecNextNodeModels(nodeModelMap 
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execConvergenceNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execConvergenceNode *ExecConvergenceNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

@@ -42,14 +42,6 @@ func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 		BranchIndex: node.BranchIndex,
 	}
 }
-func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecNotifyNode 执行知会节点")
-	processDefModel := exec.ProcessDefModel
-	nextNodes := execNotifyNode.ExecNextNodeModels(processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
-}
 
 /**
 执行知会节点
@@ -58,10 +50,10 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(exec *entity.Execution) 
 生成知会用户任务
 下节点
 */
-func (execNotifyNode *ExecNotifyNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
+func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
 	slog.Infof("ExecNotifyNode 执行知会节点")
 	processDefModel := exec.ProcessDefModel
-	nextNodes := execNotifyNode.ExecNextNodes(node, processDefModel.NodeModelMap)
+	nextNodes := execNotifyNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -82,21 +74,6 @@ func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
-func (execNotifyNode *ExecNotifyNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
 func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execNotifyNode.NextNodes == nil {
@@ -106,21 +83,6 @@ func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string
 		next, ok := nodeModelMap[val]
 		if !ok {
 			slog.Infof("节点[%v]的下节点不存在", execNotifyNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execNotifyNode *ExecNotifyNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

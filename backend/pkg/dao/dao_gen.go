@@ -21,6 +21,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		FormDefElement:        newFormDefElement(db, opts...),
 		FormDefInfo:           newFormDefInfo(db, opts...),
 		InstNodeTask:          newInstNodeTask(db, opts...),
+		InstNodeTaskFormper:   newInstNodeTaskFormper(db, opts...),
 		InstTaskDetail:        newInstTaskDetail(db, opts...),
 		InstTaskOpLog:         newInstTaskOpLog(db, opts...),
 		InstTaskParam:         newInstTaskParam(db, opts...),
@@ -49,6 +50,7 @@ type Query struct {
 	FormDefElement        formDefElement
 	FormDefInfo           formDefInfo
 	InstNodeTask          instNodeTask
+	InstNodeTaskFormper   instNodeTaskFormper
 	InstTaskDetail        instTaskDetail
 	InstTaskOpLog         instTaskOpLog
 	InstTaskParam         instTaskParam
@@ -78,6 +80,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		FormDefElement:        q.FormDefElement.clone(db),
 		FormDefInfo:           q.FormDefInfo.clone(db),
 		InstNodeTask:          q.InstNodeTask.clone(db),
+		InstNodeTaskFormper:   q.InstNodeTaskFormper.clone(db),
 		InstTaskDetail:        q.InstTaskDetail.clone(db),
 		InstTaskOpLog:         q.InstTaskOpLog.clone(db),
 		InstTaskParam:         q.InstTaskParam.clone(db),
@@ -114,6 +117,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		FormDefElement:        q.FormDefElement.replaceDB(db),
 		FormDefInfo:           q.FormDefInfo.replaceDB(db),
 		InstNodeTask:          q.InstNodeTask.replaceDB(db),
+		InstNodeTaskFormper:   q.InstNodeTaskFormper.replaceDB(db),
 		InstTaskDetail:        q.InstTaskDetail.replaceDB(db),
 		InstTaskOpLog:         q.InstTaskOpLog.replaceDB(db),
 		InstTaskParam:         q.InstTaskParam.replaceDB(db),
@@ -140,6 +144,7 @@ type queryCtx struct {
 	FormDefElement        *formDefElementDo
 	FormDefInfo           *formDefInfoDo
 	InstNodeTask          *instNodeTaskDo
+	InstNodeTaskFormper   *instNodeTaskFormperDo
 	InstTaskDetail        *instTaskDetailDo
 	InstTaskOpLog         *instTaskOpLogDo
 	InstTaskParam         *instTaskParamDo
@@ -166,6 +171,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		FormDefElement:        q.FormDefElement.WithContext(ctx),
 		FormDefInfo:           q.FormDefInfo.WithContext(ctx),
 		InstNodeTask:          q.InstNodeTask.WithContext(ctx),
+		InstNodeTaskFormper:   q.InstNodeTaskFormper.WithContext(ctx),
 		InstTaskDetail:        q.InstTaskDetail.WithContext(ctx),
 		InstTaskOpLog:         q.InstTaskOpLog.WithContext(ctx),
 		InstTaskParam:         q.InstTaskParam.WithContext(ctx),

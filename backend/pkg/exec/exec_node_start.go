@@ -1,9 +1,10 @@
 package exec
 
 import (
-	"github.com/gookit/slog"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecStartNode 开始节点
@@ -38,8 +39,14 @@ func NewStartNode(node *entity.NodeModelBO) *ExecStartNode {
 	}
 }
 
-func (execStartNode *ExecStartNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecStartNode 执行开始节点")
+/**
+执行开始节点
+生成实例节点任务
+执行任务
+下节点
+*/
+func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	hlog.Infof("节点[%v]的上节点不存在", execStartNode.NodeID)
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
@@ -48,14 +55,14 @@ func (execStartNode *ExecStartNode) ExecCurrNodeModel(exec *entity.Execution) Ex
 		NodeID:     execStartNode.NodeID,
 		Status:     2,
 	}
-	exec.ExecNodeTaskMap[execStartNode.NodeID] = *execNodeTask
+	execution.ExecNodeTaskMap[execStartNode.NodeID] = *execNodeTask
 
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execStartNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
-	processDefModel := exec.ProcessDefModel
+	processDefModel := execution.ProcessDefModel
 	nextNodes := execStartNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
@@ -63,34 +70,24 @@ func (execStartNode *ExecStartNode) ExecCurrNodeModel(exec *entity.Execution) Ex
 }
 
 /**
-执行开始节点
-生成实例节点任务
-执行任务
-下节点
+获取实例节点任务
 */
-func (execStartNode *ExecStartNode) ExecCurrNode(node *entity.NodeModelBO, exec *entity.Execution) ExecResult {
-	slog.Infof("ExecStartNode 执行开始节点")
-	nodeTaskId := snowflake.GetSnowflakeId()
-	//生成执行节点任务
-	var execNodeTask = &entity.ExecNodeTaskBO{
-		NodeTaskID: nodeTaskId,
-		NodeModel:  node.NodeModel,
-		NodeID:     node.NodeID,
-		Status:     2,
-	}
-	exec.ExecNodeTaskMap[node.NodeID] = *execNodeTask
-
+func (execStartNode *ExecStartNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *exec.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
-
-	processDefModel := exec.ProcessDefModel
-	nextNodes := execStartNode.ExecNextNodes(node, processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID: instTaskID,
+		NodeTaskID: nodeTaskID,
+		ParentID:   execStartNode.ParentID,
+		NodeModel:  int32(execStartNode.NodeModel),
+		NodeName:   execStartNode.NodeName,
+		Status:     2,
+		CreateTime: now,
+		UpdateTime: now,
 	}
+
+	return instNodeTask
 }
+
 func (execStartNode *ExecStartNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execStartNode.PreNodes == nil {
@@ -99,22 +96,7 @@ func (execStartNode *ExecStartNode) ExecPreNodeModels(nodeModelMap map[string]en
 	for _, val := range execStartNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execStartNode.NodeID)
-		}
-		preNodes = append(preNodes, pre)
-	}
-	return &preNodes
-}
-
-func (execStartNode *ExecStartNode) ExecPreNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var preNodes = make([]entity.NodeModelBO, 0)
-	if node.PreNodes == nil {
-		return &preNodes
-	}
-	for _, val := range node.PreNodes {
-		pre, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", node.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execStartNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -129,22 +111,7 @@ func (execStartNode *ExecStartNode) ExecNextNodeModels(nodeModelMap map[string]e
 	for _, val := range execStartNode.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execStartNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
-	}
-	return &nextNodes
-}
-
-func (execStartNode *ExecStartNode) ExecNextNodes(node *entity.NodeModelBO, nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
-	var nextNodes = make([]entity.NodeModelBO, 0)
-	if node.NextNodes == nil {
-		return &nextNodes
-	}
-	for _, val := range node.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", node.NodeID)
+			hlog.Infof("节点[%v]的下节点不存在", execStartNode.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

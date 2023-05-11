@@ -52,7 +52,7 @@ type processDefInfo struct {
 	ProcessDefName field.String // 流程定义名称
 	Status         field.Int32  // 状态【1：草稿；2：发布可用；3：停用】
 	Remark         field.String // 描述
-	StructData     field.String // 流程结构化数据
+	StructData     field.String // 流程定义数据
 	CreateTime     field.Time   // 创建时间
 	CreateUser     field.String // 创建人
 	UpdateTime     field.Time   // 更新时间
