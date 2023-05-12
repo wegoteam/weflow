@@ -7,6 +7,7 @@ import (
 )
 
 type IExecNode interface {
+
 	// ExecCurrNodeModel 执行当前节点
 	ExecCurrNodeModel(exec *entity.Execution) ExecResult
 	// ExecNextNodeModels 获取下一节点
