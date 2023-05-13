@@ -33,7 +33,8 @@ func StartProcessInstTask(modelId string) {
 	//实例节点任务
 	var instNodeTasks = make([]entity.InstNodeTaskBO, 0)
 	execution.InstNodeTasks = &instNodeTasks
-
+	execution.ProcessDefId = "1640993392605401001"
+	execution.FormDefId = "1640993392605401001"
 	Exec(&startNode, execution)
 
 	hlog.Infof("执行结果%+v", execution)

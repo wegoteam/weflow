@@ -1,8 +1,11 @@
 package exec
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecBranchNode 分支节点
@@ -50,16 +53,31 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 执行任务
 下节点
 */
-func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecBranchNode 执行分支节点")
+func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID)
 	var branchNodes = make([]entity.NodeModelBO, 0)
+	nodeTaskId := snowflake.GetSnowflakeId()
 
-	execNodeTaskMap := exec.ExecNodeTaskMap
-	processDefModel := exec.ProcessDefModel
+	execNodeTaskMap := execution.ExecNodeTaskMap
+	processDefModel := execution.ProcessDefModel
 	nodeModelMap := processDefModel.NodeModelMap
 	_, ok := execNodeTaskMap[execBranchNode.NodeID]
 	if !ok {
-		slog.Infof("节点[%s]的分支节点未执行", execBranchNode.NodeID)
+		hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID)
+		//生成执行节点任务
+		var execNodeTask = &entity.ExecNodeTaskBO{
+			NodeTaskID: nodeTaskId,
+			NodeModel:  execBranchNode.NodeModel,
+			NodeID:     execBranchNode.NodeID,
+			Status:     1,
+		}
+		execution.ExecNodeTaskMap[execBranchNode.NodeID] = *execNodeTask
+
+		//生成实例节点任务
+		instNodeTasks := execution.InstNodeTasks
+		var instNodeTask = execBranchNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+		*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
 		for _, childBranchs := range execBranchNode.ChildrenIds {
 			if childBranchs == nil {
 				continue
@@ -81,6 +99,27 @@ func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(exec *entity.Execution) 
 	return ExecResult{
 		NextNodes: &branchNodes,
 	}
+}
+
+/**
+获取实例节点任务
+*/
+func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
+	//生成实例节点任务
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID:    instTaskID,
+		NodeTaskID:    nodeTaskID,
+		ParentID:      execBranchNode.ParentID,
+		NodeModel:     int32(execBranchNode.NodeModel),
+		NodeName:      execBranchNode.NodeName,
+		BranchMode:    int32(execBranchNode.BranchMode),
+		DefaultBranch: int32(execBranchNode.DefaultBranch),
+		Status:        1,
+		CreateTime:    now,
+		UpdateTime:    now,
+	}
+
+	return instNodeTask
 }
 
 func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {

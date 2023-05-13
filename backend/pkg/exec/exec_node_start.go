@@ -46,7 +46,7 @@ func NewStartNode(node *entity.NodeModelBO) *ExecStartNode {
 下节点
 */
 func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("节点[%v]的上节点不存在", execStartNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行开始节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execStartNode.NodeID)
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{

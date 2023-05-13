@@ -1,8 +1,11 @@
 package exec
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecConvergenceNode 汇聚节点
@@ -43,13 +46,48 @@ func NewConvergenceNode(node *entity.NodeModelBO) *ExecConvergenceNode {
 执行任务
 下节点
 */
-func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecConvergenceNode 执行汇聚节点")
-	processDefModel := exec.ProcessDefModel
+func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行汇聚节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConvergenceNode.NodeID)
+	processDefModel := execution.ProcessDefModel
+	nodeTaskId := snowflake.GetSnowflakeId()
+
+	//生成执行节点任务
+	var execNodeTask = &entity.ExecNodeTaskBO{
+		NodeTaskID: nodeTaskId,
+		NodeModel:  execConvergenceNode.NodeModel,
+		NodeID:     execConvergenceNode.NodeID,
+		Status:     1,
+	}
+	execution.ExecNodeTaskMap[execConvergenceNode.NodeID] = *execNodeTask
+
+	//生成实例节点任务
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execConvergenceNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
 	nextNodes := execConvergenceNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
+}
+
+/**
+获取实例节点任务
+*/
+func (execConvergenceNode *ExecConvergenceNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
+	//生成实例节点任务
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID: instTaskID,
+		NodeTaskID: nodeTaskID,
+		ParentID:   execConvergenceNode.ParentID,
+		NodeModel:  int32(execConvergenceNode.NodeModel),
+		NodeName:   execConvergenceNode.NodeName,
+		Status:     1,
+		CreateTime: now,
+		UpdateTime: now,
+	}
+
+	return instNodeTask
 }
 
 func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {

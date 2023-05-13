@@ -1,9 +1,12 @@
 package exec
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/expr"
+	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecConditionNode 条件节点
@@ -44,13 +47,29 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 	}
 }
 
-func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(exec *entity.Execution) ExecResult {
-	slog.Infof("ExecConditionNode 执行条件节点")
+func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID)
+
+	nodeTaskId := snowflake.GetSnowflakeId()
+
+	//生成执行节点任务
+	var execNodeTask = &entity.ExecNodeTaskBO{
+		NodeTaskID: nodeTaskId,
+		NodeModel:  execConditionNode.NodeModel,
+		NodeID:     execConditionNode.NodeID,
+		Status:     1,
+	}
+	execution.ExecNodeTaskMap[execConditionNode.NodeID] = *execNodeTask
+
+	//生成实例节点任务
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
 	//条件
 	conditions := execConditionNode.ConditionExpr
 	//参数
-	paramMap := exec.InstTaskParamMap
+	paramMap := execution.InstTaskParamMap
 
 	//执行条件
 	flag := expr.ExecExpr(conditions, paramMap)
@@ -58,11 +77,33 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(exec *entity.Execu
 		slog.Infof("节点[%v]的条件不成立", execConditionNode.NodeID)
 		return ExecResult{}
 	}
-	processDefModel := exec.ProcessDefModel
+	processDefModel := execution.ProcessDefModel
 	nextNodes := execConditionNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
+}
+
+/**
+获取实例节点任务
+*/
+func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
+	//生成实例节点任务
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID:     instTaskID,
+		NodeTaskID:     nodeTaskID,
+		ParentID:       execConditionNode.ParentID,
+		NodeModel:      int32(execConditionNode.NodeModel),
+		NodeName:       execConditionNode.NodeName,
+		BranchLevel:    int32(execConditionNode.Level),
+		ConditionExpr:  execConditionNode.ConditionExpr,
+		ConditionGroup: execConditionNode.ConditionGroup,
+		Status:         1,
+		CreateTime:     now,
+		UpdateTime:     now,
+	}
+
+	return instNodeTask
 }
 
 func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {

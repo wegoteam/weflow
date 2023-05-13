@@ -1,9 +1,11 @@
 package exec
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/gookit/slog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
+	"time"
 )
 
 // ExecTransactNode 办理节点
@@ -59,7 +61,7 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 */
 func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 
-	slog.Infof("ExecTransactNode 执行办理节点")
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行办理节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -88,6 +90,29 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
+}
+
+/**
+获取实例节点任务
+*/
+func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
+	//生成实例节点任务
+	var instNodeTask = entity.InstNodeTaskBO{
+		InstTaskID:     instTaskID,
+		NodeTaskID:     nodeTaskID,
+		ParentID:       execTransactNode.ParentID,
+		NodeModel:      int32(execTransactNode.NodeModel),
+		NodeName:       execTransactNode.NodeName,
+		NoneHandler:    int32(execTransactNode.NoneHandler),
+		AppointHandler: execTransactNode.AppointHandler,
+		HandleMode:     int32(execTransactNode.HandleMode),
+		FinishMode:     int32(execTransactNode.FinishMode),
+		Status:         1,
+		CreateTime:     now,
+		UpdateTime:     now,
+	}
+
+	return instNodeTask
 }
 
 func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {

@@ -56,6 +56,7 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 
 // ExecCurrNodeModel 执行当前节点
 func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行审批节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
