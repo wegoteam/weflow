@@ -40,10 +40,7 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 			Opinion:      1,
 			OpinionDesc:  "",
 		}
-		for i := 0; i < 10; i++ {
-
-			userTasks = append(userTasks, userTask)
-		}
+		userTasks = append(userTasks, userTask)
 	}
 
 	return userTasks
