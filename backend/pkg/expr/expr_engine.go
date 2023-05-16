@@ -1,8 +1,8 @@
 package expr
 
 import (
-	"fmt"
 	"github.com/antonmedv/expr"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 )
 
@@ -18,19 +18,19 @@ func ExecExpr(exprData string, env map[string]interface{}) bool {
 
 	output, err := expr.Eval(exprData, env)
 	if err != nil {
-		fmt.Printf("err: %v", err)
+		hlog.Infof("执行条件表达式错误：%v", err)
 		return false
 	}
 	switch output.(type) {
 	case bool:
-		fmt.Printf("%v\n", output.(bool))
+		hlog.Infof("执行条件表达式返回结果：%v", output.(bool))
 		return output.(bool)
 	case int:
-		fmt.Printf("%v\n", output.(int))
+		hlog.Infof("执行条件表达式返回结果：%v", output.(int))
 	case string:
-		fmt.Printf("%v\n", output.(string))
+		hlog.Infof("执行条件表达式返回结果：%v", output.(string))
 	default:
-		fmt.Printf("%v\n", output)
+		hlog.Infof("执行条件表达式返回结果：%v", output)
 	}
-	return true
+	return false
 }

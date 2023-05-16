@@ -2,7 +2,8 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/gookit/slog"
+	"github.com/elliotchance/pie/v2"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/expr"
 	"github.com/wegoteam/wepkg/snowflake"
@@ -48,7 +49,7 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 }
 
 func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -70,14 +71,44 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.
 	conditions := execConditionNode.ConditionExpr
 	//参数
 	paramMap := execution.InstTaskParamMap
+	//流程定义
+	processDefModel := execution.ProcessDefModel
 
 	//执行条件
 	flag := expr.ExecExpr(conditions, paramMap)
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions)
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, paramMap)
 	if !flag {
-		slog.Infof("节点[%v]的条件不成立", execConditionNode.NodeID)
-		return ExecResult{}
+		hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
+		//条件不成立，验证是父节点的分支是否有出口
+		if isParent(execConditionNode.ParentID) {
+			return ExecResult{}
+		}
+		var nextNodes = make([]entity.NodeModelBO, 0)
+		//返回父的分支节点，验证分支节点是否有出口
+		//判断下节点是否为父节点
+		//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+		pNodeModel, ok := processDefModel.NodeModelMap[execConditionNode.ParentID]
+		if !ok {
+			hlog.Warnf("节点[%s]的父节点不存在", execConditionNode.NodeID)
+			return ExecResult{}
+		}
+		if pNodeModel.NodeModel != constant.BRANCH_NODE_MODEL {
+			hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConditionNode.NodeID, execConditionNode.ParentID)
+			return ExecResult{}
+		}
+		branchNodeModel := NewBranchNode(&pNodeModel)
+		if branchNodeModel.LastNodes == nil {
+			hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execConditionNode.NodeID, execConditionNode.ParentID)
+			return ExecResult{}
+		}
+		if pie.Contains(branchNodeModel.LastNodes, execConditionNode.NodeID) {
+			nextNodes = append(nextNodes, pNodeModel)
+		}
+		return ExecResult{
+			NextNodes: &nextNodes,
+		}
 	}
-	processDefModel := execution.ProcessDefModel
 	nextNodes := execConditionNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
@@ -102,7 +133,6 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
-
 	return instNodeTask
 }
 
@@ -114,7 +144,7 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 	for _, val := range execConditionNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execConditionNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execConditionNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -123,15 +153,37 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 
 func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-	if execConditionNode.NextNodes == nil {
+	//判断是否有下节点
+	if execConditionNode.NextNodes != nil {
+		for _, val := range execConditionNode.NextNodes {
+			next, ok := nodeModelMap[val]
+			if !ok {
+				hlog.Infof("节点[%s]的下节点不存在", execConditionNode.NodeID)
+			}
+			nextNodes = append(nextNodes, next)
+		}
+	}
+	//判断下节点是否为父节点
+	if isParent(execConditionNode.ParentID) {
 		return &nextNodes
 	}
-	for _, val := range execConditionNode.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execConditionNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	pNodeModel, ok := nodeModelMap[execConditionNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execConditionNode.NodeID)
+		return &nextNodes
+	}
+	if pNodeModel.NodeModel != constant.BRANCH_NODE_MODEL {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConditionNode.NodeID, execConditionNode.ParentID)
+		return &nextNodes
+	}
+	branchNodeModel := NewBranchNode(&pNodeModel)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execConditionNode.NodeID, execConditionNode.ParentID)
+		return &nextNodes
+	}
+	if pie.Contains(branchNodeModel.LastNodes, execConditionNode.NodeID) {
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }

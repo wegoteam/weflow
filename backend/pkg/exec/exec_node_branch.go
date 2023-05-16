@@ -54,7 +54,7 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 下节点
 */
 func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]节点名称[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
 	var branchNodes = make([]entity.NodeModelBO, 0)
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -63,7 +63,7 @@ func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execut
 	nodeModelMap := processDefModel.NodeModelMap
 	_, ok := execNodeTaskMap[execBranchNode.NodeID]
 	if !ok {
-		hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID)
+		hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]节点名称[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
 		//生成执行节点任务
 		var execNodeTask = &entity.ExecNodeTaskBO{
 			NodeTaskID: nodeTaskId,

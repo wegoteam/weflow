@@ -2,6 +2,8 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/elliotchance/pie/v2"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -56,7 +58,7 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 
 // ExecCurrNodeModel 执行当前节点
 func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行审批节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行审批节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID, execApprovalNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -73,6 +75,11 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execApprovalNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
+	//生成实例节点任务表单权限
+	instNodeTaskForms := execution.TaskFormPers
+	addInstNodeTaskForms := execApprovalNode.GetTaskFormPers(execApprovalNode.FormPer, instNodeTask)
+	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 
 	//生成用户任务
 	userTasks := execution.UserTasks
@@ -110,6 +117,25 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 	return instNodeTask
 }
 
+/**
+获取实例节点任务表单权限
+*/
+func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
+	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
+	for ind, formPer := range formPers {
+		var taskFormPerBO = entity.TaskFormPerBO{
+			InstTaskID: instNodeTask.InstTaskID,
+			NodeTaskID: instNodeTask.NodeTaskID,
+			NodeID:     instNodeTask.NodeID,
+			ElemID:     formPer.ElemID,
+			ElemPID:    formPer.ElemPID,
+			Per:        int32(formPer.Per),
+		}
+		taskFormPers[ind] = taskFormPerBO
+	}
+	return taskFormPers
+}
+
 // ExecPreNodeModels 获取上一节点
 func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
@@ -119,7 +145,7 @@ func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[str
 	for _, val := range execApprovalNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			hlog.Infof("节点[%v]的上节点不存在", execApprovalNode.NodeID)
+			hlog.Infof("节点[%s]的上节点不存在", execApprovalNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -129,15 +155,40 @@ func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[str
 // ExecNextNodeModels 获取下一节点
 func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-	if execApprovalNode.NextNodes == nil {
+
+	//判断是否有下节点
+	if execApprovalNode.NextNodes != nil {
+		for _, val := range execApprovalNode.NextNodes {
+			next, ok := nodeModelMap[val]
+			if !ok {
+				hlog.Infof("节点[%s]的下节点不存在", execApprovalNode.NodeID)
+			}
+			nextNodes = append(nextNodes, next)
+		}
+	}
+
+	//判断下节点是否为父节点
+	if isParent(execApprovalNode.ParentID) {
 		return &nextNodes
 	}
-	for _, val := range execApprovalNode.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			hlog.Infof("节点[%v]的下节点不存在", execApprovalNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	nodeModelBO, ok := nodeModelMap[execApprovalNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execApprovalNode.NodeID)
+		return &nextNodes
+	}
+	if nodeModelBO.NodeModel != constant.BRANCH_NODE_MODEL {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execApprovalNode.NodeID, execApprovalNode.ParentID)
+		return &nextNodes
+	}
+	branchNodeModel := NewBranchNode(&nodeModelBO)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execApprovalNode.NodeID, execApprovalNode.ParentID)
+		return &nextNodes
+	}
+
+	if pie.Contains(branchNodeModel.LastNodes, execApprovalNode.NodeID) {
+		nextNodes = append(nextNodes, nodeModelBO)
 	}
 	return &nextNodes
 }

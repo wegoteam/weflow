@@ -230,9 +230,9 @@ create table `inst_node_task_formper` (
                                             `inst_task_id` varchar(32) not null default '' comment '实例任务id',
                                             `node_task_id` varchar(32) not null default '' comment '节点任务id',
                                             `node_id` varchar(32) not null default '' comment '节点id',
-                                            `elemId` varchar(128) not null default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等',
-                                            `elemPId` varchar(128) not null default '' comment '处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等',
-                                            `per` int(11) not null default '1' comment '处理人顺序;正序排序',
+                                            `elemId` varchar(128) not null default '' comment '表单元素ID',
+                                            `elemPId` varchar(128) not null default '' comment '表单元素父ID',
+                                            `per` tinyint(4) not null default '2' comment '表单权限【可编辑：1；只读：2；隐藏：3】默认只读2',
 
                                             primary key (`id`),
                                             key `process_def_id_index` (`inst_task_id`,`node_task_id`)

@@ -7,10 +7,12 @@ require (
 	github.com/bytedance/go-tagexpr/v2 v2.9.2
 	github.com/bytedance/sonic v1.8.7
 	github.com/cloudwego/hertz v0.6.1
+	github.com/elliotchance/pie/v2 v2.5.2
 	github.com/gookit/slog v0.5.1
 	github.com/redis/go-redis/v9 v9.0.3
 	github.com/stretchr/testify v1.8.1
 	github.com/wegoteam/wepkg v1.0.2
+	golang.org/x/exp v0.0.0-20220909182711-5c715a9e8561
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gen v0.3.21
 	gorm.io/gorm v1.24.6

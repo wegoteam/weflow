@@ -47,7 +47,7 @@ func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
 下节点
 */
 func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行结束节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execEndNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行结束节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execEndNode.NodeID, execEndNode.NodeName)
 	nodeTaskId := snowflake.GetSnowflakeId()
 
 	//生成执行节点任务

@@ -15,6 +15,7 @@ type Execution struct {
 	ExecNodeTaskMap  map[string]ExecNodeTaskBO `json:"execNodeTaskMap"`  //实例节点任务执行缓存数据
 	UserTasks        *[]UserTaskBO             `json:"userTasks"`        //用户任务
 	InstNodeTasks    *[]InstNodeTaskBO         `json:"instNodeTasks"`    //实例节点任务
+	TaskFormPers     *[]TaskFormPerBO          `json:"taskFormPers"`     //实例节点任务表单权限
 }
 
 // ExecNodeTaskBO 执行的节点任务，执行流转任务
@@ -71,6 +72,15 @@ type InstNodeTaskBO struct {
 	Status         int32     // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
 	CreateTime     time.Time // 创建时间
 	UpdateTime     time.Time // 更新时间
+}
+
+type TaskFormPerBO struct {
+	InstTaskID string // 实例任务id
+	NodeTaskID string // 节点任务id
+	NodeID     string // 节点ID
+	ElemID     string //表单元素ID
+	ElemPID    string //表单元素父ID
+	Per        int32  // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
 }
 
 // InstTaskExecution 执行实例

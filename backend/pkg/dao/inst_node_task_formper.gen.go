@@ -48,9 +48,9 @@ type instNodeTaskFormper struct {
 	InstTaskID field.String // 实例任务id
 	NodeTaskID field.String // 节点任务id
 	NodeID     field.String // 节点id
-	ElemID     field.String // 处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等
-	ElemPID    field.String // 处理人对象id;处理对象的id，根据处理人类型区分，如果操作员id、部门id等
-	Per        field.Int32  // 处理人顺序;正序排序
+	ElemID     field.String // 表单元素ID
+	ElemPID    field.String // 表单元素父ID
+	Per        field.Int32  // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
 
 	fieldMap map[string]field.Expr
 }

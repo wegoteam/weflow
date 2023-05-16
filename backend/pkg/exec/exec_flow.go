@@ -18,7 +18,6 @@ func StartProcessInstTask(modelId string) {
 	execution.InstTaskStatus = 1
 	execution.Now = time.Now()
 	startNodeId := processDefModel.StartNodeId
-
 	startNode := processDefModel.NodeModelMap[startNodeId]
 
 	//实例任务参数
@@ -33,6 +32,10 @@ func StartProcessInstTask(modelId string) {
 	//实例节点任务
 	var instNodeTasks = make([]entity.InstNodeTaskBO, 0)
 	execution.InstNodeTasks = &instNodeTasks
+	//实例节点任务表单权限
+	var taskFormPers = make([]entity.TaskFormPerBO, 0)
+	execution.TaskFormPers = &taskFormPers
+
 	execution.ProcessDefId = "1640993392605401001"
 	execution.FormDefId = "1640993392605401001"
 	Exec(&startNode, execution)

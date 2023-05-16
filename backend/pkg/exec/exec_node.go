@@ -22,7 +22,7 @@ type ExecResult struct {
 /**
 获取执行节点
 */
-func GetExecNode(node *entity.NodeModelBO) IExecNode {
+func getExecNode(node *entity.NodeModelBO) IExecNode {
 	var exec IExecNode
 	switch node.NodeModel {
 	case constant.START_NODE_MODEL:
@@ -62,7 +62,7 @@ func Exec(currnode *entity.NodeModelBO, execution *entity.Execution) {
 执行节点
 */
 func execNode(currnode *entity.NodeModelBO, execution *entity.Execution) {
-	iexec := GetExecNode(currnode)
+	iexec := getExecNode(currnode)
 	handleNodes := iexec.ExecCurrNodeModel(execution)
 
 	nodes := handleNodes.NextNodes
@@ -72,4 +72,16 @@ func execNode(currnode *entity.NodeModelBO, execution *entity.Execution) {
 	for _, next := range *nodes {
 		execNode(&next, execution)
 	}
+}
+
+/**
+判断是否为父节点
+*/
+func isParent(parentId string) bool {
+
+	if parentId == "" || len(parentId) == 0 {
+		return true
+	}
+
+	return false
 }

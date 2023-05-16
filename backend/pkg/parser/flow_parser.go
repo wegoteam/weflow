@@ -72,6 +72,7 @@ func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
 		NodeID:         node.NodeID,
 		NodeName:       node.NodeName,
 		NodeModel:      node.NodeModel,
+		ParentID:       node.ParentID,
 		ApproveType:    node.ApproveType,
 		FormPer:        node.FormPer,
 		NodeSetting:    node.NodeSetting,

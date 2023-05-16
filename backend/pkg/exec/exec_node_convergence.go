@@ -47,7 +47,7 @@ func NewConvergenceNode(node *entity.NodeModelBO) *ExecConvergenceNode {
 下节点
 */
 func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行汇聚节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConvergenceNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行汇聚节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConvergenceNode.NodeID, execConvergenceNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -98,7 +98,7 @@ func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap m
 	for _, val := range execConvergenceNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execConvergenceNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execConvergenceNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}

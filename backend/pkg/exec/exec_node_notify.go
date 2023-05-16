@@ -2,7 +2,8 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/gookit/slog"
+	"github.com/elliotchance/pie/v2"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -54,7 +55,7 @@ func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 下节点
 */
 func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行抄送节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行抄送节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID, execNotifyNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -71,6 +72,11 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execNotifyNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
+	//生成实例节点任务表单权限
+	instNodeTaskForms := execution.TaskFormPers
+	addInstNodeTaskForms := execNotifyNode.GetTaskFormPers(execNotifyNode.FormPer, instNodeTask)
+	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 
 	//生成用户任务
 	userTasks := execution.UserTasks
@@ -102,6 +108,26 @@ func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID str
 	return instNodeTask
 }
 
+/**
+获取实例节点任务表单权限
+*/
+func (execNotifyNode *ExecNotifyNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
+	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
+	for ind, formPer := range formPers {
+		var taskFormPerBO = entity.TaskFormPerBO{
+			InstTaskID: instNodeTask.InstTaskID,
+			NodeTaskID: instNodeTask.NodeTaskID,
+			NodeID:     instNodeTask.NodeID,
+			ElemID:     formPer.ElemID,
+			ElemPID:    formPer.ElemPID,
+			Per:        int32(formPer.Per),
+		}
+		taskFormPers[ind] = taskFormPerBO
+	}
+
+	return taskFormPers
+}
+
 func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execNotifyNode.PreNodes == nil {
@@ -110,7 +136,7 @@ func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]
 	for _, val := range execNotifyNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execNotifyNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execNotifyNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -119,15 +145,39 @@ func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]
 
 func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-	if execNotifyNode.NextNodes == nil {
+
+	//判断是否有下节点
+	if execNotifyNode.NextNodes != nil {
+		for _, val := range execNotifyNode.NextNodes {
+			next, ok := nodeModelMap[val]
+			if !ok {
+				hlog.Infof("节点[%s]的下节点不存在", execNotifyNode.NodeID)
+			}
+			nextNodes = append(nextNodes, next)
+		}
+	}
+
+	//判断下节点是否为父节点
+	if isParent(execNotifyNode.ParentID) {
 		return &nextNodes
 	}
-	for _, val := range execNotifyNode.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execNotifyNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	nodeModelBO, ok := nodeModelMap[execNotifyNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execNotifyNode.NodeID)
+		return &nextNodes
+	}
+	if nodeModelBO.NodeModel != constant.BRANCH_NODE_MODEL {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execNotifyNode.NodeID, execNotifyNode.ParentID)
+		return &nextNodes
+	}
+	branchNodeModel := NewBranchNode(&nodeModelBO)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execNotifyNode.NodeID, execNotifyNode.ParentID)
+		return &nextNodes
+	}
+	if pie.Contains(branchNodeModel.LastNodes, execNotifyNode.NodeID) {
+		nextNodes = append(nextNodes, nodeModelBO)
 	}
 	return &nextNodes
 }

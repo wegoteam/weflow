@@ -47,7 +47,7 @@ func NewCustomNode(node *entity.NodeModelBO) *ExecCustomNode {
 下节点
 */
 func (execCustomNode *ExecCustomNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
-	hlog.Infof("实例任务[%s]的流程定义[%s]执行自定义节点[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID)
+	hlog.Infof("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -99,7 +99,7 @@ func (execCustomNode *ExecCustomNode) ExecPreNodeModels(nodeModelMap map[string]
 	for _, val := range execCustomNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execCustomNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execCustomNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
