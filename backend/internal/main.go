@@ -4,36 +4,34 @@ package main
 
 import (
 	"context"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/hertz-contrib/logger/accesslog"
-	pkgconf "github.com/wegoteam/weflow/pkg/common/config"
-	"github.com/wegoteam/weflow/pkg/exec"
-	"gopkg.in/natefinch/lumberjack.v2"
+	"github.com/wegoteam/wepkg/snowflake"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
+	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/conf"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
 	// init dal
 	// dal.Init()
-	pkgconf.InitConfig()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 
 	// add a ping route to test
-	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
-		ctx.JSON(consts.StatusOK, utils.H{"ping": "pong"})
-		exec.StartProcessInstTask("")
+	h.GET("/snowflake", func(c context.Context, ctx *app.RequestContext) {
+		snowflakeId := snowflake.GetSnowflakeId()
+		ctx.JSON(consts.StatusOK, utils.H{"snowflakeId": snowflakeId})
 	})
 
 	router.GeneratedRegister(h)

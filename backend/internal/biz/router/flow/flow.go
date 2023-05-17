@@ -4,6 +4,7 @@ package Flow
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
+	_ "github.com/wegoteam/weflow/internal/biz/handler/flow"
 )
 
 /*
