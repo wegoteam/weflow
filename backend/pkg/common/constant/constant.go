@@ -4,70 +4,145 @@ package constant
 	节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 */
 const (
-	StartNodeModel       = 1
-	ApprovalNodeModel    = 2
-	TransactNodeModel    = 3
-	NotifyNodeModel      = 4
-	CustomNodeModel      = 5
-	ConditionNodeModel   = 6
-	BranchNodeModel      = 7
-	ConvergenceNodeModel = 8
-	EndNodeModel         = 9
+	StartNodeModel       = 1 //开始节点
+	ApprovalNodeModel    = 2 //审批节点
+	TransactNodeModel    = 3 //办理节点
+	NotifyNodeModel      = 4 //抄送节点
+	CustomNodeModel      = 5 //自定义节点
+	ConditionNodeModel   = 6 //条件节点
+	BranchNodeModel      = 7 //分支节点
+	ConvergenceNodeModel = 8 //汇聚节点
+	EndNodeModel         = 9 //结束节点
 )
 
 /**
 Redis key的前缀
 */
 const (
-	//流程定义Redis的前缀
-	RedisProcessDefModel = "weflow:proess-def:"
+	RedisProcessDefModel = "weflow:proess-def:" //流程定义Redis的前缀
 )
 
 const (
-	HasRedisProcessDefModel = 1
+	HasRedisProcessDefModel = 1 //存在流程定义标志
 )
 
 /**
-实例任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
+实例任务状态【0：草稿；1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
 */
 const (
-	InstanceTaskStatusCreate   = 1
-	InstanceTaskStatusDoing    = 2
-	InstanceTaskStatusStop     = 3
-	InstanceTaskStatusComplete = 4
-	InstanceTaskStatusHangUp   = 5
-	InstanceTaskStatusRollback = 6
+	InstanceTaskStatusDraft    = 0 //草稿
+	InstanceTaskStatusCreate   = 1 //创建中(草稿)
+	InstanceTaskStatusDoing    = 2 //进行中
+	InstanceTaskStatusStop     = 3 //终止
+	InstanceTaskStatusComplete = 4 //完成
+	InstanceTaskStatusHangUp   = 5 //挂起
+	InstanceTaskStatusRollback = 6 //回退
 )
 
 /**
 实例节点任务状态【1：未开始；2：处理中；3：完成；4：回退；5：终止；6：不通过】
 */
 const (
-	InstanceNodeTaskStatusNotStart = 1
-	InstanceNodeTaskStatusDoing    = 2
-	InstanceNodeTaskStatusComplete = 3
-	InstanceNodeTaskStatusRollback = 4
-	InstanceNodeTaskStatusStop     = 5
-	InstanceNodeTaskStatusNotPass  = 6
+	InstanceNodeTaskStatusNotStart = 1 //未开始
+	InstanceNodeTaskStatusDoing    = 2 //处理中
+	InstanceNodeTaskStatusComplete = 3 //完成
+	InstanceNodeTaskStatusRollback = 4 //回退
+	InstanceNodeTaskStatusStop     = 5 //终止
+	InstanceNodeTaskStatusNotPass  = 6 //不通过
 )
 
 /**
 实例用户任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
 */
 const (
-	InstanceUserTaskStatusDoing    = 1
-	InstanceUserTaskStatusComplete = 2
-	InstanceUserTaskStatusRollback = 3
-	InstanceUserTaskStatusStop     = 4
-	InstanceUserTaskStatusNotPass  = 5
+	InstanceUserTaskStatusDoing    = 1 //处理中
+	InstanceUserTaskStatusComplete = 2 //完成
+	InstanceUserTaskStatusRollback = 3 //回退
+	InstanceUserTaskStatusStop     = 4 //终止
+	InstanceUserTaskStatusNotPass  = 5 //不通过
 )
 
 /**
 实例用户任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】
 */
 const (
-	InstanceUserTaskOpinionNotPublish = 1
-	InstanceUserTaskOpinionRead       = 2
-	InstanceUserTaskOpinionAgree      = 3
-	InstanceUserTaskOpinionDisagree   = 4
+	InstanceUserTaskOpinionNotPublish = 1 //未发表
+	InstanceUserTaskOpinionRead       = 2 //已阅
+	InstanceUserTaskOpinionAgree      = 3 //同意
+	InstanceUserTaskOpinionDisagree   = 4 //不同意
+)
+
+/**
+常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+*/
+const (
+	//常用审批人
+	ApprovalUserTypeMember = 1 //指定成员
+	ApprovalUserTypeSelf   = 2 //发起人自己
+	ApprovalUserTypeSelect = 3 //发起人自选
+	ApprovalUserTypeRole   = 4 //角色
+	ApprovalUserTypeDept   = 5 //部门
+	//主管（相对岗位）
+	RelativeTypeDeptDirectly = 1 //直属主管
+	RelativeTypeDeptDept     = 2 //部门主管
+	RelativeTypeDeptMulti    = 3 //连续多级主管
+	RelativeTypeDeptControl  = 4 //部门控件对应主管
+	//其他
+	OtherTypeFormMember = 1 //表单人员控件
+	OtherTypeFormDept   = 2 //部门控件
+	OtherTypeFormRole   = 3 //角色控件
+)
+
+/**
+处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
+*/
+const (
+	ApprovalUserStrategyCommon = 1 //常用审批人
+	ApprovalUserStrategyDept   = 2 //主管（相对岗位）
+	ApprovalUserStrategyOther  = 3 //其他
+)
+
+/**
+审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+*/
+const (
+	ApprovalTypeManual = 1 //人工审批
+	ApprovalTypePass   = 2 //自动通过
+	ApprovalTypeRefuse = 3 //自动拒绝
+)
+
+/**
+审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+*/
+const (
+	ApprovalEmptyTypePass     = 1 //自动通过
+	ApprovalEmptyTypeTransfer = 2 //自动转交管理员
+	ApprovalEmptyTypeAssign   = 3 //指定审批人
+)
+
+/**
+审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+*/
+const (
+	ApprovalWayOrder = 1 //依次审批
+	ApprovalWayCount = 2 //会签
+	ApprovalWayOr    = 3 //或签
+)
+
+/**
+分支执行方式【单分支：1；多分支：2】默认多分支2
+*/
+const (
+	BranchWaySingle = 1 //单分支
+	BranchWayMulti  = 2 //多分支
+)
+
+/**
+表单权限【可编辑：1；只读：2；隐藏：3；必填：4】默认只读2
+*/
+const (
+	FormPermissionEdit   = 1 //可编辑
+	FormPermissionRead   = 2 //只读
+	FormPermissionHidden = 3 //隐藏
+	FormPermissionMust   = 4 //必填
 )

@@ -35,7 +35,6 @@ type ExecApprovalNode struct {
 实例化执行审批节点对象
 */
 func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
-
 	return &ExecApprovalNode{
 		NodeModel:   node.NodeModel,
 		NodeName:    node.NodeName,
@@ -113,7 +112,6 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
-
 	return instNodeTask
 }
 
