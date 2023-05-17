@@ -64,7 +64,7 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execNotifyNode.NodeModel,
 		NodeID:     execNotifyNode.NodeID,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execNotifyNode.NodeID] = *execNodeTask
 
@@ -100,7 +100,7 @@ func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID str
 		ParentID:   execNotifyNode.ParentID,
 		NodeModel:  int32(execNotifyNode.NodeModel),
 		NodeName:   execNotifyNode.NodeName,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusDoing,
 		CreateTime: now,
 		UpdateTime: now,
 	}
@@ -162,22 +162,22 @@ func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string
 		return &nextNodes
 	}
 	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
-	nodeModelBO, ok := nodeModelMap[execNotifyNode.ParentID]
+	pNodeModel, ok := nodeModelMap[execNotifyNode.ParentID]
 	if !ok {
 		hlog.Warnf("节点[%s]的父节点不存在", execNotifyNode.NodeID)
 		return &nextNodes
 	}
-	if nodeModelBO.NodeModel != constant.BRANCH_NODE_MODEL {
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execNotifyNode.NodeID, execNotifyNode.ParentID)
 		return &nextNodes
 	}
-	branchNodeModel := NewBranchNode(&nodeModelBO)
+	branchNodeModel := NewBranchNode(&pNodeModel)
 	if branchNodeModel.LastNodes == nil {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execNotifyNode.NodeID, execNotifyNode.ParentID)
 		return &nextNodes
 	}
 	if pie.Contains(branchNodeModel.LastNodes, execNotifyNode.NodeID) {
-		nextNodes = append(nextNodes, nodeModelBO)
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }

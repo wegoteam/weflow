@@ -7,9 +7,9 @@ type Execution struct {
 	InstTaskID       string                    `json:"instTaskId"`       //实例任务ID
 	ProcessDefId     string                    `json:"processDefId"`     //流程定义ID
 	FormDefId        string                    `json:"formDefId"`        //表单定义ID
-	InstTaskStatus   int8                      `json:"instStatus"`       //实例任务状态
-	Now              time.Time                 `json:"now"`              //当前时间
+	InstTaskStatus   int8                      `json:"instTaskStatus"`   //实例任务状态
 	InstTaskName     string                    `json:"instTaskName"`     //实例任务名称
+	Now              time.Time                 `json:"now"`              //当前时间
 	ProcessDefModel  *ProcessDefModel          `json:"processDefModel"`  //流程定义
 	InstTaskParamMap map[string]interface{}    `json:"instTaskParamMap"` //实例任务参数
 	ExecNodeTaskMap  map[string]ExecNodeTaskBO `json:"execNodeTaskMap"`  //实例节点任务执行缓存数据
@@ -22,7 +22,7 @@ type Execution struct {
 type ExecNodeTaskBO struct {
 	NodeTaskID string // 节点任务id
 	NodeID     string // 节点id
-	Status     int8   // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
+	Status     int8   // 任务状态【1：未开始；2：处理中；3：完成；4：回退；5：终止；6：不通过】
 	NodeModel  int8   // 节点模型【1：开始节点；2：审批节点；3：办理节点；4：抄送节点；5：自定义节点；6：条件节点；7：分支节点；8：汇聚节点；9：结束节点】
 }
 
@@ -39,15 +39,14 @@ type UserTaskBO struct {
 	Sort         int32     // 处理人顺序;正序排序
 	Obj          string    // 扩展字段，设计中可忽略
 	Relative     string    // 相对发起人的直属主管，设计中可忽略
-	Status       int32     // 任务状态【1：处理中；2：完成；3：回退；4：终止】
+	Status       int32     // 任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
 	CreateTime   time.Time // 创建时间
 	UpdateTime   time.Time // 更新时间
 	HandleTime   time.Time // 处理时间
 	OpUserID     string    // 操作用户id
 	OpUserName   string    // 操作用户名称
-	Opinion      int32     // 处理意见【1：未发表；2：已阅；3：同意；4：不同意】
+	Opinion      int32     // 任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】
 	OpinionDesc  string    // 处理意见描述
-
 }
 
 // InstNodeTaskBO 实例节点任务
@@ -69,7 +68,7 @@ type InstNodeTaskBO struct {
 	ConditionGroup string    // 条件组前端描述展示条件组
 	ConditionExpr  string    // 条件组解析后的表达式
 	Remark         string    // 节点描述
-	Status         int32     // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
+	Status         int32     // 任务状态【1：未开始；2：处理中；3：完成；4：回退；5：终止；6：不通过】
 	CreateTime     time.Time // 创建时间
 	UpdateTime     time.Time // 更新时间
 }

@@ -71,14 +71,14 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execTransactNode.NodeModel,
 		NodeID:     execTransactNode.NodeID,
-		Status:     2,
+		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execTransactNode.NodeID] = *execNodeTask
 
 	//生成实例节点任务
-	var instNodeTask = entity.InstNodeTaskBO{}
-	instNodeTasks := *execution.InstNodeTasks
-	instNodeTasks = append(instNodeTasks, instNodeTask)
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execTransactNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
 	//生成实例节点任务表单权限
 	instNodeTaskForms := execution.TaskFormPers
@@ -113,7 +113,7 @@ func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID
 		AppointHandler: execTransactNode.AppointHandler,
 		HandleMode:     int32(execTransactNode.HandleMode),
 		FinishMode:     int32(execTransactNode.FinishMode),
-		Status:         1,
+		Status:         constant.InstanceNodeTaskStatusDoing,
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
@@ -175,22 +175,22 @@ func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[st
 		return &nextNodes
 	}
 	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
-	nodeModelBO, ok := nodeModelMap[execTransactNode.ParentID]
+	pNodeModel, ok := nodeModelMap[execTransactNode.ParentID]
 	if !ok {
 		hlog.Warnf("节点[%s]的父节点不存在", execTransactNode.NodeID)
 		return &nextNodes
 	}
-	if nodeModelBO.NodeModel != constant.BRANCH_NODE_MODEL {
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execTransactNode.NodeID, execTransactNode.ParentID)
 		return &nextNodes
 	}
-	branchNodeModel := NewBranchNode(&nodeModelBO)
+	branchNodeModel := NewBranchNode(&pNodeModel)
 	if branchNodeModel.LastNodes == nil {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execTransactNode.NodeID, execTransactNode.ParentID)
 		return &nextNodes
 	}
 	if pie.Contains(branchNodeModel.LastNodes, execTransactNode.NodeID) {
-		nextNodes = append(nextNodes, nodeModelBO)
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }

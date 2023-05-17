@@ -1,5 +1,5 @@
 #!/bin/bash
-RUN_NAME=hello
+RUN_NAME=flow
 mkdir -p output/bin output/conf
 cp script/bootstrap.sh output 2>/dev/null
 chmod +x output/bootstrap.sh

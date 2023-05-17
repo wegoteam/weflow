@@ -67,7 +67,7 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execApprovalNode.NodeModel,
 		NodeID:     execApprovalNode.NodeID,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execApprovalNode.NodeID] = *execNodeTask
 
@@ -109,7 +109,7 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 		AppointHandler: execApprovalNode.AppointHandler,
 		HandleMode:     int32(execApprovalNode.HandleMode),
 		FinishMode:     int32(execApprovalNode.FinishMode),
-		Status:         1,
+		Status:         constant.InstanceNodeTaskStatusDoing,
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
@@ -172,23 +172,23 @@ func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[st
 		return &nextNodes
 	}
 	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
-	nodeModelBO, ok := nodeModelMap[execApprovalNode.ParentID]
+	pNodeModel, ok := nodeModelMap[execApprovalNode.ParentID]
 	if !ok {
 		hlog.Warnf("节点[%s]的父节点不存在", execApprovalNode.NodeID)
 		return &nextNodes
 	}
-	if nodeModelBO.NodeModel != constant.BRANCH_NODE_MODEL {
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execApprovalNode.NodeID, execApprovalNode.ParentID)
 		return &nextNodes
 	}
-	branchNodeModel := NewBranchNode(&nodeModelBO)
+	branchNodeModel := NewBranchNode(&pNodeModel)
 	if branchNodeModel.LastNodes == nil {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execApprovalNode.NodeID, execApprovalNode.ParentID)
 		return &nextNodes
 	}
 
 	if pie.Contains(branchNodeModel.LastNodes, execApprovalNode.NodeID) {
-		nextNodes = append(nextNodes, nodeModelBO)
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }

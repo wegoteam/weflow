@@ -2,7 +2,7 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/gookit/slog"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -55,7 +55,7 @@ func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) E
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execEndNode.NodeModel,
 		NodeID:     execEndNode.NodeID,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 	}
 	execution.ExecNodeTaskMap[execEndNode.NodeID] = *execNodeTask
 
@@ -64,6 +64,8 @@ func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) E
 	var instNodeTask = execEndNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
+	//实例任务状态完成
+	execution.InstTaskStatus = constant.InstanceTaskStatusComplete
 	return ExecResult{
 		NextNodes: &[]entity.NodeModelBO{},
 	}
@@ -80,7 +82,7 @@ func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, n
 		ParentID:   execEndNode.ParentID,
 		NodeModel:  int32(execEndNode.NodeModel),
 		NodeName:   execEndNode.NodeName,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 		CreateTime: now,
 		UpdateTime: now,
 	}
@@ -96,7 +98,7 @@ func (execEndNode *ExecEndNode) ExecPreNodeModels(nodeModelMap map[string]entity
 	for _, val := range execEndNode.PreNodes {
 		pre, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的上节点不存在", execEndNode.NodeID)
+			hlog.Infof("节点[%v]的上节点不存在", execEndNode.NodeID)
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -111,7 +113,7 @@ func (execEndNode *ExecEndNode) ExecNextNodeModels(nodeModelMap map[string]entit
 	for _, val := range execEndNode.NextNodes {
 		next, ok := nodeModelMap[val]
 		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execEndNode.NodeID)
+			hlog.Infof("节点[%v]的下节点不存在", execEndNode.NodeID)
 		}
 		nextNodes = append(nextNodes, next)
 	}

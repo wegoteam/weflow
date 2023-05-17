@@ -50,68 +50,101 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 
 func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
+	//条件
+	conditions := execConditionNode.ConditionExpr
+	//参数
+	paramMap := execution.InstTaskParamMap
+	//执行条件
+	flag := expr.ExecExpr(conditions, paramMap)
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions)
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, paramMap)
+	if !flag {
+		return buildNoPass(execution, execConditionNode)
+	}
+	return buildPass(execution, execConditionNode)
+}
+
+/**
+获取通过的返回结果
+*/
+func buildPass(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
-
+	//流程定义
+	processDefModel := execution.ProcessDefModel
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execConditionNode.NodeModel,
 		NodeID:     execConditionNode.NodeID,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 	}
 	execution.ExecNodeTaskMap[execConditionNode.NodeID] = *execNodeTask
 
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	instNodeTask.Status = constant.InstanceNodeTaskStatusComplete
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
-	//条件
-	conditions := execConditionNode.ConditionExpr
-	//参数
-	paramMap := execution.InstTaskParamMap
-	//流程定义
-	processDefModel := execution.ProcessDefModel
-
-	//执行条件
-	flag := expr.ExecExpr(conditions, paramMap)
-	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions)
-	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, paramMap)
-	if !flag {
-		hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
-		//条件不成立，验证是父节点的分支是否有出口
-		if isParent(execConditionNode.ParentID) {
-			return ExecResult{}
-		}
-		var nextNodes = make([]entity.NodeModelBO, 0)
-		//返回父的分支节点，验证分支节点是否有出口
-		//判断下节点是否为父节点
-		//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
-		pNodeModel, ok := processDefModel.NodeModelMap[execConditionNode.ParentID]
-		if !ok {
-			hlog.Warnf("节点[%s]的父节点不存在", execConditionNode.NodeID)
-			return ExecResult{}
-		}
-		if pNodeModel.NodeModel != constant.BRANCH_NODE_MODEL {
-			hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConditionNode.NodeID, execConditionNode.ParentID)
-			return ExecResult{}
-		}
-		branchNodeModel := NewBranchNode(&pNodeModel)
-		if branchNodeModel.LastNodes == nil {
-			hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execConditionNode.NodeID, execConditionNode.ParentID)
-			return ExecResult{}
-		}
-		if pie.Contains(branchNodeModel.LastNodes, execConditionNode.NodeID) {
-			nextNodes = append(nextNodes, pNodeModel)
-		}
-		return ExecResult{
-			NextNodes: &nextNodes,
-		}
-	}
 	nextNodes := execConditionNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
+	}
+}
+
+/**
+获取不通过的返回结果
+*/
+func buildNoPass(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+	hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
+
+	nodeTaskId := snowflake.GetSnowflakeId()
+	//流程定义
+	processDefModel := execution.ProcessDefModel
+	//生成执行节点任务
+	var execNodeTask = &entity.ExecNodeTaskBO{
+		NodeTaskID: nodeTaskId,
+		NodeModel:  execConditionNode.NodeModel,
+		NodeID:     execConditionNode.NodeID,
+		Status:     constant.InstanceNodeTaskStatusNotPass,
+	}
+	execution.ExecNodeTaskMap[execConditionNode.NodeID] = *execNodeTask
+
+	//生成实例节点任务
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	instNodeTask.Status = constant.InstanceNodeTaskStatusNotPass
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
+	//条件不成立，验证是父节点的分支是否有出口
+	if isParent(execConditionNode.ParentID) {
+		return ExecResult{}
+	}
+	var nextNodes = make([]entity.NodeModelBO, 0)
+	//返回父的分支节点，验证分支节点是否有出口
+	//判断下节点是否为父节点
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	pNodeModel, ok := processDefModel.NodeModelMap[execConditionNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execConditionNode.NodeID)
+		return ExecResult{}
+	}
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConditionNode.NodeID, execConditionNode.ParentID)
+		return ExecResult{}
+	}
+	branchNodeModel := NewBranchNode(&pNodeModel)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execConditionNode.NodeID, execConditionNode.ParentID)
+		return ExecResult{}
+	}
+	if pie.Contains(branchNodeModel.LastNodes, execConditionNode.NodeID) {
+		nextNodes = append(nextNodes, pNodeModel)
+	}
+	return ExecResult{
+		NextNodes: &nextNodes,
 	}
 }
 
@@ -129,7 +162,7 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 		BranchLevel:    int32(execConditionNode.Level),
 		ConditionExpr:  execConditionNode.ConditionExpr,
 		ConditionGroup: execConditionNode.ConditionGroup,
-		Status:         1,
+		Status:         constant.InstanceNodeTaskStatusDoing,
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
@@ -173,7 +206,7 @@ func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[
 		hlog.Warnf("节点[%s]的父节点不存在", execConditionNode.NodeID)
 		return &nextNodes
 	}
-	if pNodeModel.NodeModel != constant.BRANCH_NODE_MODEL {
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConditionNode.NodeID, execConditionNode.ParentID)
 		return &nextNodes
 	}

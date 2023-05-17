@@ -6,19 +6,19 @@ replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
 require (
 	github.com/apache/thrift v0.0.0-00010101000000-000000000000
-	github.com/cloudwego/hertz v0.6.1
+	github.com/cloudwego/hertz v0.6.3
 	github.com/go-redis/redis/v8 v8.11.0
-	github.com/hertz-contrib/cors v0.0.0-20230307061136-1fe747ea6a2a
+	github.com/hertz-contrib/cors v0.0.0-20230423034624-2bc83a8400f0
 	github.com/hertz-contrib/gzip v0.0.1
-	github.com/hertz-contrib/logger/accesslog v0.0.0-20230320032231-b153fe729ee7
+	github.com/hertz-contrib/logger/accesslog v0.0.0-20230428050608-fc430385c0ec
 	github.com/hertz-contrib/logger/logrus v1.0.0
 	github.com/hertz-contrib/pprof v0.1.0
 	github.com/kr/pretty v0.3.1
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/validator.v2 v2.0.1
 	gopkg.in/yaml.v2 v2.4.0
-	gorm.io/driver/mysql v1.4.7
-	gorm.io/gorm v1.24.6
+	gorm.io/driver/mysql v1.5.0
+	gorm.io/gorm v1.25.1
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	github.com/bytedance/sonic v1.8.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/cloudwego/netpoll v0.3.1 // indirect
+	github.com/cloudwego/netpoll v0.3.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect

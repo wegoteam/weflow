@@ -46,7 +46,7 @@ func Parser(data string) *[]entity.NodeModelBO {
 			nextIds = append(nextIds, nodes[nodeInd+1].NodeID)
 			nodeBO.NextNodes = nextIds
 		}
-		if node.NodeModel == constant.BRANCH_NODE_MODEL {
+		if node.NodeModel == constant.BranchNodeModel {
 			//解析分支节点
 			parserBranchNodeModel(nodeBO, node.Children, &datas)
 			continue
@@ -94,7 +94,7 @@ func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
 节点：上节点、下节点、节点下标、尾节点等基础信息
 */
 func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeModelEntity, datas *[]entity.NodeModelBO) {
-	if nodeBO.NodeModel != constant.BRANCH_NODE_MODEL {
+	if nodeBO.NodeModel != constant.BranchNodeModel {
 		return
 	}
 	var branchIds = make([][]string, len(childs))
@@ -131,7 +131,7 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 			if ind == branchChildLen-1 {
 				branchLastIds[branch] = child.NodeID
 			}
-			if child.NodeModel == constant.BRANCH_NODE_MODEL {
+			if child.NodeModel == constant.BranchNodeModel {
 				parserBranchNodeModel(childNode, child.Children, datas)
 				continue
 			}
@@ -146,7 +146,7 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 在数据库中获取流程定义节点信息，部署到Redis中
 */
 func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
-	var processDefKey = constant.REDIS_PROCESS_DEF_MODEL + processDefId
+	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()
 	var processDefInfo = &model.ProcessDefInfo{}
 	dbErr := MysqlDB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: processDefId}).First(processDefInfo).Error
@@ -163,7 +163,7 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 	var nodeModelMap = make(map[string]entity.NodeModelBO)
 	_, err := RedisCliet.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for _, node := range *nodes {
-			if node.NodeModel == constant.START_NODE_MODEL {
+			if node.NodeModel == constant.StartNodeModel {
 				processDefModel.StartNodeId = node.NodeID
 			}
 			nodeModelMap[node.NodeID] = node
@@ -190,7 +190,7 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 从Redis中获取流程定义的节点信息
 */
 func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
-	var processDefKey = constant.REDIS_PROCESS_DEF_MODEL + processDefId
+	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()
 	var nodeStrMap map[string]string
 	nodeStrMap, err := RedisCliet.HGetAll(ctx, processDefKey).Result()
@@ -206,7 +206,7 @@ func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
 		if err != nil {
 			hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
 		}
-		if node.NodeModel == constant.START_NODE_MODEL {
+		if node.NodeModel == constant.StartNodeModel {
 			processDefModel.StartNodeId = node.NodeID
 		}
 		nodeModelMap[key] = *node

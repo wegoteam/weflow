@@ -25,23 +25,23 @@ type ExecResult struct {
 func getExecNode(node *entity.NodeModelBO) IExecNode {
 	var exec IExecNode
 	switch node.NodeModel {
-	case constant.START_NODE_MODEL:
+	case constant.StartNodeModel:
 		exec = NewStartNode(node)
-	case constant.APPROVAL_NODE_MODEL:
+	case constant.ApprovalNodeModel:
 		exec = NewApprovalNode(node)
-	case constant.TRANSACT_NODE_MODEL:
+	case constant.TransactNodeModel:
 		exec = NewTransactNode(node)
-	case constant.NOTIFY_NODE_MODEL:
+	case constant.NotifyNodeModel:
 		exec = NewNotifyNode(node)
-	case constant.CUSTOM_NODE_MODEL:
+	case constant.CustomNodeModel:
 		exec = NewCustomNode(node)
-	case constant.CONDITION_NODE_MODEL:
+	case constant.ConditionNodeModel:
 		exec = NewConditionNode(node)
-	case constant.BRANCH_NODE_MODEL:
+	case constant.BranchNodeModel:
 		exec = NewBranchNode(node)
-	case constant.CONVERGENCE_NODE_MODEL:
+	case constant.ConvergenceNodeModel:
 		exec = NewConvergenceNode(node)
-	case constant.END_NODE_MODEL:
+	case constant.EndNodeModel:
 		exec = NewEndNode(node)
 	default:
 		hlog.Error("未知节点类型")

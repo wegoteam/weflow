@@ -2,6 +2,7 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -53,7 +54,7 @@ func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Executio
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execStartNode.NodeModel,
 		NodeID:     execStartNode.NodeID,
-		Status:     2,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 	}
 	execution.ExecNodeTaskMap[execStartNode.NodeID] = *execNodeTask
 
@@ -80,7 +81,7 @@ func (execStartNode *ExecStartNode) GetInstNodeTask(instTaskID, nodeTaskID strin
 		ParentID:   execStartNode.ParentID,
 		NodeModel:  int32(execStartNode.NodeModel),
 		NodeName:   execStartNode.NodeName,
-		Status:     2,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 		CreateTime: now,
 		UpdateTime: now,
 	}

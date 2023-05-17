@@ -12,7 +12,6 @@ require (
 	github.com/redis/go-redis/v9 v9.0.3
 	github.com/stretchr/testify v1.8.1
 	github.com/wegoteam/wepkg v1.0.2
-	golang.org/x/exp v0.0.0-20220909182711-5c715a9e8561
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gen v0.3.21
 	gorm.io/gorm v1.24.6
@@ -42,6 +41,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/arch v0.3.0 // indirect
+	golang.org/x/exp v0.0.0-20220909182711-5c715a9e8561 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect

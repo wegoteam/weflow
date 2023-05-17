@@ -2,7 +2,8 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/gookit/slog"
+	"github.com/elliotchance/pie/v2"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -56,7 +57,7 @@ func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *ent
 		NodeTaskID: nodeTaskId,
 		NodeModel:  execConvergenceNode.NodeModel,
 		NodeID:     execConvergenceNode.NodeID,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 	}
 	execution.ExecNodeTaskMap[execConvergenceNode.NodeID] = *execNodeTask
 
@@ -82,7 +83,7 @@ func (execConvergenceNode *ExecConvergenceNode) GetInstNodeTask(instTaskID, node
 		ParentID:   execConvergenceNode.ParentID,
 		NodeModel:  int32(execConvergenceNode.NodeModel),
 		NodeName:   execConvergenceNode.NodeName,
-		Status:     1,
+		Status:     constant.InstanceNodeTaskStatusComplete,
 		CreateTime: now,
 		UpdateTime: now,
 	}
@@ -107,15 +108,40 @@ func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap m
 
 func (execConvergenceNode *ExecConvergenceNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-	if execConvergenceNode.NextNodes == nil {
+
+	//判断是否有下节点
+	if execConvergenceNode.NextNodes != nil {
+		for _, val := range execConvergenceNode.NextNodes {
+			next, ok := nodeModelMap[val]
+			if !ok {
+				hlog.Infof("节点[%s]的下节点不存在", execConvergenceNode.NodeID)
+			}
+			nextNodes = append(nextNodes, next)
+		}
+	}
+
+	//判断下节点是否为父节点
+	if isParent(execConvergenceNode.ParentID) {
 		return &nextNodes
 	}
-	for _, val := range execConvergenceNode.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execConvergenceNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	pNodeModel, ok := nodeModelMap[execConvergenceNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execConvergenceNode.NodeID)
+		return &nextNodes
+	}
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execConvergenceNode.NodeID, execConvergenceNode.ParentID)
+		return &nextNodes
+	}
+	branchNodeModel := NewBranchNode(&pNodeModel)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execConvergenceNode.NodeID, execConvergenceNode.ParentID)
+		return &nextNodes
+	}
+
+	if pie.Contains(branchNodeModel.LastNodes, execConvergenceNode.NodeID) {
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }
