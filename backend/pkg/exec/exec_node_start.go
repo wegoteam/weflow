@@ -76,6 +76,7 @@ func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Executio
 func (execStartNode *ExecStartNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
 		ParentID:   execStartNode.ParentID,

@@ -61,6 +61,11 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 下节点
 */
 func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	_, ok := execution.ExecNodeTaskMap[execTransactNode.NodeID]
+	if ok {
+		hlog.Warnf("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
+		return ExecResult{}
+	}
 
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
 	processDefModel := execution.ProcessDefModel
@@ -104,6 +109,7 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType:     constant.OperationTypeAdd,
 		InstTaskID:     instTaskID,
 		NodeTaskID:     nodeTaskID,
 		ParentID:       execTransactNode.ParentID,
@@ -117,7 +123,6 @@ func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID
 		CreateTime:     now,
 		UpdateTime:     now,
 	}
-
 	return instNodeTask
 }
 
@@ -128,6 +133,7 @@ func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.Form
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
 	for ind, formPer := range formPers {
 		var taskFormPerBO = entity.TaskFormPerBO{
+			ExecOpType: constant.OperationTypeAdd,
 			InstTaskID: instNodeTask.InstTaskID,
 			NodeTaskID: instNodeTask.NodeTaskID,
 			NodeID:     instNodeTask.NodeID,

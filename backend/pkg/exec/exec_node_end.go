@@ -47,6 +47,11 @@ func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
 下节点
 */
 func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	_, ok := execution.ExecNodeTaskMap[execEndNode.NodeID]
+	if ok {
+		hlog.Warnf("实例任务[%s]的流程定义[%s]执行结束节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execEndNode.NodeID, execEndNode.NodeName)
+		return ExecResult{}
+	}
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行结束节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execEndNode.NodeID, execEndNode.NodeName)
 	nodeTaskId := snowflake.GetSnowflakeId()
 
@@ -77,6 +82,7 @@ func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) E
 func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
 		ParentID:   execEndNode.ParentID,

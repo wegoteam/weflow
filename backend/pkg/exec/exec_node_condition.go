@@ -49,6 +49,12 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 }
 
 func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	_, ok := execution.ExecNodeTaskMap[execConditionNode.NodeID]
+	if ok {
+		hlog.Warnf("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
+		return ExecResult{}
+	}
+
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 	//条件
 	conditions := execConditionNode.ConditionExpr
@@ -154,6 +160,7 @@ func buildNoPass(execution *entity.Execution, execConditionNode *ExecConditionNo
 func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType:     constant.OperationTypeAdd,
 		InstTaskID:     instTaskID,
 		NodeTaskID:     nodeTaskID,
 		ParentID:       execConditionNode.ParentID,

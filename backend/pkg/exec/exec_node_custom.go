@@ -48,6 +48,12 @@ func NewCustomNode(node *entity.NodeModelBO) *ExecCustomNode {
 下节点
 */
 func (execCustomNode *ExecCustomNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+	_, ok := execution.ExecNodeTaskMap[execCustomNode.NodeID]
+	if ok {
+		hlog.Warnf("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
+		return ExecResult{}
+	}
+
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -79,6 +85,7 @@ func (execCustomNode *ExecCustomNode) ExecCurrNodeModel(execution *entity.Execut
 func (execCustomNode *ExecCustomNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
 		ParentID:   execCustomNode.ParentID,

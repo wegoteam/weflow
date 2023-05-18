@@ -146,3 +146,21 @@ const (
 	FormPermissionHidden = 3 //隐藏
 	FormPermissionMust   = 4 //必填
 )
+
+/**
+执行操作类型【添加：1；修改：2；删除：3】
+*/
+const (
+	OperationTypeAdd    = 1 //添加
+	OperationTypeUpdate = 2 //修改
+	OperationTypeDelete = 3 //删除
+)
+
+/**
+分支节点完成标志【1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口】
+*/
+const (
+	BranchNodeStatusNotComplete = 1 //分支节点未完成
+	BranchNodeStatusComplete    = 2 //分支节点完成且存在出口
+	BranchNodeStatusNoBranch    = 3 //分支节点完成无分支出口
+)

@@ -28,6 +28,7 @@ type ExecNodeTaskBO struct {
 
 // UserTaskBO 用户任务
 type UserTaskBO struct {
+	ExecOpType   int8      // 执行操作类型【添加：1；修改：2；删除：3】
 	InstTaskID   string    // 实例任务id
 	NodeTaskID   string    // 节点任务id
 	NodeID       string    // 节点任务id
@@ -51,6 +52,7 @@ type UserTaskBO struct {
 
 // InstNodeTaskBO 实例节点任务
 type InstNodeTaskBO struct {
+	ExecOpType     int8      // 执行操作类型【添加：1；修改：2；删除：3】
 	InstTaskID     string    // 实例任务id
 	NodeTaskID     string    // 节点任务id
 	NodeID         string    // 节点id
@@ -74,6 +76,7 @@ type InstNodeTaskBO struct {
 }
 
 type TaskFormPerBO struct {
+	ExecOpType int8   // 执行操作类型【添加：1；修改：2；删除：3】
 	InstTaskID string // 实例任务id
 	NodeTaskID string // 节点任务id
 	NodeID     string // 节点ID

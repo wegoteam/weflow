@@ -2,7 +2,9 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/elliotchance/pie/v2"
 	"github.com/gookit/slog"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 	"time"
@@ -55,46 +57,95 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 */
 func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]节点名称[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
+
+	//判断当前的节点任务是否存在、或者是否在进行中
+	//获取是否存在节点的执行任务
+	_, ok := execution.ExecNodeTaskMap[execBranchNode.NodeID]
+	if !ok {
+		return bulidBrachNotStartResult(execution, execBranchNode)
+	}
+	//验证当前的分支节点是否完成
+	finishFlag := getCurrBranchFinishFlag(execution, execBranchNode)
+	//分支节点未完成
+	//分支节点完成无分支出口，分支节点完成状态为不通过
+	switch finishFlag {
+	case constant.BranchNodeStatusNotComplete:
+		//分支节点未完成
+		return ExecResult{}
+	case constant.BranchNodeStatusComplete:
+		//分支节点完成且存在出口
+		return buildBranchFinishedHasOutResult(execution, execBranchNode)
+	case constant.BranchNodeStatusNoBranch:
+		//分支节点完成无分支出口
+		return buildBranchFinishedNotOutResult(execution, execBranchNode)
+	default:
+		return ExecResult{}
+	}
+}
+
+/**
+分支节点完成且存在出口
+*/
+func buildBranchFinishedHasOutResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+	processDefModel := execution.ProcessDefModel
+	//执行任务
+	nextNodes := execBranchNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	return ExecResult{
+		NextNodes: nextNodes,
+	}
+}
+
+/**
+分支节点完成无分支出口
+*/
+func buildBranchFinishedNotOutResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+
+	return ExecResult{}
+}
+
+/**
+验证当前的分支节点是否完成
+分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
+*/
+func getCurrBranchFinishFlag(execution *entity.Execution, execBranchNode *ExecBranchNode) int8 {
+
+	return constant.BranchNodeStatusComplete
+}
+
+/**
+未开始，流转分支节点的子分支的头节点
+*/
+func bulidBrachNotStartResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+	hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]节点名称[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
 	var branchNodes = make([]entity.NodeModelBO, 0)
 	nodeTaskId := snowflake.GetSnowflakeId()
-
-	execNodeTaskMap := execution.ExecNodeTaskMap
 	processDefModel := execution.ProcessDefModel
 	nodeModelMap := processDefModel.NodeModelMap
-	_, ok := execNodeTaskMap[execBranchNode.NodeID]
-	if !ok {
-		hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]节点名称[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
-		//生成执行节点任务
-		var execNodeTask = &entity.ExecNodeTaskBO{
-			NodeTaskID: nodeTaskId,
-			NodeModel:  execBranchNode.NodeModel,
-			NodeID:     execBranchNode.NodeID,
-			Status:     1,
-		}
-		execution.ExecNodeTaskMap[execBranchNode.NodeID] = *execNodeTask
 
-		//生成实例节点任务
-		instNodeTasks := execution.InstNodeTasks
-		var instNodeTask = execBranchNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
-		*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
-		for _, childBranchs := range execBranchNode.ChildrenIds {
-			if childBranchs == nil {
-				continue
-			}
-			bo, hasNode := nodeModelMap[childBranchs[0]]
-			if !hasNode {
-				slog.Infof("节点[%v]的分支节点不存在", execBranchNode.NodeID)
-			}
-			branchNodes = append(branchNodes, bo)
-		}
-
-		return ExecResult{
-			NextNodes: &branchNodes,
-		}
+	//生成执行节点任务
+	var execNodeTask = &entity.ExecNodeTaskBO{
+		NodeTaskID: nodeTaskId,
+		NodeModel:  execBranchNode.NodeModel,
+		NodeID:     execBranchNode.NodeID,
+		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
+	execution.ExecNodeTaskMap[execBranchNode.NodeID] = *execNodeTask
 
-	//判断内存信息分支节点未执行
+	//生成实例节点任务
+	instNodeTasks := execution.InstNodeTasks
+	var instNodeTask = execBranchNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
+	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+
+	for _, childBranchs := range execBranchNode.ChildrenIds {
+		if childBranchs == nil {
+			continue
+		}
+		bo, hasNode := nodeModelMap[childBranchs[0]]
+		if !hasNode {
+			slog.Infof("节点[%v]的分支节点不存在", execBranchNode.NodeID)
+		}
+		branchNodes = append(branchNodes, bo)
+	}
 
 	return ExecResult{
 		NextNodes: &branchNodes,
@@ -107,6 +158,7 @@ func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execut
 func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType:    constant.OperationTypeAdd,
 		InstTaskID:    instTaskID,
 		NodeTaskID:    nodeTaskID,
 		ParentID:      execBranchNode.ParentID,
@@ -114,7 +166,7 @@ func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID str
 		NodeName:      execBranchNode.NodeName,
 		BranchMode:    int32(execBranchNode.BranchMode),
 		DefaultBranch: int32(execBranchNode.DefaultBranch),
-		Status:        1,
+		Status:        constant.InstanceNodeTaskStatusDoing,
 		CreateTime:    now,
 		UpdateTime:    now,
 	}
@@ -139,15 +191,40 @@ func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]
 
 func (execBranchNode *ExecBranchNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-	if execBranchNode.NextNodes == nil {
+
+	//判断是否有下节点
+	if execBranchNode.NextNodes != nil {
+		for _, val := range execBranchNode.NextNodes {
+			next, ok := nodeModelMap[val]
+			if !ok {
+				hlog.Infof("节点[%s]的下节点不存在", execBranchNode.NodeID)
+			}
+			nextNodes = append(nextNodes, next)
+		}
+	}
+
+	//判断下节点是否为父节点
+	if isParent(execBranchNode.ParentID) {
 		return &nextNodes
 	}
-	for _, val := range execBranchNode.NextNodes {
-		next, ok := nodeModelMap[val]
-		if !ok {
-			slog.Infof("节点[%v]的下节点不存在", execBranchNode.NodeID)
-		}
-		nextNodes = append(nextNodes, next)
+	//判断节点的父节点是否是分支节点，节点是否在分支节点的最后节点上
+	pNodeModel, ok := nodeModelMap[execBranchNode.ParentID]
+	if !ok {
+		hlog.Warnf("节点[%s]的父节点不存在", execBranchNode.NodeID)
+		return &nextNodes
+	}
+	if pNodeModel.NodeModel != constant.BranchNodeModel {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该节点的父节点不是分支节点", execBranchNode.NodeID, execBranchNode.ParentID)
+		return &nextNodes
+	}
+	branchNodeModel := NewBranchNode(&pNodeModel)
+	if branchNodeModel.LastNodes == nil {
+		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execBranchNode.NodeID, execBranchNode.ParentID)
+		return &nextNodes
+	}
+
+	if pie.Contains(branchNodeModel.LastNodes, execBranchNode.NodeID) {
+		nextNodes = append(nextNodes, pNodeModel)
 	}
 	return &nextNodes
 }

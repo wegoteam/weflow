@@ -78,6 +78,7 @@ func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *ent
 func (execConvergenceNode *ExecConvergenceNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
+		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
 		ParentID:   execConvergenceNode.ParentID,
