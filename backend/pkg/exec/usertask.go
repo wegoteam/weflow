@@ -1,17 +1,21 @@
 package exec
 
 import (
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/wepkg/snowflake"
 )
 
-/**
-生成用户任务
-处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
-常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
-*/
+//
+// GetUserTask
+//  @Description: 生成用户任务
+//处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
+//常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+//  @param instNodeTask
+//  @param nodeHandler
+//  @return []entity.UserTaskBO
+//
 func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
-
 	userTasks := make([]entity.UserTaskBO, 0)
 	//生成用户任务
 	handlers := nodeHandler.Handlers
@@ -31,7 +35,7 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 			Sort:         int32(handler.Sort),
 			Obj:          nodeHandler.Obj,
 			Relative:     nodeHandler.Relative,
-			Status:       1,
+			Status:       constant.InstanceUserTaskStatusDoing,
 			CreateTime:   instNodeTask.CreateTime,
 			UpdateTime:   instNodeTask.UpdateTime,
 			HandleTime:   instNodeTask.CreateTime,
@@ -42,7 +46,6 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 		}
 		userTasks = append(userTasks, userTask)
 	}
-
 	return userTasks
 }
 

@@ -27,11 +27,13 @@ type ExecConditionNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-/**
-实例化执行条件节点对象
-*/
+//
+// NewConditionNode
+//  @Description: 实例化执行条件节点对象
+//  @param node
+//  @return *ExecConditionNode
+//
 func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
-
 	return &ExecConditionNode{
 		NodeModel:      node.NodeModel,
 		NodeName:       node.NodeName,
@@ -48,13 +50,19 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 	}
 }
 
+//
+// ExecCurrNodeModel
+//  @Description: 执行当前节点
+//  @receiver execConditionNode
+//  @param execution
+//  @return ExecResult
+//
 func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execConditionNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 		return ExecResult{}
 	}
-
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 	//条件
 	conditions := execConditionNode.ConditionExpr
@@ -65,15 +73,19 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions)
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, paramMap)
 	if !flag {
-		return buildNoPass(execution, execConditionNode)
+		return buildNoPassResult(execution, execConditionNode)
 	}
-	return buildPass(execution, execConditionNode)
+	return buildPassResult(execution, execConditionNode)
 }
 
-/**
-获取通过的返回结果
-*/
-func buildPass(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+//
+// buildPassResult
+//  @Description: 获取通过的返回结果
+//  @param execution
+//  @param execConditionNode
+//  @return ExecResult
+//
+func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -87,25 +99,26 @@ func buildPass(execution *entity.Execution, execConditionNode *ExecConditionNode
 		Status:     constant.InstanceNodeTaskStatusComplete,
 	}
 	execution.ExecNodeTaskMap[execConditionNode.NodeID] = *execNodeTask
-
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	instNodeTask.Status = constant.InstanceNodeTaskStatusComplete
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
 	nextNodes := execConditionNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
 }
 
-/**
-获取不通过的返回结果
-*/
-func buildNoPass(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+//
+// buildNoPassResult
+//  @Description: 获取不通过的返回结果
+//  @param execution
+//  @param execConditionNode
+//  @return ExecResult
+//
+func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
-
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//流程定义
 	processDefModel := execution.ProcessDefModel
@@ -117,13 +130,11 @@ func buildNoPass(execution *entity.Execution, execConditionNode *ExecConditionNo
 		Status:     constant.InstanceNodeTaskStatusNotPass,
 	}
 	execution.ExecNodeTaskMap[execConditionNode.NodeID] = *execNodeTask
-
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	instNodeTask.Status = constant.InstanceNodeTaskStatusNotPass
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
 	//条件不成立，验证是父节点的分支是否有出口
 	if isParent(execConditionNode.ParentID) {
 		return ExecResult{}
@@ -154,9 +165,15 @@ func buildNoPass(execution *entity.Execution, execConditionNode *ExecConditionNo
 	}
 }
 
-/**
-获取实例节点任务
-*/
+//
+// GetInstNodeTask
+//  @Description: 获取实例节点任务
+//  @receiver execConditionNode
+//  @param instTaskID
+//  @param nodeTaskID
+//  @param now
+//  @return entity.InstNodeTaskBO
+//
 func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -176,6 +193,13 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 	return instNodeTask
 }
 
+//
+// ExecPreNodeModels
+//  @Description: 获取上节点
+//  @receiver execConditionNode
+//  @param nodeModelMap
+//  @return *[]entity.NodeModelBO
+//
 func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConditionNode.PreNodes == nil {
@@ -191,6 +215,13 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 	return &preNodes
 }
 
+//
+// ExecNextNodeModels
+//  @Description: 获取下节点
+//  @receiver execConditionNode
+//  @param nodeModelMap
+//  @return *[]entity.NodeModelBO
+//
 func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点

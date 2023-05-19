@@ -185,7 +185,7 @@ func getCurrBranchFinishFlag(execution *entity.Execution, execBranchNode *ExecBr
 			nodeModelBO, hasNode := nodeModelMap[childId]
 			if !hasNode {
 				out = out - 1
-				hlog.Warnf("分支节点[%v]的子节点[%v]不存在", execBranchNode.NodeID, childId)
+				hlog.Warnf("实例任务[%s]的流程定义[%s]的分支节点[%v]的子节点[%v]不存在", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, childId)
 				continue
 			}
 			execNodeTaskBO, existTask := execNodeTaskMap[childId]
@@ -229,7 +229,7 @@ func getCurrBranchFinishFlag(execution *entity.Execution, execBranchNode *ExecBr
 			case constant.ConvergenceNodeModel:
 				continue
 			default:
-				hlog.Warnf("分支节点[%v]的子节点[%v]的节点类型[%v]不支持", execBranchNode.NodeID, childId, nodeModelBO.NodeModel)
+				hlog.Warnf("实例任务[%s]的流程定义[%s]的分支节点[%v]的子节点[%v]的节点类型[%v]不支持", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, childId, nodeModelBO.NodeModel)
 				return constant.BranchNodeStatusNoBranch
 			}
 		}

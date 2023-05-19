@@ -23,10 +23,13 @@ var (
 	RedisCliet = config.RedisCliet
 )
 
-/**
-获取流程定义的模型
-获取缓存的数据，不存在则部署
-*/
+//
+// GetProcessDefModel
+//  @Description: 获取流程定义模型
+//获取缓存的数据，不存在则部署
+//  @param processDefId
+//  @return *entity.ProcessDefModel
+//
 func GetProcessDefModel(processDefId string) *entity.ProcessDefModel {
 	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()

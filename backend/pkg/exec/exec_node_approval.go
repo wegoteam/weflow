@@ -69,11 +69,9 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行审批节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID, execApprovalNode.NodeName)
 		return ExecResult{}
 	}
-
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行审批节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID, execApprovalNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
-
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
 		NodeTaskID: nodeTaskId,
@@ -82,22 +80,18 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execApprovalNode.NodeID] = *execNodeTask
-
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execApprovalNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
 	//生成实例节点任务表单权限
 	instNodeTaskForms := execution.TaskFormPers
 	addInstNodeTaskForms := execApprovalNode.GetTaskFormPers(execApprovalNode.FormPer, instNodeTask)
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
-
 	//生成用户任务
 	userTasks := execution.UserTasks
 	addUserTasks := GetUserTask(instNodeTask, execApprovalNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
-
 	//执行任务
 	nextNodes := execApprovalNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
@@ -136,9 +130,14 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 	return instNodeTask
 }
 
-/**
-获取实例节点任务表单权限
-*/
+//
+// GetTaskFormPers
+//  @Description: 获取实例节点任务表单权限
+//  @receiver execApprovalNode
+//  @param formPers
+//  @param instNodeTask
+//  @return []entity.TaskFormPerBO
+//
 func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
 	for ind, formPer := range formPers {
@@ -157,6 +156,11 @@ func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.Form
 }
 
 // ExecPreNodeModels 获取上一节点
+//  @Description:
+//  @receiver execApprovalNode
+//  @param nodeModelMap
+//  @return *[]entity.NodeModelBO
+//
 func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execApprovalNode.PreNodes == nil {
@@ -175,7 +179,6 @@ func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[str
 // ExecNextNodeModels 获取下一节点
 func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-
 	//判断是否有下节点
 	if execApprovalNode.NextNodes != nil {
 		for _, val := range execApprovalNode.NextNodes {
@@ -186,7 +189,6 @@ func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[st
 			nextNodes = append(nextNodes, next)
 		}
 	}
-
 	//判断下节点是否为父节点
 	if isParent(execApprovalNode.ParentID) {
 		return &nextNodes
@@ -206,7 +208,6 @@ func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[st
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execApprovalNode.NodeID, execApprovalNode.ParentID)
 		return &nextNodes
 	}
-
 	if pie.Contains(branchNodeModel.LastNodes, execApprovalNode.NodeID) {
 		nextNodes = append(nextNodes, pNodeModel)
 	}
