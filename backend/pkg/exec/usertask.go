@@ -6,7 +6,6 @@ import (
 	"github.com/wegoteam/wepkg/snowflake"
 )
 
-//
 // GetUserTask
 //  @Description: 生成用户任务
 //处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
@@ -14,7 +13,6 @@ import (
 //  @param instNodeTask
 //  @param nodeHandler
 //  @return []entity.UserTaskBO
-//
 func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 	//生成用户任务
@@ -41,7 +39,7 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 			HandleTime:   instNodeTask.CreateTime,
 			OpUserID:     handler.ID,
 			OpUserName:   handler.Name,
-			Opinion:      1,
+			Opinion:      constant.InstanceUserTaskOpinionNotPublish,
 			OpinionDesc:  "",
 		}
 		userTasks = append(userTasks, userTask)
@@ -50,17 +48,5 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 }
 
 type IExecNodeHandler interface {
-	GetUserTasks(nodeHandler entity.NodeHandler) []entity.UserTaskBO
-}
-
-type ICommApproverStrategy interface {
-	GetUserTasks(nodeHandler entity.NodeHandler) []entity.UserTaskBO
-}
-
-type IRelativeStrategy interface {
-	GetUserTasks(nodeHandler entity.NodeHandler) []entity.UserTaskBO
-}
-
-type IOtherStrategy interface {
 	GetUserTasks(nodeHandler entity.NodeHandler) []entity.UserTaskBO
 }

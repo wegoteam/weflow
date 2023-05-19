@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/elliotchance/pie/v2"
 	"github.com/wegoteam/weflow/pkg/common/constant"
@@ -27,12 +28,10 @@ type ExecConditionNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-//
 // NewConditionNode
 //  @Description: 实例化执行条件节点对象
 //  @param node
 //  @return *ExecConditionNode
-//
 func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 	return &ExecConditionNode{
 		NodeModel:      node.NodeModel,
@@ -50,13 +49,11 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 	}
 }
 
-//
 // ExecCurrNodeModel
 //  @Description: 执行当前节点
 //  @receiver execConditionNode
 //  @param execution
 //  @return ExecResult
-//
 func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execConditionNode.NodeID]
 	if ok {
@@ -78,13 +75,11 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.
 	return buildPassResult(execution, execConditionNode)
 }
 
-//
 // buildPassResult
 //  @Description: 获取通过的返回结果
 //  @param execution
 //  @param execConditionNode
 //  @return ExecResult
-//
 func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 
@@ -110,13 +105,11 @@ func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditi
 	}
 }
 
-//
 // buildNoPassResult
 //  @Description: 获取不通过的返回结果
 //  @param execution
 //  @param execConditionNode
 //  @return ExecResult
-//
 func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -135,6 +128,18 @@ func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecCondi
 	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	instNodeTask.Status = constant.InstanceNodeTaskStatusNotPass
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+	//生成实例任务操作日志
+	var instTaskOpLog = entity.InstTaskOpLogBO{
+		InstTaskID: execution.InstTaskID,
+		NodeID:     execConditionNode.NodeID,
+		NodeName:   execConditionNode.NodeName,
+		CreateTime: execution.Now,
+		UpdateTime: execution.Now,
+		Type:       constant.InstTaskOpLogNode,
+		Remark:     fmt.Sprintf("条件节点[%s]条件验证不通过，请检查条件配置", execConditionNode.NodeName),
+	}
+	instTaskOpLogs := execution.InstTaskOpLogs
+	*instTaskOpLogs = append(*instTaskOpLogs, instTaskOpLog)
 	//条件不成立，验证是父节点的分支是否有出口
 	if isParent(execConditionNode.ParentID) {
 		return ExecResult{}
@@ -165,7 +170,6 @@ func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecCondi
 	}
 }
 
-//
 // GetInstNodeTask
 //  @Description: 获取实例节点任务
 //  @receiver execConditionNode
@@ -173,7 +177,6 @@ func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecCondi
 //  @param nodeTaskID
 //  @param now
 //  @return entity.InstNodeTaskBO
-//
 func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -193,13 +196,11 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 	return instNodeTask
 }
 
-//
 // ExecPreNodeModels
 //  @Description: 获取上节点
 //  @receiver execConditionNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-//
 func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConditionNode.PreNodes == nil {
@@ -215,13 +216,11 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 	return &preNodes
 }
 
-//
 // ExecNextNodeModels
 //  @Description: 获取下节点
 //  @receiver execConditionNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-//
 func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点

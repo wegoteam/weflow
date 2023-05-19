@@ -2,6 +2,7 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/parser"
 	"github.com/wegoteam/wepkg/snowflake"
@@ -15,7 +16,7 @@ func StartProcessInstTask(modelId string) {
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = snowflake.GetSnowflakeId()
 	execution.InstTaskName = "测试流程"
-	execution.InstTaskStatus = 1
+	execution.InstTaskStatus = constant.InstanceTaskStatusDoing
 	execution.Now = time.Now()
 	startNodeId := processDefModel.StartNodeId
 	startNode := processDefModel.NodeModelMap[startNodeId]
@@ -35,6 +36,9 @@ func StartProcessInstTask(modelId string) {
 	//实例节点任务表单权限
 	var taskFormPers = make([]entity.TaskFormPerBO, 0)
 	execution.TaskFormPers = &taskFormPers
+	//实例任务操作日志
+	var instTaskOpLogs = make([]entity.InstTaskOpLogBO, 0)
+	execution.InstTaskOpLogs = &instTaskOpLogs
 
 	execution.ProcessDefId = "1640993392605401001"
 	execution.FormDefId = "1640993392605401001"

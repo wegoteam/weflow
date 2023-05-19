@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/elliotchance/pie/v2"
 	"github.com/wegoteam/weflow/pkg/common/constant"
@@ -126,6 +127,18 @@ func buildBranchFinishedNotOutResult(execution *entity.Execution, execBranchNode
 		UpdateTime: execution.Now,
 	}
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
+	//添加分支节点不通过的操作日志
+	var instTaskOpLog = entity.InstTaskOpLogBO{
+		InstTaskID: execution.InstTaskID,
+		NodeID:     execBranchNode.NodeID,
+		NodeName:   execBranchNode.NodeName,
+		CreateTime: execution.Now,
+		UpdateTime: execution.Now,
+		Type:       constant.InstTaskOpLogNode,
+		Remark:     fmt.Sprintf("分支节点[%s]完成无分支出口，节点流转异常", execBranchNode.NodeName),
+	}
+	instTaskOpLogs := execution.InstTaskOpLogs
+	*instTaskOpLogs = append(*instTaskOpLogs, instTaskOpLog)
 	//判断下节点是否为父节点
 	if isParent(execBranchNode.ParentID) {
 		return ExecResult{}

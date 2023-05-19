@@ -9,6 +9,8 @@ type Execution struct {
 	FormDefId        string                    `json:"formDefId"`        //表单定义ID
 	InstTaskStatus   int8                      `json:"instTaskStatus"`   //实例任务状态
 	InstTaskName     string                    `json:"instTaskName"`     //实例任务名称
+	CreateUserID     string                    `json:"createUserId"`     //创建人ID
+	CreateUserName   string                    `json:"createUserName"`   //创建人名称
 	Now              time.Time                 `json:"now"`              //当前时间
 	ProcessDefModel  *ProcessDefModel          `json:"processDefModel"`  //流程定义
 	InstTaskParamMap map[string]interface{}    `json:"instTaskParamMap"` //实例任务参数
@@ -16,6 +18,7 @@ type Execution struct {
 	UserTasks        *[]UserTaskBO             `json:"userTasks"`        //用户任务
 	InstNodeTasks    *[]InstNodeTaskBO         `json:"instNodeTasks"`    //实例节点任务
 	TaskFormPers     *[]TaskFormPerBO          `json:"taskFormPers"`     //实例节点任务表单权限
+	InstTaskOpLogs   *[]InstTaskOpLogBO        `json:"instTaskOpLogs"`   //实例任务操作日志
 }
 
 // ExecNodeTaskBO 执行的节点任务，执行流转任务
@@ -75,6 +78,7 @@ type InstNodeTaskBO struct {
 	UpdateTime     time.Time // 更新时间
 }
 
+// TaskFormPerBO 任务表单权限
 type TaskFormPerBO struct {
 	ExecOpType int8   // 执行操作类型【添加：1；修改：2；删除：3】
 	InstTaskID string // 实例任务id
@@ -83,6 +87,17 @@ type TaskFormPerBO struct {
 	ElemID     string //表单元素ID
 	ElemPID    string //表单元素父ID
 	Per        int32  // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
+}
+
+// InstTaskOpLogBO 实例任务操作日志
+type InstTaskOpLogBO struct {
+	InstTaskID string    // 实例任务id
+	NodeID     string    // 节点任务id
+	NodeName   string    // 节点名称
+	CreateTime time.Time // 创建时间
+	UpdateTime time.Time // 更新时间
+	Type       int32     // 类型【1：节点；2：任务；3：其他】
+	Remark     string    // 描述
 }
 
 // InstTaskExecution 执行实例

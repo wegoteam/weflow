@@ -37,9 +37,11 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 	_instTaskDetail.Status = field.NewInt32(tableName, "status")
 	_instTaskDetail.Remark = field.NewString(tableName, "remark")
 	_instTaskDetail.CreateTime = field.NewTime(tableName, "create_time")
-	_instTaskDetail.CreateUser = field.NewString(tableName, "create_user")
+	_instTaskDetail.CreateUserID = field.NewString(tableName, "create_user_id")
+	_instTaskDetail.CreateUserName = field.NewString(tableName, "create_user_name")
 	_instTaskDetail.UpdateTime = field.NewTime(tableName, "update_time")
-	_instTaskDetail.UpdateUser = field.NewString(tableName, "update_user")
+	_instTaskDetail.UpdateUserID = field.NewString(tableName, "update_user_id")
+	_instTaskDetail.UpdateUserName = field.NewString(tableName, "update_user_name")
 	_instTaskDetail.StartTime = field.NewTime(tableName, "start_time")
 	_instTaskDetail.EndTime = field.NewTime(tableName, "end_time")
 
@@ -51,22 +53,24 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 type instTaskDetail struct {
 	instTaskDetailDo instTaskDetailDo
 
-	ALL          field.Asterisk
-	ID           field.Int64  // 唯一id
-	InstTaskID   field.String // 实例任务id
-	ModelID      field.String // 模板id
-	ProcessDefID field.String // 流程定义id
-	FormDefID    field.String // 表单定义id
-	VersionID    field.Int64  // 版本id
-	TaskName     field.String // 实例任务名称
-	Status       field.Int32  // 任务状态【1：创建中；2：进行中； 3：终止； 4：完成； 5：挂起；6：草稿】
-	Remark       field.String // 描述
-	CreateTime   field.Time   // 创建时间
-	CreateUser   field.String // 创建人
-	UpdateTime   field.Time   // 更新时间
-	UpdateUser   field.String // 更新人
-	StartTime    field.Time   // 发起时间
-	EndTime      field.Time   // 结束时间
+	ALL            field.Asterisk
+	ID             field.Int64  // 唯一id
+	InstTaskID     field.String // 实例任务id
+	ModelID        field.String // 模板id
+	ProcessDefID   field.String // 流程定义id
+	FormDefID      field.String // 表单定义id
+	VersionID      field.Int64  // 版本id
+	TaskName       field.String // 实例任务名称
+	Status         field.Int32  // 任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
+	Remark         field.String // 描述
+	CreateTime     field.Time   // 创建时间
+	CreateUserID   field.String // 创建人id
+	CreateUserName field.String // 创建人名称
+	UpdateTime     field.Time   // 更新时间
+	UpdateUserID   field.String // 更新人id
+	UpdateUserName field.String // 更新人名称
+	StartTime      field.Time   // 发起时间
+	EndTime        field.Time   // 结束时间
 
 	fieldMap map[string]field.Expr
 }
@@ -93,9 +97,11 @@ func (i *instTaskDetail) updateTableName(table string) *instTaskDetail {
 	i.Status = field.NewInt32(table, "status")
 	i.Remark = field.NewString(table, "remark")
 	i.CreateTime = field.NewTime(table, "create_time")
-	i.CreateUser = field.NewString(table, "create_user")
+	i.CreateUserID = field.NewString(table, "create_user_id")
+	i.CreateUserName = field.NewString(table, "create_user_name")
 	i.UpdateTime = field.NewTime(table, "update_time")
-	i.UpdateUser = field.NewString(table, "update_user")
+	i.UpdateUserID = field.NewString(table, "update_user_id")
+	i.UpdateUserName = field.NewString(table, "update_user_name")
 	i.StartTime = field.NewTime(table, "start_time")
 	i.EndTime = field.NewTime(table, "end_time")
 
@@ -122,7 +128,7 @@ func (i *instTaskDetail) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (i *instTaskDetail) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 15)
+	i.fieldMap = make(map[string]field.Expr, 17)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["inst_task_id"] = i.InstTaskID
 	i.fieldMap["model_id"] = i.ModelID
@@ -133,9 +139,11 @@ func (i *instTaskDetail) fillFieldMap() {
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["remark"] = i.Remark
 	i.fieldMap["create_time"] = i.CreateTime
-	i.fieldMap["create_user"] = i.CreateUser
+	i.fieldMap["create_user_id"] = i.CreateUserID
+	i.fieldMap["create_user_name"] = i.CreateUserName
 	i.fieldMap["update_time"] = i.UpdateTime
-	i.fieldMap["update_user"] = i.UpdateUser
+	i.fieldMap["update_user_id"] = i.UpdateUserID
+	i.fieldMap["update_user_name"] = i.UpdateUserName
 	i.fieldMap["start_time"] = i.StartTime
 	i.fieldMap["end_time"] = i.EndTime
 }

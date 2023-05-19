@@ -77,11 +77,11 @@ const (
 */
 const (
 	//常用审批人
-	ApprovalUserTypeMember = 1 //指定成员
-	ApprovalUserTypeSelf   = 2 //发起人自己
-	ApprovalUserTypeSelect = 3 //发起人自选
-	ApprovalUserTypeRole   = 4 //角色
-	ApprovalUserTypeDept   = 5 //部门
+	ApprovalUserTypeUser            = 1 //指定成员
+	ApprovalUserTypeInitiator       = 2 //发起人自己
+	ApprovalUserTypeInitiatorSelect = 3 //发起人自选
+	ApprovalUserTypeRole            = 4 //角色
+	ApprovalUserTypeDept            = 5 //部门
 	//主管（相对岗位）
 	RelativeTypeDeptDirectly = 1 //直属主管
 	RelativeTypeDeptDept     = 2 //部门主管
@@ -163,4 +163,13 @@ const (
 	BranchNodeStatusNotComplete = 1 //分支节点未完成
 	BranchNodeStatusComplete    = 2 //分支节点完成且存在出口
 	BranchNodeStatusNoBranch    = 3 //分支节点完成无分支出口
+)
+
+/**
+实例任务操作日志类型【1：节点；2：任务；3：其他】
+*/
+const (
+	InstTaskOpLogNode  = 1
+	InstTaskOpLogTask  = 2
+	InstTaskOpLogOther = 3
 )

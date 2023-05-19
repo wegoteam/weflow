@@ -62,7 +62,6 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 //  @receiver execApprovalNode
 //  @param execution
 //  @return ExecResult
-//
 func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execApprovalNode.NodeID]
 	if ok {
@@ -99,7 +98,6 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 	}
 }
 
-//
 // GetInstNodeTask
 //  @Description: 生成实例节点任务
 //  @receiver execApprovalNode
@@ -107,7 +105,6 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 //  @param nodeTaskID
 //  @param now
 //  @return entity.InstNodeTaskBO
-//
 func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -130,14 +127,12 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 	return instNodeTask
 }
 
-//
 // GetTaskFormPers
 //  @Description: 获取实例节点任务表单权限
 //  @receiver execApprovalNode
 //  @param formPers
 //  @param instNodeTask
 //  @return []entity.TaskFormPerBO
-//
 func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
 	for ind, formPer := range formPers {
@@ -160,7 +155,6 @@ func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.Form
 //  @receiver execApprovalNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-//
 func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execApprovalNode.PreNodes == nil {
