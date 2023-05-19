@@ -120,6 +120,7 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 		ExecOpType:     constant.OperationTypeAdd,
 		InstTaskID:     instTaskID,
 		NodeTaskID:     nodeTaskID,
+		NodeID:         execApprovalNode.NodeID,
 		ParentID:       execApprovalNode.ParentID,
 		NodeModel:      int32(execApprovalNode.NodeModel),
 		NodeName:       execApprovalNode.NodeName,

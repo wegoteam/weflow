@@ -60,11 +60,9 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行抄送节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID, execNotifyNode.NodeName)
 		return ExecResult{}
 	}
-
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行抄送节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID, execNotifyNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
-
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
 		NodeTaskID: nodeTaskId,
@@ -73,22 +71,19 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execNotifyNode.NodeID] = *execNodeTask
-
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execNotifyNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
 	//生成实例节点任务表单权限
 	instNodeTaskForms := execution.TaskFormPers
 	addInstNodeTaskForms := execNotifyNode.GetTaskFormPers(execNotifyNode.FormPer, instNodeTask)
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
-
 	//生成用户任务
 	userTasks := execution.UserTasks
 	addUserTasks := GetUserTask(instNodeTask, execNotifyNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
-
+	//获取执行的下节点
 	nextNodes := execNotifyNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
@@ -104,6 +99,7 @@ func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID str
 		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
+		NodeID:     execNotifyNode.NodeID,
 		ParentID:   execNotifyNode.ParentID,
 		NodeModel:  int32(execNotifyNode.NodeModel),
 		NodeName:   execNotifyNode.NodeName,
@@ -111,7 +107,6 @@ func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID str
 		CreateTime: now,
 		UpdateTime: now,
 	}
-
 	return instNodeTask
 }
 
@@ -132,7 +127,6 @@ func (execNotifyNode *ExecNotifyNode) GetTaskFormPers(formPers []entity.FormPer,
 		}
 		taskFormPers[ind] = taskFormPerBO
 	}
-
 	return taskFormPers
 }
 
@@ -153,7 +147,6 @@ func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]
 
 func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-
 	//判断是否有下节点
 	if execNotifyNode.NextNodes != nil {
 		for _, val := range execNotifyNode.NextNodes {
@@ -164,7 +157,6 @@ func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string
 			nextNodes = append(nextNodes, next)
 		}
 	}
-
 	//判断下节点是否为父节点
 	if isParent(execNotifyNode.ParentID) {
 		return &nextNodes

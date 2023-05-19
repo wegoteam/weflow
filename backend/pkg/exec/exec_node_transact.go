@@ -66,11 +66,9 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
 		return ExecResult{}
 	}
-
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
-
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
 		NodeTaskID: nodeTaskId,
@@ -79,24 +77,19 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 		Status:     constant.InstanceNodeTaskStatusDoing,
 	}
 	execution.ExecNodeTaskMap[execTransactNode.NodeID] = *execNodeTask
-
 	//生成实例节点任务
 	instNodeTasks := execution.InstNodeTasks
 	var instNodeTask = execTransactNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-
 	//生成实例节点任务表单权限
 	instNodeTaskForms := execution.TaskFormPers
 	addInstNodeTaskForms := execTransactNode.GetTaskFormPers(execTransactNode.FormPer, instNodeTask)
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
-
 	//生成用户任务
 	var userTask = entity.UserTaskBO{}
 	userTasks := *execution.UserTasks
 	userTasks = append(userTasks, userTask)
-
 	//执行任务
-
 	nextNodes := execTransactNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
@@ -112,6 +105,7 @@ func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID
 		ExecOpType:     constant.OperationTypeAdd,
 		InstTaskID:     instTaskID,
 		NodeTaskID:     nodeTaskID,
+		NodeID:         execTransactNode.NodeID,
 		ParentID:       execTransactNode.ParentID,
 		NodeModel:      int32(execTransactNode.NodeModel),
 		NodeName:       execTransactNode.NodeName,
@@ -143,7 +137,6 @@ func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.Form
 		}
 		taskFormPers[ind] = taskFormPerBO
 	}
-
 	return taskFormPers
 }
 
@@ -164,7 +157,6 @@ func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[str
 
 func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
-
 	//判断是否有下节点
 	if execTransactNode.NextNodes != nil {
 		for _, val := range execTransactNode.NextNodes {
@@ -175,7 +167,6 @@ func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[st
 			nextNodes = append(nextNodes, next)
 		}
 	}
-
 	//判断下节点是否为父节点
 	if isParent(execTransactNode.ParentID) {
 		return &nextNodes
