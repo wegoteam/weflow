@@ -97,9 +97,9 @@ const (
 处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
 */
 const (
-	ApprovalUserStrategyCommon = 1 //常用审批人
-	ApprovalUserStrategyDept   = 2 //主管（相对岗位）
-	ApprovalUserStrategyOther  = 3 //其他
+	ApprovalUserStrategyCommon       = 1 //常用审批人
+	ApprovalUserStrategyRelativePost = 2 //主管（相对岗位）
+	ApprovalUserStrategyOther        = 3 //其他
 )
 
 /**

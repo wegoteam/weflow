@@ -81,7 +81,8 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
 	userTasks := execution.UserTasks
-	addUserTasks := GetUserTask(instNodeTask, execNotifyNode.NodeHandler)
+	//addUserTasks := GetUserTask(instNodeTask, execNotifyNode.NodeHandler)
+	addUserTasks := ExecUserTask(*execution, instNodeTask, execNotifyNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
 	//获取执行的下节点
 	nextNodes := execNotifyNode.ExecNextNodeModels(processDefModel.NodeModelMap)

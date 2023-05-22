@@ -89,7 +89,8 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
 	userTasks := execution.UserTasks
-	addUserTasks := GetUserTask(instNodeTask, execApprovalNode.NodeHandler)
+	//addUserTasks := GetUserTask(instNodeTask, execApprovalNode.NodeHandler)
+	addUserTasks := ExecUserTask(*execution, instNodeTask, execApprovalNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
 	//执行任务
 	nextNodes := execApprovalNode.ExecNextNodeModels(processDefModel.NodeModelMap)

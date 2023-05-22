@@ -86,9 +86,10 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 	addInstNodeTaskForms := execTransactNode.GetTaskFormPers(execTransactNode.FormPer, instNodeTask)
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
-	var userTask = entity.UserTaskBO{}
-	userTasks := *execution.UserTasks
-	userTasks = append(userTasks, userTask)
+	userTasks := execution.UserTasks
+	//addUserTasks := GetUserTask(instNodeTask, execTransactNode.NodeHandler)
+	addUserTasks := ExecUserTask(*execution, instNodeTask, execTransactNode.NodeHandler)
+	*userTasks = append(*userTasks, addUserTasks...)
 	//执行任务
 	nextNodes := execTransactNode.ExecNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
