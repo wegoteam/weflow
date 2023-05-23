@@ -59,27 +59,21 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 func ExecUserTask(execution entity.Execution, instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 	//生成用户任务
-	handlers := nodeHandler.Handlers
-	if handlers == nil || len(handlers) == 0 {
-		return userTasks
+	var genUserTaskBO = GenUserTaskBO{
+		InstTaskID:     execution.InstTaskID,
+		NodeTaskID:     instNodeTask.NodeTaskID,
+		NodeID:         instNodeTask.NodeID,
+		CreateUserID:   execution.CreateUserID,
+		CreateUserName: execution.CreateUserName,
+		Type:           nodeHandler.Type,
+		Strategy:       nodeHandler.Strategy,
+		Obj:            nodeHandler.Obj,
+		Relative:       nodeHandler.Relative,
+		Handler:        nodeHandler.Handlers,
+		Now:            execution.Now,
 	}
-	for _, handler := range handlers {
-		var genUserTaskBO = GenUserTaskBO{
-			InstTaskID:     execution.InstTaskID,
-			NodeTaskID:     instNodeTask.NodeTaskID,
-			NodeID:         instNodeTask.NodeID,
-			CreateUserID:   execution.CreateUserID,
-			CreateUserName: execution.CreateUserName,
-			Type:           nodeHandler.Type,
-			Strategy:       nodeHandler.Strategy,
-			Obj:            nodeHandler.Obj,
-			Relative:       nodeHandler.Relative,
-			Handler:        handler,
-			Now:            execution.Now,
-		}
-		genUserTasks := genUserTaskBO.ExecHandlerStrategy()
-		userTasks = append(userTasks, genUserTasks...)
-	}
+	genUserTasks := genUserTaskBO.ExecHandlerStrategy()
+	userTasks = append(userTasks, genUserTasks...)
 	return userTasks
 }
 
@@ -88,17 +82,17 @@ type IExecNodeHandler interface {
 }
 
 type GenUserTaskBO struct {
-	InstTaskID     string          //实例任务id
-	NodeTaskID     string          //节点任务id
-	NodeID         string          //节点id
-	CreateUserID   string          //创建人ID
-	CreateUserName string          //创建人名称
-	Now            time.Time       //当前时间
-	Type           int             //常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
-	Handler        entity.Handlers //处理人列表
-	Strategy       int             //处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
-	Obj            string          //扩展字段，设计中可忽略
-	Relative       string          //相对岗位，设计中可忽略
+	InstTaskID     string            //实例任务id
+	NodeTaskID     string            //节点任务id
+	NodeID         string            //节点id
+	CreateUserID   string            //创建人ID
+	CreateUserName string            //创建人名称
+	Now            time.Time         //当前时间
+	Type           int               //常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
+	Handler        []entity.Handlers //处理人列表
+	Strategy       int               //处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
+	Obj            string            //扩展字段，设计中可忽略
+	Relative       string            //相对岗位，设计中可忽略
 }
 
 func (genUserTaskBO *GenUserTaskBO) ExecHandlerStrategy() []entity.UserTaskBO {
