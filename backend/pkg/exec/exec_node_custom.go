@@ -47,7 +47,7 @@ func NewCustomNode(node *entity.NodeModelBO) *ExecCustomNode {
 执行任务
 下节点
 */
-func (execCustomNode *ExecCustomNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execCustomNode *ExecCustomNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execCustomNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
@@ -73,7 +73,7 @@ func (execCustomNode *ExecCustomNode) ExecCurrNodeModel(execution *entity.Execut
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
 	processDefModel := execution.ProcessDefModel
-	nextNodes := execCustomNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execCustomNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -99,7 +99,7 @@ func (execCustomNode *ExecCustomNode) GetInstNodeTask(instTaskID, nodeTaskID str
 	return instNodeTask
 }
 
-func (execCustomNode *ExecCustomNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execCustomNode *ExecCustomNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execCustomNode.PreNodes == nil {
 		return &preNodes
@@ -114,7 +114,7 @@ func (execCustomNode *ExecCustomNode) ExecPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
-func (execCustomNode *ExecCustomNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execCustomNode *ExecCustomNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 
 	//判断是否有下节点

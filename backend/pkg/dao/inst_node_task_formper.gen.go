@@ -50,7 +50,7 @@ type instNodeTaskFormper struct {
 	NodeID     field.String // 节点id
 	ElemID     field.String // 表单元素ID
 	ElemPID    field.String // 表单元素父ID
-	Per        field.Int32  // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
+	Per        field.Int32  // 表单权限【可编辑：1；只读：2；隐藏：3;必填：4】默认只读2
 
 	fieldMap map[string]field.Expr
 }

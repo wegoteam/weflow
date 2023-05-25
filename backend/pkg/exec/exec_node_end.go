@@ -46,7 +46,7 @@ func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
 执行任务
 下节点
 */
-func (execEndNode *ExecEndNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execEndNode *ExecEndNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execEndNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行结束节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execEndNode.NodeID, execEndNode.NodeName)
@@ -85,6 +85,7 @@ func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, n
 		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
+		NodeID:     execEndNode.NodeID,
 		ParentID:   execEndNode.ParentID,
 		NodeModel:  int32(execEndNode.NodeModel),
 		NodeName:   execEndNode.NodeName,
@@ -96,7 +97,7 @@ func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, n
 	return instNodeTask
 }
 
-func (execEndNode *ExecEndNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execEndNode *ExecEndNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execEndNode.PreNodes == nil {
 		return &preNodes
@@ -111,7 +112,7 @@ func (execEndNode *ExecEndNode) ExecPreNodeModels(nodeModelMap map[string]entity
 	return &preNodes
 }
 
-func (execEndNode *ExecEndNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execEndNode *ExecEndNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execEndNode.NextNodes == nil {
 		return &nextNodes

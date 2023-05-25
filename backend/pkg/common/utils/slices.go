@@ -6,6 +6,10 @@ func IsContainsSlice[T comparable](slice []T, item T) bool {
 	return pie.Contains(slice, item)
 }
 
-func IsEmptySlice(slice []interface{}) bool {
+func IsEmptySlice[T comparable](slice []T) bool {
 	return slice == nil || len(slice) == 0
+}
+
+func IsNotEmptySlice[T comparable](slice []T) bool {
+	return !IsEmptySlice(slice)
 }

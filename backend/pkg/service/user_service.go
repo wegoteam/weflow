@@ -40,3 +40,38 @@ func GetRoleUserInfo(roleIds []string) []entity.UserInfoResult {
 	}
 	return userResults
 }
+
+// GetOrgUserInfo
+// @Description: 获取组织的用户信息
+// @param roleIds
+// @return []entity.UserInfoResult
+func GetOrgUserInfo(orgIds []string) []entity.UserInfoResult {
+	userResults := make([]entity.UserInfoResult, 0)
+	if orgIds == nil || len(orgIds) == 0 {
+		return userResults
+	}
+	users := &[]model.UserInfo{}
+	MysqlDB.Model(&model.UserInfo{}).Where("org_id in (?)", orgIds).Find(&users)
+	if users == nil {
+		return userResults
+	}
+	for _, user := range *users {
+		userResult := &entity.UserInfoResult{
+			ID:         user.ID,
+			UserID:     user.UserID,
+			UserName:   user.UserName,
+			Password:   user.Password,
+			Phone:      user.Phone,
+			Email:      user.Email,
+			OrgID:      user.OrgID,
+			Status:     user.Status,
+			Remark:     user.Remark,
+			CreateUser: user.CreateUser,
+			UpdateUser: user.UpdateUser,
+			CreateTime: user.CreateTime,
+			UpdateTime: user.UpdateTime,
+		}
+		userResults = append(userResults, *userResult)
+	}
+	return userResults
+}

@@ -13,7 +13,7 @@ import (
 // ICommApproverStrategy 常用审批人
 // @Description: 常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】
 type ICommApproverStrategy interface {
-	GenUserTasks() []entity.UserTaskBO
+	genUserTasks() []entity.UserTaskBO
 }
 
 func GenCommApproverStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
@@ -110,7 +110,7 @@ type ApprovalUserTypeUser struct {
 // @Description: 指定成员生成用户任务
 // @receiver approvalUserTypeUser
 // @return []entity.UserTaskBO
-func (approvalUserTypeUser *ApprovalUserTypeUser) GenUserTasks() []entity.UserTaskBO {
+func (approvalUserTypeUser *ApprovalUserTypeUser) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	handlers := approvalUserTypeUser.Handlers
@@ -119,6 +119,7 @@ func (approvalUserTypeUser *ApprovalUserTypeUser) GenUserTasks() []entity.UserTa
 	}
 	for _, handler := range handlers {
 		var userTask = entity.UserTaskBO{
+			ExecOpType:   constant.OperationTypeAdd,
 			InstTaskID:   approvalUserTypeUser.InstTaskID,
 			NodeTaskID:   approvalUserTypeUser.NodeTaskID,
 			NodeID:       approvalUserTypeUser.NodeID,
@@ -165,10 +166,11 @@ type ApprovalUserTypeInitiator struct {
 // @Description: 发起人自己生成用户任务
 // @receiver approvalUserTypeInitiator
 // @return []entity.UserTaskBO
-func (approvalUserTypeInitiator *ApprovalUserTypeInitiator) GenUserTasks() []entity.UserTaskBO {
+func (approvalUserTypeInitiator *ApprovalUserTypeInitiator) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	var userTask = entity.UserTaskBO{
+		ExecOpType:   constant.OperationTypeAdd,
 		InstTaskID:   approvalUserTypeInitiator.InstTaskID,
 		NodeTaskID:   approvalUserTypeInitiator.NodeTaskID,
 		NodeID:       approvalUserTypeInitiator.NodeID,
@@ -190,7 +192,6 @@ func (approvalUserTypeInitiator *ApprovalUserTypeInitiator) GenUserTasks() []ent
 		OpinionDesc:  "",
 	}
 	userTasks = append(userTasks, userTask)
-
 	return userTasks
 }
 
@@ -210,7 +211,11 @@ type ApprovalUserTypeInitiatorSelect struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (approvalUserTypeInitiatorSelect *ApprovalUserTypeInitiatorSelect) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 发起人自选生成用户任务
+// @receiver approvalUserTypeInitiatorSelect
+// @return []entity.UserTaskBO
+func (approvalUserTypeInitiatorSelect *ApprovalUserTypeInitiatorSelect) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
@@ -236,9 +241,8 @@ type ApprovalUserTypeRole struct {
 // @Description: 角色生成用户任务
 // @receiver a
 // @return []entity.UserTaskBO
-func (approvalUserTypeRole *ApprovalUserTypeRole) GenUserTasks() []entity.UserTaskBO {
+func (approvalUserTypeRole *ApprovalUserTypeRole) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
-
 	handlers := approvalUserTypeRole.Handlers
 	if handlers == nil || len(handlers) == 0 {
 		return userTasks
@@ -255,6 +259,7 @@ func (approvalUserTypeRole *ApprovalUserTypeRole) GenUserTasks() []entity.UserTa
 	var sort = 1
 	pie.Each(userInfos, func(userInfo entity.UserInfoResult) {
 		var userTask = entity.UserTaskBO{
+			ExecOpType:   constant.OperationTypeAdd,
 			InstTaskID:   approvalUserTypeRole.InstTaskID,
 			NodeTaskID:   approvalUserTypeRole.NodeTaskID,
 			NodeID:       approvalUserTypeRole.NodeID,
@@ -297,8 +302,51 @@ type ApprovalUserTypeDept struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (a ApprovalUserTypeDept) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 部门生成用户任务
+// @receiver approvalUserTypeDept
+// @return []entity.UserTaskBO
+func (approvalUserTypeDept *ApprovalUserTypeDept) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
-
+	handlers := approvalUserTypeDept.Handlers
+	if handlers == nil || len(handlers) == 0 {
+		return userTasks
+	}
+	orgIds := make([]string, 0)
+	pie.Each(handlers, func(handler entity.Handlers) {
+		orgIds = append(orgIds, handler.ID)
+	})
+	//获取组织下的用户
+	userInfos := service.GetOrgUserInfo(orgIds)
+	if userInfos == nil || len(userInfos) == 0 {
+		return userTasks
+	}
+	var sort = 1
+	pie.Each(userInfos, func(userInfo entity.UserInfoResult) {
+		var userTask = entity.UserTaskBO{
+			ExecOpType:   constant.OperationTypeAdd,
+			InstTaskID:   approvalUserTypeDept.InstTaskID,
+			NodeTaskID:   approvalUserTypeDept.NodeTaskID,
+			NodeID:       approvalUserTypeDept.NodeID,
+			UserTaskID:   snowflake.GetSnowflakeId(),
+			Type:         int32(approvalUserTypeDept.Type),
+			Strategy:     int32(approvalUserTypeDept.Strategy),
+			NodeUserName: userInfo.UserName,
+			NodeUserID:   userInfo.UserID,
+			Sort:         int32(sort),
+			Obj:          approvalUserTypeDept.Obj,
+			Relative:     approvalUserTypeDept.Relative,
+			Status:       constant.InstanceUserTaskStatusDoing,
+			CreateTime:   approvalUserTypeDept.Now,
+			UpdateTime:   approvalUserTypeDept.Now,
+			HandleTime:   approvalUserTypeDept.Now,
+			OpUserID:     userInfo.UserID,
+			OpUserName:   userInfo.UserName,
+			Opinion:      constant.InstanceUserTaskOpinionNotPublish,
+			OpinionDesc:  "",
+		}
+		userTasks = append(userTasks, userTask)
+		sort = sort + 1
+	})
 	return userTasks
 }

@@ -30,7 +30,7 @@ type InstNodeTask struct {
 	ConditionGroup string    `gorm:"column:condition_group;not null" json:"condition_group"`                   // 条件组前端描述展示条件组
 	ConditionExpr  string    `gorm:"column:condition_expr;not null" json:"condition_expr"`                     // 条件组解析后的表达式
 	Remark         string    `gorm:"column:remark;not null" json:"remark"`                                     // 节点描述
-	Status         int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
+	Status         int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 任务状态【1：未开始；2：处理中；3：完成；4：回退；5：终止；6：不通过】
 	CreateTime     time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
 	UpdateTime     time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`          // 更新时间
 }

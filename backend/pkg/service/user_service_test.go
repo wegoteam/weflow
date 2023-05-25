@@ -28,3 +28,14 @@ func TestGetRoleUserInfo(t *testing.T) {
 	hlog.Info(userInfos)
 
 }
+
+func TestGetOrgUserInfo(t *testing.T) {
+	orgIds := []string{"420627966730317"}
+
+	userInfos := GetOrgUserInfo(orgIds)
+	hlog.Info(userInfos)
+	users := &[]model.UserInfo{}
+
+	MysqlDB.Debug().Model(&model.UserInfo{}).Where("org_id in (?)", orgIds).Find(&users)
+	//MysqlDB.Debug().Where("org_id in (?)", orgIds).Find(&users)
+}

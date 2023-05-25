@@ -76,7 +76,7 @@ type instNodeTask struct {
 	ConditionGroup field.String // 条件组前端描述展示条件组
 	ConditionExpr  field.String // 条件组解析后的表达式
 	Remark         field.String // 节点描述
-	Status         field.Int32  // 任务状态【0：未开始；1：处理中；2：完成；3：回退；4：终止；5：条件验证通过；6：条件验证不通过】
+	Status         field.Int32  // 任务状态【1：未开始；2：处理中；3：完成；4：回退；5：终止；6：不通过】
 	CreateTime     field.Time   // 创建时间
 	UpdateTime     field.Time   // 更新时间
 

@@ -46,7 +46,7 @@ func NewStartNode(node *entity.NodeModelBO) *ExecStartNode {
 执行任务
 下节点
 */
-func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execStartNode *ExecStartNode) execCurrNodeModel(execution *Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行开始节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execStartNode.NodeID, execStartNode.NodeName)
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
@@ -64,21 +64,26 @@ func (execStartNode *ExecStartNode) ExecCurrNodeModel(execution *entity.Executio
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
 	processDefModel := execution.ProcessDefModel
-	nextNodes := execStartNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execStartNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
 }
 
-/**
-获取实例节点任务
-*/
+// GetInstNodeTask
+// @Description: 获取实例节点任务
+// @receiver execStartNode
+// @param instTaskID
+// @param nodeTaskID
+// @param now
+// @return entity.InstNodeTaskBO
 func (execStartNode *ExecStartNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
 		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
+		NodeID:     execStartNode.NodeID,
 		ParentID:   execStartNode.ParentID,
 		NodeModel:  int32(execStartNode.NodeModel),
 		NodeName:   execStartNode.NodeName,
@@ -90,7 +95,7 @@ func (execStartNode *ExecStartNode) GetInstNodeTask(instTaskID, nodeTaskID strin
 	return instNodeTask
 }
 
-func (execStartNode *ExecStartNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execStartNode *ExecStartNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execStartNode.PreNodes == nil {
 		return &preNodes
@@ -105,7 +110,7 @@ func (execStartNode *ExecStartNode) ExecPreNodeModels(nodeModelMap map[string]en
 	return &preNodes
 }
 
-func (execStartNode *ExecStartNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execStartNode *ExecStartNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execStartNode.NextNodes == nil {
 		return &nextNodes

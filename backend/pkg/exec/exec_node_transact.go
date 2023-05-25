@@ -60,7 +60,7 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 执行任务
 下节点
 */
-func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execTransactNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
@@ -87,11 +87,10 @@ func (execTransactNode *ExecTransactNode) ExecCurrNodeModel(execution *entity.Ex
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
 	userTasks := execution.UserTasks
-	//addUserTasks := GetUserTask(instNodeTask, execTransactNode.NodeHandler)
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execTransactNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
 	//执行任务
-	nextNodes := execTransactNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execTransactNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -141,7 +140,7 @@ func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.Form
 	return taskFormPers
 }
 
-func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execTransactNode *ExecTransactNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execTransactNode.PreNodes == nil {
 		return &preNodes
@@ -156,7 +155,7 @@ func (execTransactNode *ExecTransactNode) ExecPreNodeModels(nodeModelMap map[str
 	return &preNodes
 }
 
-func (execTransactNode *ExecTransactNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execTransactNode *ExecTransactNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点
 	if execTransactNode.NextNodes != nil {

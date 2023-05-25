@@ -54,7 +54,7 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 //  @receiver execConditionNode
 //  @param execution
 //  @return ExecResult
-func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execConditionNode *ExecConditionNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execConditionNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行条件节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
@@ -80,7 +80,7 @@ func (execConditionNode *ExecConditionNode) ExecCurrNodeModel(execution *entity.
 //  @param execution
 //  @param execConditionNode
 //  @return ExecResult
-func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+func buildPassResult(execution *Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -99,7 +99,7 @@ func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditi
 	var instNodeTask = execConditionNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	instNodeTask.Status = constant.InstanceNodeTaskStatusComplete
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
-	nextNodes := execConditionNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execConditionNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -110,7 +110,7 @@ func buildPassResult(execution *entity.Execution, execConditionNode *ExecConditi
 //  @param execution
 //  @param execConditionNode
 //  @return ExecResult
-func buildNoPassResult(execution *entity.Execution, execConditionNode *ExecConditionNode) ExecResult {
+func buildNoPassResult(execution *Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//流程定义
@@ -183,6 +183,7 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 		ExecOpType:     constant.OperationTypeAdd,
 		InstTaskID:     instTaskID,
 		NodeTaskID:     nodeTaskID,
+		NodeID:         execConditionNode.NodeID,
 		ParentID:       execConditionNode.ParentID,
 		NodeModel:      int32(execConditionNode.NodeModel),
 		NodeName:       execConditionNode.NodeName,
@@ -201,7 +202,7 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 //  @receiver execConditionNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execConditionNode *ExecConditionNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConditionNode.PreNodes == nil {
 		return &preNodes
@@ -221,7 +222,7 @@ func (execConditionNode *ExecConditionNode) ExecPreNodeModels(nodeModelMap map[s
 //  @receiver execConditionNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-func (execConditionNode *ExecConditionNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execConditionNode *ExecConditionNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点
 	if execConditionNode.NextNodes != nil {

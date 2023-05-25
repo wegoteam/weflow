@@ -32,7 +32,7 @@ func newInstTaskDetail(db *gorm.DB, opts ...gen.DOOption) instTaskDetail {
 	_instTaskDetail.ModelID = field.NewString(tableName, "model_id")
 	_instTaskDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_instTaskDetail.FormDefID = field.NewString(tableName, "form_def_id")
-	_instTaskDetail.VersionID = field.NewInt64(tableName, "version_id")
+	_instTaskDetail.VersionID = field.NewString(tableName, "version_id")
 	_instTaskDetail.TaskName = field.NewString(tableName, "task_name")
 	_instTaskDetail.Status = field.NewInt32(tableName, "status")
 	_instTaskDetail.Remark = field.NewString(tableName, "remark")
@@ -59,7 +59,7 @@ type instTaskDetail struct {
 	ModelID        field.String // 模板id
 	ProcessDefID   field.String // 流程定义id
 	FormDefID      field.String // 表单定义id
-	VersionID      field.Int64  // 版本id
+	VersionID      field.String // 版本id
 	TaskName       field.String // 实例任务名称
 	Status         field.Int32  // 任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
 	Remark         field.String // 描述
@@ -92,7 +92,7 @@ func (i *instTaskDetail) updateTableName(table string) *instTaskDetail {
 	i.ModelID = field.NewString(table, "model_id")
 	i.ProcessDefID = field.NewString(table, "process_def_id")
 	i.FormDefID = field.NewString(table, "form_def_id")
-	i.VersionID = field.NewInt64(table, "version_id")
+	i.VersionID = field.NewString(table, "version_id")
 	i.TaskName = field.NewString(table, "task_name")
 	i.Status = field.NewInt32(table, "status")
 	i.Remark = field.NewString(table, "remark")

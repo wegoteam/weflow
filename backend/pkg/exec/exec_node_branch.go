@@ -54,7 +54,7 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 执行任务
 下节点
 */
-func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execBranchNode *ExecBranchNode) execCurrNodeModel(execution *Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]节点名称[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
 	//判断当前的节点任务是否存在、或者是否在进行中
 	//获取是否存在节点的执行任务
@@ -85,7 +85,7 @@ func (execBranchNode *ExecBranchNode) ExecCurrNodeModel(execution *entity.Execut
 /**
 分支节点完成且存在出口
 */
-func buildBranchFinishedHasOutResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+func buildBranchFinishedHasOutResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	processDefModel := execution.ProcessDefModel
 	//修改当前执行节点任务状态为完成
 	execNodeTask := execution.ExecNodeTaskMap[execBranchNode.NodeID]
@@ -102,7 +102,7 @@ func buildBranchFinishedHasOutResult(execution *entity.Execution, execBranchNode
 	}
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 	//执行任务
-	nextNodes := execBranchNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execBranchNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -111,7 +111,7 @@ func buildBranchFinishedHasOutResult(execution *entity.Execution, execBranchNode
 /**
 分支节点完成无分支出口
 */
-func buildBranchFinishedNotOutResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+func buildBranchFinishedNotOutResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	processDefModel := execution.ProcessDefModel
 	//修改当前执行节点任务状态为不通过
 	execNodeTask := execution.ExecNodeTaskMap[execBranchNode.NodeID]
@@ -172,7 +172,7 @@ func buildBranchFinishedNotOutResult(execution *entity.Execution, execBranchNode
 验证当前的分支节点是否完成
 分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
 */
-func getCurrBranchFinishFlag(execution *entity.Execution, execBranchNode *ExecBranchNode) int8 {
+func getCurrBranchFinishFlag(execution *Execution, execBranchNode *ExecBranchNode) int8 {
 	execNodeTaskMap := execution.ExecNodeTaskMap
 	processDefModel := execution.ProcessDefModel
 	nodeModelMap := processDefModel.NodeModelMap
@@ -256,7 +256,7 @@ func getCurrBranchFinishFlag(execution *entity.Execution, execBranchNode *ExecBr
 /**
 未开始，流转分支节点的子分支的头节点
 */
-func bulidBrachNotStartResult(execution *entity.Execution, execBranchNode *ExecBranchNode) ExecResult {
+func bulidBrachNotStartResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]节点名称[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
 	var branchNodes = make([]entity.NodeModelBO, 0)
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -298,6 +298,7 @@ func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID str
 		ExecOpType:    constant.OperationTypeAdd,
 		InstTaskID:    instTaskID,
 		NodeTaskID:    nodeTaskID,
+		NodeID:        execBranchNode.NodeID,
 		ParentID:      execBranchNode.ParentID,
 		NodeModel:     int32(execBranchNode.NodeModel),
 		NodeName:      execBranchNode.NodeName,
@@ -310,7 +311,7 @@ func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID str
 	return instNodeTask
 }
 
-func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execBranchNode *ExecBranchNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execBranchNode.PreNodes == nil {
 		return &preNodes
@@ -325,7 +326,7 @@ func (execBranchNode *ExecBranchNode) ExecPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
-func (execBranchNode *ExecBranchNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execBranchNode *ExecBranchNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点
 	if execBranchNode.NextNodes != nil {

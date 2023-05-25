@@ -69,13 +69,13 @@ type instUserTask struct {
 	Sort         field.Int32  // 处理人顺序;正序排序
 	Obj          field.String // 扩展字段，设计中可忽略
 	Relative     field.String // 相对发起人的直属主管，设计中可忽略
-	Status       field.Int32  // 任务状态【1：处理中；2：完成；3：回退；4：终止】
+	Status       field.Int32  // 任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
 	CreateTime   field.Time   // 创建时间
 	UpdateTime   field.Time   // 更新时间
 	HandleTime   field.Time   // 处理时间
 	OpUserID     field.String // 操作用户id
 	OpUserName   field.String // 操作用户名称
-	Opinion      field.Int32  // 处理意见【1：未发表；2：已阅；3：同意；4：不同意】
+	Opinion      field.Int32  // 任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】
 	OpinionDesc  field.String // 处理意见描述
 
 	fieldMap map[string]field.Expr

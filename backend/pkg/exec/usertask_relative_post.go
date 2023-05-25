@@ -10,7 +10,7 @@ import (
 // IRelativeStrategy
 // @Description: 主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】
 type IRelativeStrategy interface {
-	GenUserTasks() []entity.UserTaskBO
+	genUserTasks() []entity.UserTaskBO
 }
 
 func GenRelativePostStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
@@ -91,7 +91,11 @@ type RelativeTypeDeptDirectly struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (r RelativeTypeDeptDirectly) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 直属主管生成用户任务
+// @receiver relativeTypeDeptDirectly
+// @return []entity.UserTaskBO
+func (relativeTypeDeptDirectly *RelativeTypeDeptDirectly) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
@@ -113,12 +117,18 @@ type RelativeTypeDeptDept struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (r RelativeTypeDeptDept) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 部门主管生成用户任务
+// @receiver relativeTypeDeptDept
+// @return []entity.UserTaskBO
+func (relativeTypeDeptDept *RelativeTypeDeptDept) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
 }
 
+// RelativeTypeDeptMulti
+// @Description: 相对岗位【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】
 type RelativeTypeDeptMulti struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -133,12 +143,18 @@ type RelativeTypeDeptMulti struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (r RelativeTypeDeptMulti) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 连续多级主管生成用户任务
+// @receiver relativeTypeDeptMulti
+// @return []entity.UserTaskBO
+func (relativeTypeDeptMulti *RelativeTypeDeptMulti) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
 }
 
+// RelativeTypeDeptDeptControl
+// @Description: 相对岗位【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】
 type RelativeTypeDeptDeptControl struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -153,7 +169,11 @@ type RelativeTypeDeptDeptControl struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (r RelativeTypeDeptDeptControl) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 部门控件对应主管生成用户任务
+// @receiver relativeTypeDeptDeptControl
+// @return []entity.UserTaskBO
+func (relativeTypeDeptDeptControl *RelativeTypeDeptDeptControl) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks

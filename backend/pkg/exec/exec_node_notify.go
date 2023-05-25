@@ -54,7 +54,7 @@ func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 生成知会用户任务
 下节点
 */
-func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execNotifyNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行抄送节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID, execNotifyNode.NodeName)
@@ -81,11 +81,10 @@ func (execNotifyNode *ExecNotifyNode) ExecCurrNodeModel(execution *entity.Execut
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
 	userTasks := execution.UserTasks
-	//addUserTasks := GetUserTask(instNodeTask, execNotifyNode.NodeHandler)
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execNotifyNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
 	//获取执行的下节点
-	nextNodes := execNotifyNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execNotifyNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -131,7 +130,7 @@ func (execNotifyNode *ExecNotifyNode) GetTaskFormPers(formPers []entity.FormPer,
 	return taskFormPers
 }
 
-func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execNotifyNode *ExecNotifyNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execNotifyNode.PreNodes == nil {
 		return &preNodes
@@ -146,7 +145,7 @@ func (execNotifyNode *ExecNotifyNode) ExecPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
-func (execNotifyNode *ExecNotifyNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execNotifyNode *ExecNotifyNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点
 	if execNotifyNode.NextNodes != nil {

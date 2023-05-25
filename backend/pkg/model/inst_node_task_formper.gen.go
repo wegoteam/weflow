@@ -14,7 +14,7 @@ type InstNodeTaskFormper struct {
 	NodeID     string `gorm:"column:node_id;not null" json:"node_id"`            // 节点id
 	ElemID     string `gorm:"column:elemId;not null" json:"elemId"`              // 表单元素ID
 	ElemPID    string `gorm:"column:elemPId;not null" json:"elemPId"`            // 表单元素父ID
-	Per        int32  `gorm:"column:per;not null;default:2" json:"per"`          // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
+	Per        int32  `gorm:"column:per;not null;default:2" json:"per"`          // 表单权限【可编辑：1；只读：2；隐藏：3;必填：4】默认只读2
 }
 
 // TableName InstNodeTaskFormper's table name

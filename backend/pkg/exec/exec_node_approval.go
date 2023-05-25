@@ -62,7 +62,7 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 //  @receiver execApprovalNode
 //  @param execution
 //  @return ExecResult
-func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execApprovalNode *ExecApprovalNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execApprovalNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行审批节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID, execApprovalNode.NodeName)
@@ -89,11 +89,10 @@ func (execApprovalNode *ExecApprovalNode) ExecCurrNodeModel(execution *entity.Ex
 	*instNodeTaskForms = append(*instNodeTaskForms, addInstNodeTaskForms...)
 	//生成用户任务
 	userTasks := execution.UserTasks
-	//addUserTasks := GetUserTask(instNodeTask, execApprovalNode.NodeHandler)
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execApprovalNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
 	//执行任务
-	nextNodes := execApprovalNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execApprovalNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -156,7 +155,7 @@ func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.Form
 //  @receiver execApprovalNode
 //  @param nodeModelMap
 //  @return *[]entity.NodeModelBO
-func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execApprovalNode *ExecApprovalNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execApprovalNode.PreNodes == nil {
 		return &preNodes
@@ -172,7 +171,7 @@ func (execApprovalNode *ExecApprovalNode) ExecPreNodeModels(nodeModelMap map[str
 }
 
 // ExecNextNodeModels 获取下一节点
-func (execApprovalNode *ExecApprovalNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execApprovalNode *ExecApprovalNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点
 	if execApprovalNode.NextNodes != nil {

@@ -47,7 +47,7 @@ func NewConvergenceNode(node *entity.NodeModelBO) *ExecConvergenceNode {
 执行任务
 下节点
 */
-func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *entity.Execution) ExecResult {
+func (execConvergenceNode *ExecConvergenceNode) execCurrNodeModel(execution *Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行汇聚节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execConvergenceNode.NodeID, execConvergenceNode.NodeName)
 	processDefModel := execution.ProcessDefModel
 	nodeTaskId := snowflake.GetSnowflakeId()
@@ -66,7 +66,7 @@ func (execConvergenceNode *ExecConvergenceNode) ExecCurrNodeModel(execution *ent
 	var instNodeTask = execConvergenceNode.GetInstNodeTask(execution.InstTaskID, nodeTaskId, execution.Now)
 	*instNodeTasks = append(*instNodeTasks, instNodeTask)
 
-	nextNodes := execConvergenceNode.ExecNextNodeModels(processDefModel.NodeModelMap)
+	nextNodes := execConvergenceNode.execNextNodeModels(processDefModel.NodeModelMap)
 	return ExecResult{
 		NextNodes: nextNodes,
 	}
@@ -81,6 +81,7 @@ func (execConvergenceNode *ExecConvergenceNode) GetInstNodeTask(instTaskID, node
 		ExecOpType: constant.OperationTypeAdd,
 		InstTaskID: instTaskID,
 		NodeTaskID: nodeTaskID,
+		NodeID:     execConvergenceNode.NodeID,
 		ParentID:   execConvergenceNode.ParentID,
 		NodeModel:  int32(execConvergenceNode.NodeModel),
 		NodeName:   execConvergenceNode.NodeName,
@@ -92,7 +93,7 @@ func (execConvergenceNode *ExecConvergenceNode) GetInstNodeTask(instTaskID, node
 	return instNodeTask
 }
 
-func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execConvergenceNode *ExecConvergenceNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execConvergenceNode.PreNodes == nil {
 		return &preNodes
@@ -107,7 +108,7 @@ func (execConvergenceNode *ExecConvergenceNode) ExecPreNodeModels(nodeModelMap m
 	return &preNodes
 }
 
-func (execConvergenceNode *ExecConvergenceNode) ExecNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
+func (execConvergenceNode *ExecConvergenceNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 
 	//判断是否有下节点

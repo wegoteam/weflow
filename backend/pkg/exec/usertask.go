@@ -4,50 +4,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
-	"github.com/wegoteam/wepkg/snowflake"
 	"time"
 )
-
-// GetUserTask
-//  @Description: 生成用户任务
-//处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
-//常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
-//  @param instNodeTask
-//  @param nodeHandler
-//  @return []entity.UserTaskBO
-func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
-	userTasks := make([]entity.UserTaskBO, 0)
-	//生成用户任务
-	handlers := nodeHandler.Handlers
-	if handlers == nil || len(handlers) == 0 {
-		return userTasks
-	}
-	for _, handler := range handlers {
-		var userTask = entity.UserTaskBO{
-			InstTaskID:   instNodeTask.InstTaskID,
-			NodeTaskID:   instNodeTask.NodeTaskID,
-			NodeID:       instNodeTask.NodeID,
-			UserTaskID:   snowflake.GetSnowflakeId(),
-			Type:         int32(nodeHandler.Type),
-			Strategy:     int32(nodeHandler.Strategy),
-			NodeUserName: handler.Name,
-			NodeUserID:   handler.ID,
-			Sort:         int32(handler.Sort),
-			Obj:          nodeHandler.Obj,
-			Relative:     nodeHandler.Relative,
-			Status:       constant.InstanceUserTaskStatusDoing,
-			CreateTime:   instNodeTask.CreateTime,
-			UpdateTime:   instNodeTask.UpdateTime,
-			HandleTime:   instNodeTask.CreateTime,
-			OpUserID:     handler.ID,
-			OpUserName:   handler.Name,
-			Opinion:      constant.InstanceUserTaskOpinionNotPublish,
-			OpinionDesc:  "",
-		}
-		userTasks = append(userTasks, userTask)
-	}
-	return userTasks
-}
 
 // ExecUserTask
 // @Description: 生成用户任务
@@ -56,7 +14,7 @@ func GetUserTask(instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHand
 //  @param instNodeTask
 //  @param nodeHandler
 //  @return []entity.UserTaskBO
-func ExecUserTask(execution entity.Execution, instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
+func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 	//生成用户任务
 	var genUserTaskBO = GenUserTaskBO{
@@ -73,12 +31,19 @@ func ExecUserTask(execution entity.Execution, instNodeTask entity.InstNodeTaskBO
 		Now:            execution.Now,
 	}
 	genUserTasks := genUserTaskBO.ExecHandlerStrategy()
+	if genUserTasks == nil || len(genUserTasks) == 0 {
+		hlog.Warnf("实例任务[%s]的流程定义[%s]执行节点[%s]节点名称[%s]获取用户任务为空，请检查节点处理人策略配置", execution.InstTaskID, execution.ProcessDefId, instNodeTask.NodeID, instNodeTask.NodeName)
+		return userTasks
+	}
 	userTasks = append(userTasks, genUserTasks...)
 	return userTasks
 }
 
 type IExecNodeHandler interface {
-	GenUserTasks() []entity.UserTaskBO
+	// genUserTasks
+	// @Description: 生成用户任务
+	// @return []entity.UserTaskBO
+	genUserTasks() []entity.UserTaskBO
 }
 
 type GenUserTaskBO struct {
@@ -108,5 +73,5 @@ func (genUserTaskBO *GenUserTaskBO) ExecHandlerStrategy() []entity.UserTaskBO {
 		hlog.Error("实例任务[%s]节点[%s]执行生成用户任务策略设置有误，请检查配置", genUserTaskBO.InstTaskID, genUserTaskBO.NodeID)
 		return nil
 	}
-	return nodeHandlerStrategy.GenUserTasks()
+	return nodeHandlerStrategy.genUserTasks()
 }

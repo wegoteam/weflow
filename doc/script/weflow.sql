@@ -183,7 +183,7 @@ create table `inst_task_detail` (
                                     `model_id` varchar(32) not null default '' comment '模板id',
                                     `process_def_id` varchar(32) not null default '' comment '流程定义id',
                                     `form_def_id` varchar(32) not null default '' comment '表单定义id',
-                                    `version_id` bigint(20) not null default '0' comment '版本id',
+                                    `version_id` varchar(32) not null default '' comment '版本id',
                                     `task_name` varchar(512) not null default '' comment '实例任务名称',
                                     `status` tinyint(4) not null default '1' comment '任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】',
                                     `remark` varchar(512) not null default '' comment '描述',
@@ -196,6 +196,7 @@ create table `inst_task_detail` (
                                     `start_time` timestamp not null default current_timestamp on update current_timestamp comment '发起时间',
                                     `end_time` timestamp not null default current_timestamp on update current_timestamp comment '结束时间',
                                     primary key (`id`),
+                                    unique key `inst_user_task_unique` (`inst_task_id`),
                                     key `inst_task_id_index` (`inst_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='执行实例任务信息表';
 
@@ -223,6 +224,7 @@ create table `inst_node_task` (
                                   `create_time` timestamp not null default current_timestamp on update current_timestamp comment '创建时间',
                                   `update_time` timestamp null default current_timestamp on update current_timestamp comment '更新时间',
                                   primary key (`id`),
+                                  unique key `inst_user_task_unique` (`inst_task_id`,`node_task_id`),
                                   key `inst_node_task_id_index` (`inst_task_id`,`node_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='实例节点任务表';
 
@@ -234,7 +236,7 @@ create table `inst_node_task_formper` (
                                             `node_id` varchar(32) not null default '' comment '节点id',
                                             `elemId` varchar(128) not null default '' comment '表单元素ID',
                                             `elemPId` varchar(128) not null default '' comment '表单元素父ID',
-                                            `per` tinyint(4) not null default '2' comment '表单权限【可编辑：1；只读：2；隐藏：3】默认只读2',
+                                            `per` tinyint(4) not null default '2' comment '表单权限【可编辑：1；只读：2；隐藏：3;必填：4】默认只读2',
 
                                             primary key (`id`),
                                             key `process_def_id_index` (`inst_task_id`,`node_task_id`)
@@ -263,6 +265,7 @@ create table `inst_user_task` (
                                   `opinion` tinyint(4) not null default '1' comment '任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】',
                                   `opinion_desc` varchar(3000) not null default '' comment '处理意见描述',
                                   primary key (`id`),
+                                  unique key `inst_user_task_unique` (`inst_task_id`,`user_task_id`),
                                   key `inst_user_task_index` (`inst_task_id`,`node_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='实例用户任务表';
 
@@ -686,3 +689,17 @@ INSERT INTO `process_def_info` (`process_def_id`, `process_def_name`, `status`, 
         "parentId":""
     }
 ]', '2023-04-12 15:19:02', '', '2023-04-12 15:19:02', '');
+
+INSERT INTO `form_def_info` (`form_def_id`, `form_def_name`, `html_content`, `html_page_url`, `status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('1681467241063842637', '测试表单', NULL, '', 1, '', '2023-05-24 13:36:54', 'xuch01', '2023-05-24 13:36:54', 'xuch01');
+
+INSERT INTO `organization_info` (`org_id`, `parent_id`, `org_name`, `status`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('420627966730317', '0', 'wego', 1, '', 'xuch01', 'xuch01', '2023-05-24 11:35:13', '2023-05-24 11:35:13');
+INSERT INTO `role_info` (`role_id`, `parent_id`, `role_name`, `status`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('420627966730315', '0', '管理员', 1, '', 'xuch01', 'xuch01', '2023-05-24 11:34:16', '2023-05-24 11:34:16');
+INSERT INTO `user_info` ( `user_id`, `user_name`, `password`, `phone`, `email`, `org_id`, `status`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('547', 'xuch01', 'xuch01', '13800138000', '13800138000@163.com', '420627966730317', 1, '', 'xuch01', 'xuch01', '2023-05-24 10:54:02', '2023-05-24 10:54:02');
+INSERT INTO `user_info` ( `user_id`, `user_name`, `password`, `phone`, `email`, `org_id`, `status`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('420627966730316', 'xuch02', 'xuch02', '13800138001', '13800138001@163.com', '420627966730317', 1, '', 'xuch02', 'xuch02', '2023-05-24 10:54:04', '2023-05-24 10:54:04');
+INSERT INTO `user_role_link` (`role_id`, `user_id`, `status`, `remark`, `create_time`, `update_time`) VALUES ('420627966730315', '547', 1, '', '2023-05-23 17:54:35', '2023-05-23 17:54:35');
+INSERT INTO `user_role_link` (`role_id`, `user_id`, `status`, `remark`, `create_time`, `update_time`) VALUES ('420627966730315', '420627966730316', 1, '', '2023-05-23 17:54:54', '2023-05-23 17:54:54');
+
+INSERT INTO `model_detail` (`model_id`, `model_name`, `model_title`, `process_def_id`, `form_def_id`, `model_group_id`, `icon_url`, `status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('420915317174341', '测试模板', '测试模板', '1640993392605401001', '1681467241063842637', '1665958955971575812', '', 1, '', '2023-05-24 13:37:14', 'xuch01', '2023-05-24 13:37:14', 'xuch01');
+INSERT INTO `model_group` (`group_id`, `group_name`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('1665958955971575812', '测试组', '', 'xuch01', 'xuch01', '2023-05-24 13:32:46', '2023-05-24 13:32:46');
+INSERT INTO `model_version` (`model_id`, `model_title`, `version_id`, `process_def_id`, `form_def_id`, `table_info`, `use_status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`, `notice_url`, `title_props`) VALUES ('420915317174341', '测试模板', '1681335332954505235', '1640993392605401001', '1681467241063842637', '', 1, '', '2023-05-24 13:37:09', '', '2023-05-24 13:37:09', '', '', '');
+

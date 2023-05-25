@@ -10,7 +10,7 @@ import (
 // IOtherStrategy
 // @Description: 其他【表单人员控件：1；部门控件：2；角色控件：3】
 type IOtherStrategy interface {
-	GenUserTasks() []entity.UserTaskBO
+	genUserTasks() []entity.UserTaskBO
 }
 
 func GenOtherStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
@@ -62,6 +62,8 @@ func GenOtherStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
 	}
 }
 
+// OtherTypeFormMember
+// @Description: 表单人员控件
 type OtherTypeFormMember struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -76,12 +78,18 @@ type OtherTypeFormMember struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (o OtherTypeFormMember) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 表单人员控件生成用户任务
+// @receiver otherTypeFormMember
+// @return []entity.UserTaskBO
+func (otherTypeFormMember *OtherTypeFormMember) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
 }
 
+// OtherTypeFormDept
+// @Description: 部门控件
 type OtherTypeFormDept struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -96,12 +104,18 @@ type OtherTypeFormDept struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (o OtherTypeFormDept) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 部门控件生成用户任务
+// @receiver otherTypeFormDept
+// @return []entity.UserTaskBO
+func (otherTypeFormDept *OtherTypeFormDept) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
 }
 
+// OtherTypeFormRole
+// @Description: 角色控件
 type OtherTypeFormRole struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -116,7 +130,11 @@ type OtherTypeFormRole struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
-func (o OtherTypeFormRole) GenUserTasks() []entity.UserTaskBO {
+// GenUserTasks
+// @Description: 角色控件生成用户任务
+// @receiver otherTypeFormRole
+// @return []entity.UserTaskBO
+func (otherTypeFormRole *OtherTypeFormRole) genUserTasks() []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
 
 	return userTasks
