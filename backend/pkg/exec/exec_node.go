@@ -6,6 +6,8 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
 )
 
+// IExecNode
+// @Description: 执行节点接口
 type IExecNode interface {
 	// execCurrNodeModel 执行当前节点
 	execCurrNodeModel(execution *Execution) ExecResult
@@ -15,13 +17,16 @@ type IExecNode interface {
 	execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO
 }
 
+// ExecResult
+// @Description: 执行结果
 type ExecResult struct {
 	NextNodes *[]entity.NodeModelBO
 }
 
-/**
-获取执行节点
-*/
+// getExecNode
+// @Description: 获取执行节点
+// @param node
+// @return IExecNode
 func getExecNode(node *entity.NodeModelBO) IExecNode {
 	var exec IExecNode
 	switch node.NodeModel {
@@ -49,9 +54,10 @@ func getExecNode(node *entity.NodeModelBO) IExecNode {
 	return exec
 }
 
-/**
-执行流转节点
-*/
+// execNode
+// @Description: 执行流转节点
+// @param currNode
+// @param execution
 func execNode(currNode *entity.NodeModelBO, execution *Execution) {
 	iexec := getExecNode(currNode)
 	if iexec == nil {
@@ -68,14 +74,13 @@ func execNode(currNode *entity.NodeModelBO, execution *Execution) {
 	}
 }
 
-/**
-判断是否为父节点
-*/
+// isParent
+// @Description: 判断是否为父节点
+// @param parentId
+// @return bool
 func isParent(parentId string) bool {
-
 	if parentId == "" || len(parentId) == 0 {
 		return true
 	}
-
 	return false
 }

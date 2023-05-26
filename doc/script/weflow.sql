@@ -3,7 +3,6 @@ drop table if exists model_detail;
 create table `model_detail` (
                                 `id` bigint(20) not null auto_increment comment '唯一id',
                                 `model_id` varchar(32) not null default '' comment '模板id',
-                                `model_name` varchar(128) not null default '' comment '模板名称',
                                 `model_title` varchar(256) not null default '' comment '模板标题',
                                 `process_def_id` varchar(32) not null default '' comment '流程定义id',
                                 `form_def_id` varchar(32) not null default '' comment '表单定义id',
@@ -37,8 +36,7 @@ create table `model_version` (
                                  `version_id` varchar(32) not null default '' comment '版本id',
                                  `process_def_id` varchar(32) not null default '' comment '流程定义id',
                                  `form_def_id` varchar(32) not null default '' comment '表单定义id',
-                                 `table_info` varchar(1024) not null default '' comment '表单数据库表',
-                                 `use_status` tinyint(4) not null default '1' comment '使用状态【1：非当前使用；2：当前使用】',
+                                 `use_status` tinyint(4) not null default '1' comment '使用状态【1：使用；2：未使用】',
                                  `remark` varchar(512) not null default '' comment '描述',
                                  `create_time` timestamp not null default current_timestamp on update current_timestamp comment '创建时间',
                                  `create_user` varchar(50) not null default '' comment '创建人',
@@ -47,7 +45,7 @@ create table `model_version` (
                                  `notice_url` varchar(256) not null default '' comment '回调通知推送url',
                                  `title_props` varchar(1024) not null default '' comment '标题配置',
                                  primary key (`id`),
-                                 unique key `model_id_and_status_index` (`model_id`,`use_status`)
+                                 unique key `model_and_version_unique` (`model_id`,`version_id`)
 ) engine=innodb default charset=utf8mb4 comment='模板版本表';
 
 drop table if exists model_auth;
@@ -100,7 +98,6 @@ create table `process_def_node` (
                                     `condition_group` varchar(4000) not null default '' comment '条件组前端描述展示条件组',
                                     `condition_expr` varchar(4000) not null default '' comment '条件组解析后的表达式',
                                     `remark` varchar(512) not null default '' comment '节点描述',
-
                                     `pre_nodes` varchar(2000) not null default '' comment '上节点ID集合,多个用逗号隔开',
                                     `next_nodes` varchar(2000) not null default '' comment '下节点ID集合,多个用逗号隔开',
                                     `last_nodes` varchar(2000) not null default '' comment '尾节点ID集合,多个用逗号隔开',
@@ -699,7 +696,7 @@ INSERT INTO `user_info` ( `user_id`, `user_name`, `password`, `phone`, `email`, 
 INSERT INTO `user_role_link` (`role_id`, `user_id`, `status`, `remark`, `create_time`, `update_time`) VALUES ('420627966730315', '547', 1, '', '2023-05-23 17:54:35', '2023-05-23 17:54:35');
 INSERT INTO `user_role_link` (`role_id`, `user_id`, `status`, `remark`, `create_time`, `update_time`) VALUES ('420627966730315', '420627966730316', 1, '', '2023-05-23 17:54:54', '2023-05-23 17:54:54');
 
-INSERT INTO `model_detail` (`model_id`, `model_name`, `model_title`, `process_def_id`, `form_def_id`, `model_group_id`, `icon_url`, `status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('420915317174341', '测试模板', '测试模板', '1640993392605401001', '1681467241063842637', '1665958955971575812', '', 1, '', '2023-05-24 13:37:14', 'xuch01', '2023-05-24 13:37:14', 'xuch01');
+INSERT INTO `model_detail` (`model_id`, `model_title`, `process_def_id`, `form_def_id`, `model_group_id`, `icon_url`, `status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES ('420915317174341', '测试模板', '1640993392605401001', '1681467241063842637', '1665958955971575812', '', 1, '', '2023-05-24 13:37:14', 'xuch01', '2023-05-24 13:37:14', 'xuch01');
 INSERT INTO `model_group` (`group_id`, `group_name`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('1665958955971575812', '测试组', '', 'xuch01', 'xuch01', '2023-05-24 13:32:46', '2023-05-24 13:32:46');
-INSERT INTO `model_version` (`model_id`, `model_title`, `version_id`, `process_def_id`, `form_def_id`, `table_info`, `use_status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`, `notice_url`, `title_props`) VALUES ('420915317174341', '测试模板', '1681335332954505235', '1640993392605401001', '1681467241063842637', '', 1, '', '2023-05-24 13:37:09', '', '2023-05-24 13:37:09', '', '', '');
+INSERT INTO `model_version` (`model_id`, `model_title`, `version_id`, `process_def_id`, `form_def_id`, `use_status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`, `notice_url`, `title_props`) VALUES ('420915317174341', '测试模板', '1681335332954505235', '1640993392605401001', '1681467241063842637',  1, '', '2023-05-24 13:37:09', '', '2023-05-24 13:37:09', '', '', '');
 

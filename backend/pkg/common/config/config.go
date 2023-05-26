@@ -7,30 +7,40 @@ import (
 	"github.com/gookit/slog/handler"
 	"github.com/gookit/slog/rotatefile"
 	"github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"sync"
 )
 
 var (
-	MysqlDB    *gorm.DB
-	RedisCliet *redis.Client
-	once       sync.Once
+	MysqlDB     *gorm.DB
+	RedisCliet  *redis.Client
+	MongoClient *mongo.Client
+	once        sync.Once
 )
 
+// init
+// @Description: 初始化配置
 func init() {
 	InitConfig()
 }
 
+// InitConfig
+// @Description: 初始化配置
 func InitConfig() {
 	once.Do(func() {
 		initMysqlConfig()
 		initRedisConfig()
+		initMongoDBConfig()
 		//initSlogConfig()
-		hlog.Info("MySQL、Redis、slog初始化成功")
+		hlog.Info("MySQL、Redis、MongoDB、slog初始化成功")
 	})
 }
 
+// initMysqlConfig
+// @Description: 初始化MySQL配置
 func initMysqlConfig() {
 	var err error
 	MysqlDB, err = gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:3306)/weflow?charset=utf8&parseTime=True&loc=Local"),
@@ -43,6 +53,9 @@ func initMysqlConfig() {
 		panic(err)
 	}
 }
+
+// initRedisConfig
+// @Description: 初始化Redis配置
 func initRedisConfig() {
 	RedisCliet = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -55,6 +68,19 @@ func initRedisConfig() {
 	}
 }
 
+// initMongoDBConfig
+// @Description: 初始化MongoDB配置
+//mongodb://user:password@localhost:27017/?authSource=admin
+func initMongoDBConfig() {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	MongoClient = client
+}
+
+// initSlogConfig
+// @Description: 初始化slog配置
 func initSlogConfig() {
 	slog.Configure(func(logger *slog.SugaredLogger) {
 		f := logger.Formatter.(*slog.TextFormatter)

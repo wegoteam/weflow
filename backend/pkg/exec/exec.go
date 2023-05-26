@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	MysqlDB    = config.MysqlDB
-	RedisCliet = config.RedisCliet
+	MysqlDB     = config.MysqlDB
+	RedisCliet  = config.RedisCliet
+	MongoClient = config.MongoClient
 )
 
 // IExecution

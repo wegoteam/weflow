@@ -39,6 +39,8 @@ func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeH
 	return userTasks
 }
 
+// IExecNodeHandler
+// @Description: 执行节点处理人接口
 type IExecNodeHandler interface {
 	// genUserTasks
 	// @Description: 生成用户任务
@@ -46,6 +48,8 @@ type IExecNodeHandler interface {
 	genUserTasks() []entity.UserTaskBO
 }
 
+// GenUserTaskBO
+// @Description: 生成用户任务BO
 type GenUserTaskBO struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
@@ -60,6 +64,10 @@ type GenUserTaskBO struct {
 	Relative       string            //相对岗位，设计中可忽略
 }
 
+// ExecHandlerStrategy
+// @Description: 执行生成用户任务策略
+// @receiver genUserTaskBO
+// @return []entity.UserTaskBO
 func (genUserTaskBO *GenUserTaskBO) ExecHandlerStrategy() []entity.UserTaskBO {
 	var nodeHandlerStrategy IExecNodeHandler
 	switch genUserTaskBO.Strategy {

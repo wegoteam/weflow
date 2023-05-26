@@ -18,8 +18,7 @@ type ModelVersion struct {
 	VersionID    string    `gorm:"column:version_id;not null" json:"version_id"`                             // 版本id
 	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	FormDefID    string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id
-	TableInfo    string    `gorm:"column:table_info;not null" json:"table_info"`                             // 表单数据库表
-	UseStatus    int32     `gorm:"column:use_status;not null;default:1" json:"use_status"`                   // 使用状态【1：非当前使用；2：当前使用】
+	UseStatus    int32     `gorm:"column:use_status;not null;default:1" json:"use_status"`                   // 使用状态【1：使用；2：未使用】
 	Remark       string    `gorm:"column:remark;not null" json:"remark"`                                     // 描述
 	CreateTime   time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
 	CreateUser   string    `gorm:"column:create_user;not null" json:"create_user"`                           // 创建人

@@ -33,7 +33,6 @@ func newModelVersion(db *gorm.DB, opts ...gen.DOOption) modelVersion {
 	_modelVersion.VersionID = field.NewString(tableName, "version_id")
 	_modelVersion.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_modelVersion.FormDefID = field.NewString(tableName, "form_def_id")
-	_modelVersion.TableInfo = field.NewString(tableName, "table_info")
 	_modelVersion.UseStatus = field.NewInt32(tableName, "use_status")
 	_modelVersion.Remark = field.NewString(tableName, "remark")
 	_modelVersion.CreateTime = field.NewTime(tableName, "create_time")
@@ -58,8 +57,7 @@ type modelVersion struct {
 	VersionID    field.String // 版本id
 	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
-	TableInfo    field.String // 表单数据库表
-	UseStatus    field.Int32  // 使用状态【1：非当前使用；2：当前使用】
+	UseStatus    field.Int32  // 使用状态【1：使用；2：未使用】
 	Remark       field.String // 描述
 	CreateTime   field.Time   // 创建时间
 	CreateUser   field.String // 创建人
@@ -89,7 +87,6 @@ func (m *modelVersion) updateTableName(table string) *modelVersion {
 	m.VersionID = field.NewString(table, "version_id")
 	m.ProcessDefID = field.NewString(table, "process_def_id")
 	m.FormDefID = field.NewString(table, "form_def_id")
-	m.TableInfo = field.NewString(table, "table_info")
 	m.UseStatus = field.NewInt32(table, "use_status")
 	m.Remark = field.NewString(table, "remark")
 	m.CreateTime = field.NewTime(table, "create_time")
@@ -122,14 +119,13 @@ func (m *modelVersion) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (m *modelVersion) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 15)
+	m.fieldMap = make(map[string]field.Expr, 14)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["model_id"] = m.ModelID
 	m.fieldMap["model_title"] = m.ModelTitle
 	m.fieldMap["version_id"] = m.VersionID
 	m.fieldMap["process_def_id"] = m.ProcessDefID
 	m.fieldMap["form_def_id"] = m.FormDefID
-	m.fieldMap["table_info"] = m.TableInfo
 	m.fieldMap["use_status"] = m.UseStatus
 	m.fieldMap["remark"] = m.Remark
 	m.fieldMap["create_time"] = m.CreateTime

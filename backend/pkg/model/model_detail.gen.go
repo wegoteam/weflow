@@ -14,7 +14,6 @@ const TableNameModelDetail = "model_detail"
 type ModelDetail struct {
 	ID           int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                        // 唯一id
 	ModelID      string    `gorm:"column:model_id;not null" json:"model_id"`                                 // 模板id
-	ModelName    string    `gorm:"column:model_name;not null" json:"model_name"`                             // 模板名称
 	ModelTitle   string    `gorm:"column:model_title;not null" json:"model_title"`                           // 模板标题
 	ProcessDefID string    `gorm:"column:process_def_id;not null" json:"process_def_id"`                     // 流程定义id
 	FormDefID    string    `gorm:"column:form_def_id;not null" json:"form_def_id"`                           // 表单定义id

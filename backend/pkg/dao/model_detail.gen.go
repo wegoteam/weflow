@@ -29,7 +29,6 @@ func newModelDetail(db *gorm.DB, opts ...gen.DOOption) modelDetail {
 	_modelDetail.ALL = field.NewAsterisk(tableName)
 	_modelDetail.ID = field.NewInt64(tableName, "id")
 	_modelDetail.ModelID = field.NewString(tableName, "model_id")
-	_modelDetail.ModelName = field.NewString(tableName, "model_name")
 	_modelDetail.ModelTitle = field.NewString(tableName, "model_title")
 	_modelDetail.ProcessDefID = field.NewString(tableName, "process_def_id")
 	_modelDetail.FormDefID = field.NewString(tableName, "form_def_id")
@@ -53,7 +52,6 @@ type modelDetail struct {
 	ALL          field.Asterisk
 	ID           field.Int64  // 唯一id
 	ModelID      field.String // 模板id
-	ModelName    field.String // 模板名称
 	ModelTitle   field.String // 模板标题
 	ProcessDefID field.String // 流程定义id
 	FormDefID    field.String // 表单定义id
@@ -83,7 +81,6 @@ func (m *modelDetail) updateTableName(table string) *modelDetail {
 	m.ALL = field.NewAsterisk(table)
 	m.ID = field.NewInt64(table, "id")
 	m.ModelID = field.NewString(table, "model_id")
-	m.ModelName = field.NewString(table, "model_name")
 	m.ModelTitle = field.NewString(table, "model_title")
 	m.ProcessDefID = field.NewString(table, "process_def_id")
 	m.FormDefID = field.NewString(table, "form_def_id")
@@ -119,10 +116,9 @@ func (m *modelDetail) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *modelDetail) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 14)
+	m.fieldMap = make(map[string]field.Expr, 13)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["model_id"] = m.ModelID
-	m.fieldMap["model_name"] = m.ModelName
 	m.fieldMap["model_title"] = m.ModelTitle
 	m.fieldMap["process_def_id"] = m.ProcessDefID
 	m.fieldMap["form_def_id"] = m.FormDefID
