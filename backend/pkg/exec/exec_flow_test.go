@@ -215,3 +215,16 @@ func TestMongodb(t *testing.T) {
 	}
 
 }
+
+func TestStartProcessInstTask(t *testing.T) {
+	var createUserName = "xuch01"
+	var createUserID = "547"
+	var modelID = "420915317174341"
+	var instTaskParamMap = make(map[string]interface{})
+	instTaskParamMap["testparam1"] = "testparam1"
+	instTaskParamMap["testparam2"] = "testparam22222"
+	instTaskParamMap["testparam3"] = "testparam33333"
+	instTaskParamMap["testparam3"] = "testparam4"
+	instTaskId := StartProcessInstTask(modelID, createUserID, createUserName, instTaskParamMap)
+	hlog.Infof("执行结果:%v", instTaskId)
+}

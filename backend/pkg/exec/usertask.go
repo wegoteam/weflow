@@ -20,6 +20,10 @@ func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeH
 	var genUserTaskBO = GenUserTaskBO{
 		InstTaskID:     execution.InstTaskID,
 		NodeTaskID:     instNodeTask.NodeTaskID,
+		ApproveType:    instNodeTask.ApproveType,
+		NoneHandler:    instNodeTask.NoneHandler,
+		AppointHandler: instNodeTask.AppointHandler,
+		HandleMode:     instNodeTask.HandleMode,
 		NodeID:         instNodeTask.NodeID,
 		CreateUserID:   execution.CreateUserID,
 		CreateUserName: execution.CreateUserName,
@@ -53,6 +57,10 @@ type IExecNodeHandler interface {
 type GenUserTaskBO struct {
 	InstTaskID     string            //实例任务id
 	NodeTaskID     string            //节点任务id
+	ApproveType    int32             // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
+	NoneHandler    int32             // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
+	AppointHandler string            // 审批人为空时指定审批人ID
+	HandleMode     int32             // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	NodeID         string            //节点id
 	CreateUserID   string            //创建人ID
 	CreateUserName string            //创建人名称

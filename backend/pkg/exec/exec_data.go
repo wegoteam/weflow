@@ -6,6 +6,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/service"
 )
 
 // ExecData
@@ -31,6 +32,8 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 	addInstTaskOpLogs := transformInstTaskOpLog(*execution.InstTaskOpLogs)
 	//转换实例任务表单权限
 	addInstTaskFormPers, _, _ := transformInstTaskFormPer(*execution.TaskFormPers)
+	//转换实例任务参数
+	addInstTaskParams := service.TransformInstTaskParam(execution.InstTaskID, execution.InstTaskParamMap, execution.Now)
 	//开启事务
 	tx := MysqlDB.Begin()
 	defer func() {
@@ -114,6 +117,14 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 		if addInstTaskFormPerErr != nil {
 			hlog.Error("实例任务[%v]保存实例任务表单权限失败", execution.InstTaskID, addInstTaskFormPerErr)
 			panic(addInstTaskFormPerErr)
+		}
+	}
+	//保存实例任务参数
+	if addInstTaskParams != nil && len(addInstTaskParams) > 0 {
+		addInstTaskParamErr := tx.CreateInBatches(addInstTaskParams, len(addInstTaskParams)).Error
+		if addInstTaskParamErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, addInstTaskParamErr)
+			panic(addInstTaskParamErr)
 		}
 	}
 	//提交事务

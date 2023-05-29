@@ -16,13 +16,15 @@ import (
 // @param userID
 // @param userName
 // @param params
-func StartProcessInstTask(modelID, userID, userName string, params map[string]any) {
+func StartProcessInstTask(modelID, userID, userName string, params map[string]any) string {
 
 	instTaskExecution := &InstTaskExecution{
+		Execution:      &Execution{},
+		ModelID:        modelID,
 		CreateUserName: userName,
 		CreateUserID:   userID,
 	}
-	instTaskExecution.start(modelID, params)
+	return instTaskExecution.start(modelID, params)
 }
 
 // start
@@ -40,6 +42,7 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 		hlog.Errorf("模板ID[{}]不存在或者模板未发布可用版本", modelID)
 		panic("模板不存在或者模板未发布可用版本")
 	}
+	instTaskExecution.VersionID = modelVersion.VersionID
 	execution.CreateUserName = instTaskExecution.CreateUserName
 	execution.CreateUserID = instTaskExecution.CreateUserID
 	execution.ProcessDefId = modelVersion.ProcessDefID
@@ -77,6 +80,8 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 	execution.InstTaskOpLogs = &instTaskOpLogs
 	//执行节点
 	execNode(&startNode, execution)
+	//实例任务数据
+	instTaskExecution.execInstData()
 	hlog.Infof("实例任务[%v]的发起人[%v]发起版本[%v]的实例任务执行成功，发起参数为%v", execution.InstTaskID, instTaskExecution.CreateUserID, instTaskExecution.VersionID, params)
 	return execution.InstTaskID
 }

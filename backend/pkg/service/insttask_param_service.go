@@ -19,7 +19,11 @@ func TransformInstTaskParam(instTaskID string, instTaskParamMap map[string]inter
 		return instTaskParams
 	}
 	for paramId, paramVal := range instTaskParamMap {
-		paramByte, _ := sonic.Marshal(paramVal)
+		paramByte, err := sonic.Marshal(paramVal)
+		if err != nil {
+			hlog.Errorf("实例任务[%s]参数[%s]转换失败", instTaskID, paramId, err)
+			continue
+		}
 		var instTaskParam = &model.InstTaskParam{
 			InstTaskID:    instTaskID,
 			ParamID:       paramId,
@@ -54,7 +58,8 @@ func GetInstTaskParam(instTaskID string) map[string]interface{} {
 		var obj interface{}
 		err := sonic.Unmarshal(instTaskParam.ParamBinary, &obj)
 		if err != nil {
-			hlog.Error(err)
+			hlog.Errorf("实例任务[%s]参数[%s]转换失败", instTaskID, instTaskParam.ParamID, err)
+			continue
 		}
 		instTaskParamMap[instTaskParam.ParamID] = obj
 	}
