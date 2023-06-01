@@ -9,13 +9,6 @@ import (
 	"github.com/wegoteam/weflow/pkg/service"
 )
 
-// ExecData
-//  @Description: 执行流转数据
-//  @param execution
-func ExecData(execution *Execution) {
-
-}
-
 // execInstData
 // @Description: 保存实例数据
 // @receiver instTaskExecution
@@ -148,11 +141,11 @@ func transformInstTaskExecution(instTaskExecution *InstTaskExecution) *model.Ins
 		Status:         int32(execution.InstTaskStatus),
 		Remark:         "",
 		CreateTime:     execution.Now,
-		CreateUserID:   instTaskExecution.CreateUserID,
-		CreateUserName: instTaskExecution.CreateUserName,
+		CreateUserID:   instTaskExecution.OpUserID,
+		CreateUserName: instTaskExecution.OpUserName,
 		UpdateTime:     execution.Now,
-		UpdateUserID:   instTaskExecution.CreateUserID,
-		UpdateUserName: instTaskExecution.CreateUserName,
+		UpdateUserID:   instTaskExecution.OpUserID,
+		UpdateUserName: instTaskExecution.OpUserName,
 		StartTime:      execution.Now,
 		EndTime:        execution.Now,
 	}

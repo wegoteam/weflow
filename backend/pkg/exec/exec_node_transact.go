@@ -30,9 +30,10 @@ type ExecTransactNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-/**
-实例化执行节点对象
-*/
+// NewTransactNode
+// @Description: 实例化执行节点对象
+// @param node
+// @return *ExecTransactNode
 func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 
 	return &ExecTransactNode{
@@ -54,12 +55,14 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 	}
 }
 
-/**
-执行节点
-生成实例节点任务
-执行任务
-下节点
-*/
+// execCurrNodeModel
+// @Description: 执行节点
+//生成实例节点任务
+//执行任务
+//下节点
+// @receiver execTransactNode
+// @param execution
+// @return ExecResult
 func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execTransactNode.NodeID]
 	if ok {
@@ -67,7 +70,7 @@ func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution
 		return ExecResult{}
 	}
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行办理节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execTransactNode.NodeID, execTransactNode.NodeName)
-	processDefModel := execution.ProcessDefModel
+
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
@@ -89,16 +92,22 @@ func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution
 	userTasks := execution.UserTasks
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execTransactNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
-	//执行任务
-	nextNodes := execTransactNode.execNextNodeModels(processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
+	return ExecResult{}
+	////获取执行的下节点
+	//processDefModel := execution.ProcessDefModel
+	//nextNodes := execTransactNode.execNextNodeModels(processDefModel.NodeModelMap)
+	//return ExecResult{
+	//	NextNodes: nextNodes,
+	//}
 }
 
-/**
-获取实例节点任务
-*/
+// GetInstNodeTask
+// @Description: 获取实例节点任务
+// @receiver execTransactNode
+// @param instTaskID
+// @param nodeTaskID
+// @param now
+// @return entity.InstNodeTaskBO
 func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -120,9 +129,12 @@ func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID
 	return instNodeTask
 }
 
-/**
-获取实例节点任务表单权限
-*/
+// GetTaskFormPers
+// @Description: 获取实例节点任务表单权限
+// @receiver execTransactNode
+// @param formPers
+// @param instNodeTask
+// @return []entity.TaskFormPerBO
 func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
 	for ind, formPer := range formPers {
@@ -140,6 +152,11 @@ func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.Form
 	return taskFormPers
 }
 
+// execPreNodeModels
+// @Description: 获取上节点
+// @receiver execTransactNode
+// @param nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execTransactNode *ExecTransactNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execTransactNode.PreNodes == nil {
@@ -155,6 +172,11 @@ func (execTransactNode *ExecTransactNode) execPreNodeModels(nodeModelMap map[str
 	return &preNodes
 }
 
+// execNextNodeModels
+// @Description: 获取下节点
+// @receiver execTransactNode
+// @param nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execTransactNode *ExecTransactNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点

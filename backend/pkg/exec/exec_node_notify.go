@@ -26,11 +26,11 @@ type ExecNotifyNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-/**
-实例化执行审批节点对象
-*/
+// NewNotifyNode
+// @Description: 实例化执行审批节点对象
+// @param node
+// @return *ExecNotifyNode
 func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
-
 	return &ExecNotifyNode{
 		NodeModel:   node.NodeModel,
 		NodeName:    node.NodeName,
@@ -47,13 +47,15 @@ func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 	}
 }
 
-/**
-执行抄送节点
-生成实例节点任务
-执行任务
-生成知会用户任务
-下节点
-*/
+// execCurrNodeModel
+// @Description: 执行抄送节点
+//生成实例节点任务
+//执行任务
+//生成知会用户任务
+//下节点
+// @receiver execNotifyNode
+// @param execution
+// @return ExecResult
 func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execNotifyNode.NodeID]
 	if ok {
@@ -61,7 +63,7 @@ func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) Ex
 		return ExecResult{}
 	}
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行抄送节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execNotifyNode.NodeID, execNotifyNode.NodeName)
-	processDefModel := execution.ProcessDefModel
+
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
@@ -83,11 +85,13 @@ func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) Ex
 	userTasks := execution.UserTasks
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execNotifyNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
-	//获取执行的下节点
-	nextNodes := execNotifyNode.execNextNodeModels(processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
+	return ExecResult{}
+	////获取执行的下节点
+	//processDefModel := execution.ProcessDefModel
+	//nextNodes := execNotifyNode.execNextNodeModels(processDefModel.NodeModelMap)
+	//return ExecResult{
+	//	NextNodes: nextNodes,
+	//}
 }
 
 /**

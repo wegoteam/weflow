@@ -10,6 +10,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/service"
 	"github.com/wegoteam/wepkg/snowflake"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -96,11 +97,11 @@ func TestInstTaskExecution(t *testing.T) {
 
 	hlog.Infof("执行结果%+v", execution)
 	instTaskExecution := &InstTaskExecution{
-		Execution:      execution,
-		ModelID:        "420915317174341",
-		VersionID:      "1681335332954505235",
-		CreateUserID:   "547",
-		CreateUserName: "xuch01",
+		Execution:  execution,
+		ModelID:    "420915317174341",
+		VersionID:  "1681335332954505235",
+		OpUserID:   "547",
+		OpUserName: "xuch01",
 	}
 	instTaskExecution.execInstData()
 }
@@ -113,11 +114,11 @@ func TestTransformInstTaskParam(t *testing.T) {
 	instTaskParamMap["testparam3"] = "testparam4"
 
 	instTaskExecution := &InstTaskExecution{
-		Execution:      &Execution{},
-		ModelID:        "420915317174341",
-		VersionID:      "1681335332954505235",
-		CreateUserID:   "547",
-		CreateUserName: "xuch01",
+		Execution:  &Execution{},
+		ModelID:    "420915317174341",
+		VersionID:  "1681335332954505235",
+		OpUserID:   "547",
+		OpUserName: "xuch01",
 	}
 	instTaskParamMap["instTaskExecution"] = instTaskExecution
 	instTaskID := snowflake.GetSnowflakeId()
@@ -144,9 +145,6 @@ func TestTransformInstTaskParam(t *testing.T) {
 	}
 
 	hlog.Infof("执行结果%+v，查询数据为%+v", instTaskParam, instTaskParam2)
-}
-
-type Params struct {
 }
 
 func transformInstTaskParamForD(instTaskID string, instTaskParamMap map[string]interface{}, now time.Time) []interface{} {
@@ -191,6 +189,16 @@ func transformInstTaskParamForM(instTaskID string, instTaskParamMap map[string]i
 	return instTaskParams
 }
 
+type Params struct { // user type for example
+	ID         primitive.ObjectID `bson:"_id"`
+	InstTaskID string             `bson:"inst_task_id" `
+	ParamID    string             `bson:"param_id" `
+	ParamName  string             `bson:"param_name"`
+	ParamValue interface{}        `bson:"param_value"`
+	UpdateTime time.Time          `bson:"update_time"`
+	CreateTime time.Time          `bson:"create_time"`
+}
+
 func TestMongodb(t *testing.T) {
 	var err error
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
@@ -209,10 +217,17 @@ func TestMongodb(t *testing.T) {
 	collection := mgoCli.Database("weflow").Collection("inst_task_param")
 	hlog.Infof("查询数据为%+v", collection)
 
-	_, err2 := collection.InsertOne(context.TODO(), bson.D{{"name", "Alice"}})
-	if err2 != nil {
-		hlog.Fatal(err2)
+	cursor, _ := collection.Find(context.Background(), bson.D{{"inst_task_id", "421395986214981"}})
+
+	//var results []bson.M
+	var results []Params
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		log.Fatal(err)
 	}
+	for _, result := range results {
+		hlog.Infof("查询数据为%+v", result)
+	}
+	hlog.Infof("查询数据为%+v", cursor)
 
 }
 

@@ -69,7 +69,7 @@ func (execApprovalNode *ExecApprovalNode) execCurrNodeModel(execution *Execution
 		return ExecResult{}
 	}
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行审批节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execApprovalNode.NodeID, execApprovalNode.NodeName)
-	processDefModel := execution.ProcessDefModel
+
 	nodeTaskId := snowflake.GetSnowflakeId()
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
@@ -91,11 +91,13 @@ func (execApprovalNode *ExecApprovalNode) execCurrNodeModel(execution *Execution
 	userTasks := execution.UserTasks
 	addUserTasks := ExecUserTask(*execution, instNodeTask, execApprovalNode.NodeHandler)
 	*userTasks = append(*userTasks, addUserTasks...)
-	//执行任务
-	nextNodes := execApprovalNode.execNextNodeModels(processDefModel.NodeModelMap)
-	return ExecResult{
-		NextNodes: nextNodes,
-	}
+	return ExecResult{}
+	////生成下一节点
+	//processDefModel := execution.ProcessDefModel
+	//nextNodes := execApprovalNode.execNextNodeModels(processDefModel.NodeModelMap)
+	//return ExecResult{
+	//	NextNodes: nextNodes,
+	//}
 }
 
 // GetInstNodeTask

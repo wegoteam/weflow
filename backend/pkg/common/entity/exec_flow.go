@@ -9,8 +9,8 @@ import "time"
 //	FormDefId        string                           `json:"formDefId"`        //表单定义ID
 //	InstTaskStatus   int8                             `json:"instTaskStatus"`   //实例任务状态
 //	InstTaskName     string                           `json:"instTaskName"`     //实例任务名称
-//	CreateUserID     string                           `json:"createUserId"`     //创建人ID
-//	CreateUserName   string                           `json:"createUserName"`   //创建人名称
+//	OpUserID     string                           `json:"createUserId"`     //创建人ID
+//	OpUserName   string                           `json:"createUserName"`   //创建人名称
 //	Now              time.Time                        `json:"now"`              //当前时间
 //	ProcessDefModel  *ProcessDefModel          `json:"processDefModel"`  //流程定义
 //	InstTaskParamMap map[string]interface{}           `json:"instTaskParamMap"` //实例任务参数

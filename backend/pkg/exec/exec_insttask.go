@@ -19,10 +19,10 @@ import (
 func StartProcessInstTask(modelID, userID, userName string, params map[string]any) string {
 
 	instTaskExecution := &InstTaskExecution{
-		Execution:      &Execution{},
-		ModelID:        modelID,
-		CreateUserName: userName,
-		CreateUserID:   userID,
+		Execution:  &Execution{},
+		ModelID:    modelID,
+		OpUserName: userName,
+		OpUserID:   userID,
 	}
 	return instTaskExecution.start(modelID, params)
 }
@@ -43,8 +43,8 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 		panic("模板不存在或者模板未发布可用版本")
 	}
 	instTaskExecution.VersionID = modelVersion.VersionID
-	execution.CreateUserName = instTaskExecution.CreateUserName
-	execution.CreateUserID = instTaskExecution.CreateUserID
+	execution.CreateUserName = instTaskExecution.OpUserName
+	execution.CreateUserID = instTaskExecution.OpUserID
 	execution.ProcessDefId = modelVersion.ProcessDefID
 	execution.FormDefId = modelVersion.FormDefID
 	//获取流程定义模型
@@ -82,14 +82,36 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 	execNode(&startNode, execution)
 	//实例任务数据
 	instTaskExecution.execInstData()
-	hlog.Infof("实例任务[%v]的发起人[%v]发起版本[%v]的实例任务执行成功，发起参数为%v", execution.InstTaskID, instTaskExecution.CreateUserID, instTaskExecution.VersionID, params)
+	hlog.Infof("实例任务[%v]的发起人[%v]发起版本[%v]的实例任务执行成功，发起参数为%v", execution.InstTaskID, instTaskExecution.OpUserID, instTaskExecution.VersionID, params)
 	return execution.InstTaskID
 }
 
-func (execution *Execution) stop(instTaskID string) {
+// stop
+// @Description: 停止实例任务
+// @receiver instTaskExecution
+// @param instTaskID
+// @return bool
+func (instTaskExecution *InstTaskExecution) stop(instTaskID string) bool {
 
+	return true
 }
 
-func (execution *Execution) hangup(instTaskID string) {
+// suspend
+// @Description: 暂停实例任务
+// @receiver instTaskExecution
+// @param instTaskID
+// @return bool
+func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) bool {
 
+	return true
+}
+
+// resume
+// @Description: 恢复实例任务
+// @receiver instTaskExecution
+// @param instTaskID
+// @return bool
+func (instTaskExecution *InstTaskExecution) resume(instTaskID string) bool {
+
+	return true
 }
