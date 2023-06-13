@@ -43,7 +43,7 @@ type UserTaskBO struct {
 	Sort         int32     // 处理人顺序;正序排序
 	Obj          string    // 扩展字段，设计中可忽略
 	Relative     string    // 相对发起人的直属主管，设计中可忽略
-	Status       int32     // 任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
+	Status       int32     // 实例用户任务状态【1：处理中；2：完成（同意）；3：不通过（不同意）；4：回退；5：终止】
 	CreateTime   time.Time // 创建时间
 	UpdateTime   time.Time // 更新时间
 	HandleTime   time.Time // 处理时间
@@ -65,7 +65,7 @@ type InstNodeTaskBO struct {
 	ApproveType    int32     // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
 	NoneHandler    int32     // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
 	AppointHandler string    // 审批人为空时指定审批人ID
-	HandleMode     int32     // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	HandleMode     int32     // 审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	FinishMode     int32     // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
 	BranchMode     int32     // 分支执行方式【单分支：1；多分支：2】默认多分支2
 	DefaultBranch  int32     // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标

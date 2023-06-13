@@ -18,7 +18,7 @@ type InstUserTaskOpinion struct {
 	UserTaskID  string    `gorm:"column:user_task_id;not null" json:"user_task_id"`                         // 用户任务id
 	NodeID      string    `gorm:"column:node_id;not null" json:"node_id"`                                   // 节点id
 	OpinionID   string    `gorm:"column:opinion_id;not null" json:"opinion_id"`                             // 意见id
-	Opinion     int32     `gorm:"column:opinion;not null;default:1" json:"opinion"`                         // 处理意见【1：未处理；2：已阅；3：同意；4：不同意；5：回退；6：终止】
+	Opinion     int32     `gorm:"column:opinion;not null;default:1" json:"opinion"`                         // 处理意见【1：未处理；2：同意；3：不同意；4：回退；5：终止；6：撤回】
 	OpinionDesc string    `gorm:"column:opinion_desc;not null" json:"opinion_desc"`                         // 处理意见描述
 	OpUserID    string    `gorm:"column:op_user_id;not null" json:"op_user_id"`                             // 操作用户id
 	OpUserName  string    `gorm:"column:op_user_name;not null" json:"op_user_name"`                         // 操作用户名称

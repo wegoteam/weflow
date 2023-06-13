@@ -4,6 +4,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/common/utils"
+	"github.com/wegoteam/wepkg/snowflake"
 	"time"
 )
 
@@ -40,6 +42,49 @@ func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeH
 		return userTasks
 	}
 	userTasks = append(userTasks, genUserTasks...)
+	return userTasks
+}
+
+// ExecNextUserTask
+// @Description: 生成节点用户任务下一个串行任务
+// @param userTaskExecution
+// @param nodeHandler
+// @return []entity.UserTaskBO
+func ExecNextUserTask(userTaskExecution *UserTaskExecution, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
+	execution := userTaskExecution.Execution
+	userTasks := make([]entity.UserTaskBO, 0)
+	//生成用户任务
+	if utils.IsEmptySlice(nodeHandler.Handlers) {
+		return userTasks
+	}
+	for _, handler := range nodeHandler.Handlers {
+		if handler.Sort != (userTaskExecution.OpSort + 1) {
+			continue
+		}
+		var userTask = entity.UserTaskBO{
+			ExecOpType:   constant.OperationTypeAdd,
+			InstTaskID:   execution.InstTaskID,
+			NodeTaskID:   userTaskExecution.NodeTaskID,
+			NodeID:       userTaskExecution.NodeID,
+			UserTaskID:   snowflake.GetSnowflakeId(),
+			Type:         int32(nodeHandler.Type),
+			Strategy:     int32(nodeHandler.Strategy),
+			NodeUserName: handler.Name,
+			NodeUserID:   handler.ID,
+			Sort:         int32(handler.Sort),
+			Obj:          nodeHandler.Obj,
+			Relative:     nodeHandler.Relative,
+			Status:       constant.InstanceUserTaskStatusDoing,
+			CreateTime:   execution.Now,
+			UpdateTime:   execution.Now,
+			HandleTime:   execution.Now,
+			OpUserID:     handler.ID,
+			OpUserName:   handler.Name,
+			Opinion:      constant.InstanceUserTaskOpinionNotPublish,
+			OpinionDesc:  "",
+		}
+		userTasks = append(userTasks, userTask)
+	}
 	return userTasks
 }
 

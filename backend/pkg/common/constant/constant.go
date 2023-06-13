@@ -52,14 +52,14 @@ const (
 )
 
 /**
-实例用户任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
+实例用户任务状态【1：处理中；2：完成（同意）；3：不通过（不同意）；4：回退；5：终止】
 */
 const (
 	InstanceUserTaskStatusDoing    = 1 //处理中
-	InstanceUserTaskStatusComplete = 2 //完成
-	InstanceUserTaskStatusRollback = 3 //回退
-	InstanceUserTaskStatusStop     = 4 //终止
-	InstanceUserTaskStatusNotPass  = 5 //不通过
+	InstanceUserTaskStatusAgree    = 2 //完成(同意)
+	InstanceUserTaskStatusDisagree = 3 //不通过（不同意）
+	InstanceUserTaskStatusRollback = 4 //回退
+	InstanceUserTaskStatusStop     = 5 //终止
 )
 
 /**
@@ -67,9 +67,8 @@ const (
 */
 const (
 	InstanceUserTaskOpinionNotPublish = 1 //未发表
-	InstanceUserTaskOpinionRead       = 2 //已阅
-	InstanceUserTaskOpinionAgree      = 3 //同意
-	InstanceUserTaskOpinionDisagree   = 4 //不同意
+	InstanceUserTaskOpinionAgree      = 2 //同意
+	InstanceUserTaskOpinionDisagree   = 3 //不同意
 )
 
 /**

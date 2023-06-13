@@ -22,7 +22,7 @@ type InstNodeTask struct {
 	ApproveType    int32     `gorm:"column:approve_type;not null;default:1" json:"approve_type"`               // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
 	NoneHandler    int32     `gorm:"column:none_handler;not null;default:1" json:"none_handler"`               // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
 	AppointHandler string    `gorm:"column:appoint_handler;not null" json:"appoint_handler"`                   // 审批人为空时指定审批人ID
-	HandleMode     int32     `gorm:"column:handle_mode;not null;default:2" json:"handle_mode"`                 // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	HandleMode     int32     `gorm:"column:handle_mode;not null;default:2" json:"handle_mode"`                 // 审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	FinishMode     int32     `gorm:"column:finish_mode;not null" json:"finish_mode"`                           // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
 	BranchMode     int32     `gorm:"column:branch_mode;not null;default:2" json:"branch_mode"`                 // 分支执行方式【单分支：1；多分支：2】默认多分支2
 	DefaultBranch  int32     `gorm:"column:default_branch;not null" json:"default_branch"`                     // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标

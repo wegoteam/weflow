@@ -12,10 +12,10 @@ import (
 
 // StartProcessInstTask
 // @Description: 发起实例任务
-// @param modelID
-// @param userID
-// @param userName
-// @param params
+// @param modelID 模板ID
+// @param userID 发起人ID
+// @param userName 发起人名称
+// @param params 参数
 func StartProcessInstTask(modelID, userID, userName string, params map[string]any) string {
 
 	instTaskExecution := &InstTaskExecution{

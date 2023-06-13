@@ -14,7 +14,7 @@ type NodeModelEntity struct {
 	NodeHandler    NodeHandler `json:"nodeHandler"`    // 节点处理人
 	NoneHandler    int         `json:"noneHandler"`    //审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1--数字
 	AppointHandler string      `json:"appointHandler"` //审批人为空时指定审批人ID
-	HandleMode     int         `json:"handleMode"`     //审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	HandleMode     int         `json:"handleMode"`     //审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	FinishMode     int         `json:"finishMode"`     //完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
 
 	//条件节点
@@ -67,7 +67,7 @@ type NodeModelBO struct {
 	NodeHandler    NodeHandler `json:"nodeHandler"`    // 节点处理人
 	NoneHandler    int         `json:"noneHandler"`    //审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1--数字
 	AppointHandler string      `json:"appointHandler"` //审批人为空时指定审批人ID
-	HandleMode     int         `json:"handleMode"`     //审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	HandleMode     int         `json:"handleMode"`     //审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	FinishMode     int         `json:"finishMode"`     //完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
 
 	//条件节点

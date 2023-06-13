@@ -64,3 +64,13 @@ func TestGetModelVersion(t *testing.T) {
 	modelVersion2 := GetEnableModelVersion("420915317174341")
 	hlog.Infof("GetEnableModelVersion= %v", modelVersion2)
 }
+
+func TestGetInstNodeUserTask(t *testing.T) {
+	instNodeUserTask := GetInstNodeUserTask("424136865722437")
+	hlog.Infof("instNodeUserTask= %v", instNodeUserTask)
+}
+
+func TestGetExecNodeTaskMap(t *testing.T) {
+	execNodeTaskMap := GetExecNodeTaskMap("425247133954117")
+	hlog.Infof("execNodeTaskMap= %v", execNodeTaskMap)
+}

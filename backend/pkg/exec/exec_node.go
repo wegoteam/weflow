@@ -74,6 +74,37 @@ func execNode(currNode *entity.NodeModelBO, execution *Execution) {
 	}
 }
 
+// execNextNode
+// @Description: 执行下节点
+// @param currNode
+// @param execution
+func execNextNode(currNode *entity.NodeModelBO, execution *Execution) {
+	iexec := getExecNode(currNode)
+	if iexec == nil {
+		return
+	}
+	processDefModel := execution.ProcessDefModel
+	nextNodes := iexec.execNextNodeModels(processDefModel.NodeModelMap)
+	if nextNodes == nil || len(*nextNodes) == 0 {
+		return
+	}
+	for _, nextNode := range *nextNodes {
+		execNode(&nextNode, execution)
+	}
+}
+
+// execNextTask
+// @Description: 执行流转串行节点任务
+// @param currNode
+// @param execution
+func execNextTask(currNode *entity.NodeModelBO, userTaskExecution *UserTaskExecution) {
+	addUserTasks := ExecNextUserTask(userTaskExecution, currNode.NodeHandler)
+	execution := userTaskExecution.Execution
+	userTasks := execution.UserTasks
+	*userTasks = append(*userTasks, addUserTasks...)
+
+}
+
 // isParent
 // @Description: 判断是否为父节点
 // @param parentId

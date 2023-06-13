@@ -24,13 +24,13 @@ type InstUserTask struct {
 	Sort         int32     `gorm:"column:sort;not null;default:1" json:"sort"`                               // 处理人顺序;正序排序
 	Obj          string    `gorm:"column:obj;not null" json:"obj"`                                           // 扩展字段，设计中可忽略
 	Relative     string    `gorm:"column:relative;not null" json:"relative"`                                 // 相对发起人的直属主管，设计中可忽略
-	Status       int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 任务状态【1：处理中；2：完成；3：回退；4：终止；5：不通过】
+	Status       int32     `gorm:"column:status;not null;default:1" json:"status"`                           // 实例用户任务状态【1：处理中；2：完成（同意）；3：不通过（不同意）；4：回退；5：终止】
 	CreateTime   time.Time `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP" json:"create_time"` // 创建时间
 	UpdateTime   time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`          // 更新时间
 	HandleTime   time.Time `gorm:"column:handle_time;default:CURRENT_TIMESTAMP" json:"handle_time"`          // 处理时间
 	OpUserID     string    `gorm:"column:op_user_id;not null" json:"op_user_id"`                             // 操作用户id
 	OpUserName   string    `gorm:"column:op_user_name;not null" json:"op_user_name"`                         // 操作用户名称
-	Opinion      int32     `gorm:"column:opinion;not null;default:1" json:"opinion"`                         // 任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】
+	Opinion      int32     `gorm:"column:opinion;not null;default:1" json:"opinion"`                         // 任务处理意见【1：未发表；2：同意；3：不同意；4：xxx】
 	OpinionDesc  string    `gorm:"column:opinion_desc;not null" json:"opinion_desc"`                         // 处理意见描述
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
 	"github.com/wegoteam/weflow/pkg/service"
+	"github.com/wegoteam/wepkg/snowflake"
 )
 
 // execInstData
@@ -78,7 +79,7 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 	}
 	if utils.IsNotEmptySlice(editInstUserTasks) {
 		for _, editInstUserTask := range editInstUserTasks {
-			editInstUserTaskErr := tx.Where("inst_task_id = ? user_task_id = ?", execution.InstTaskID, editInstUserTask.UserTaskID).Updates(editInstUserTask).Error
+			editInstUserTaskErr := tx.Where("inst_task_id = ? and user_task_id = ?", execution.InstTaskID, editInstUserTask.UserTaskID).Updates(editInstUserTask).Error
 			if editInstUserTaskErr != nil {
 				hlog.Error("实例任务[%v]更新实例用户任务失败", execution.InstTaskID, editInstUserTaskErr)
 				panic(editInstUserTaskErr)
@@ -90,7 +91,7 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 		for _, delInstUserTask := range delInstUserTasks {
 			delInstUserTaskIds = append(delInstUserTaskIds, delInstUserTask.NodeTaskID)
 		}
-		delInstUserTaskErr := tx.Where("inst_task_id = ? user_task_id IN ?", execution.InstTaskID, delInstUserTaskIds).Delete(&model.InstUserTask{}).Error
+		delInstUserTaskErr := tx.Where("inst_task_id = ? and user_task_id IN ?", execution.InstTaskID, delInstUserTaskIds).Delete(&model.InstUserTask{}).Error
 		if delInstUserTaskErr != nil {
 			hlog.Error("实例任务[%v]删除实例用户任务失败", execution.InstTaskID, delInstUserTaskErr)
 			panic(delInstUserTaskErr)
@@ -114,6 +115,139 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 	}
 	//保存实例任务参数
 	if addInstTaskParams != nil && len(addInstTaskParams) > 0 {
+		addInstTaskParamErr := tx.CreateInBatches(addInstTaskParams, len(addInstTaskParams)).Error
+		if addInstTaskParamErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, addInstTaskParamErr)
+			panic(addInstTaskParamErr)
+		}
+	}
+	//提交事务
+	tx.Commit()
+}
+
+// execInstData
+// @Description: 保存实例数据
+// @receiver instTaskExecution
+func (userTaskExecution *UserTaskExecution) execInstUserTaskData() {
+
+	execution := userTaskExecution.Execution
+	//转换实例节点任务
+	addInstNodeTasks, editInstNodeTasks, delInstNodeTasks := transformInstNodeTask(*execution.InstNodeTasks)
+	//转换实例用户任务
+	addInstUserTasks, editInstUserTasks, delInstUserTasks := transformInstUserTask(*execution.UserTasks)
+	//转换实例任务日志
+	addInstTaskOpLogs := transformInstTaskOpLog(*execution.InstTaskOpLogs)
+	//转换实例任务表单权限
+	addInstTaskFormPers, _, _ := transformInstTaskFormPer(*execution.TaskFormPers)
+	//转换实例任务参数
+	addInstTaskParams := service.TransformInstTaskParam(execution.InstTaskID, execution.InstTaskParamMap, execution.Now)
+	//开启事务
+	tx := MysqlDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	//保存用户任务评论
+	addInstUserTaskOpinion := &model.InstUserTaskOpinion{
+		InstTaskID:  execution.InstTaskID,
+		NodeTaskID:  userTaskExecution.NodeTaskID,
+		UserTaskID:  userTaskExecution.UserTaskID,
+		NodeID:      userTaskExecution.NodeID,
+		OpinionID:   snowflake.GetSnowflakeId(),
+		Opinion:     int32(userTaskExecution.UserTaskStatus),
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		OpUserID:    userTaskExecution.OpUserID,
+		OpUserName:  userTaskExecution.OpUserName,
+		CreateTime:  execution.Now,
+		UpdateTime:  execution.Now,
+		OpinionTime: execution.Now,
+	}
+	addInstUserTaskOpinionErr := tx.Create(addInstUserTaskOpinion).Error
+	if addInstUserTaskOpinionErr != nil {
+		hlog.Error("实例任务[%v]保存用户任务评论失败", execution.InstTaskID, addInstUserTaskOpinionErr)
+		panic(addInstUserTaskOpinionErr)
+	}
+	//保存实例节点任务
+	if utils.IsNotEmptySlice(addInstNodeTasks) {
+		addInstNodeTaskErr := tx.CreateInBatches(addInstNodeTasks, len(addInstNodeTasks)).Error
+		if addInstNodeTaskErr != nil {
+			hlog.Error("实例任务[%v]保存实例节点任务失败", execution.InstTaskID, addInstNodeTaskErr)
+			panic(addInstNodeTaskErr)
+		}
+	}
+	if utils.IsNotEmptySlice(editInstNodeTasks) {
+		for _, editInstNodeTask := range editInstNodeTasks {
+			editInstNodeTaskErr := tx.Where("inst_task_id = ? and node_task_id = ?", execution.InstTaskID, editInstNodeTask.NodeTaskID).Updates(editInstNodeTask).Error
+			if editInstNodeTaskErr != nil {
+				hlog.Error("实例任务[%v]更新实例节点任务失败", execution.InstTaskID, editInstNodeTaskErr)
+				panic(editInstNodeTaskErr)
+			}
+		}
+	}
+	if utils.IsNotEmptySlice(delInstNodeTasks) {
+		delInstNodeTaskIds := make([]string, 0)
+		for _, delInstNodeTask := range delInstNodeTasks {
+			delInstNodeTaskIds = append(delInstNodeTaskIds, delInstNodeTask.NodeTaskID)
+		}
+		delInstNodeTaskErr := tx.Where("inst_task_id = ? and node_task_id IN ?", execution.InstTaskID, delInstNodeTaskIds).Delete(&model.InstNodeTask{}).Error
+		if delInstNodeTaskErr != nil {
+			hlog.Error("实例任务[%v]删除实例节点任务失败", execution.InstTaskID, delInstNodeTaskErr)
+			panic(delInstNodeTaskErr)
+		}
+	}
+	//保存实例用户任务
+	if utils.IsNotEmptySlice(addInstUserTasks) {
+		addInstUserTaskErr := tx.CreateInBatches(addInstUserTasks, len(addInstUserTasks)).Error
+		if addInstUserTaskErr != nil {
+			hlog.Error("实例任务[%v]保存实例用户任务失败", execution.InstTaskID, addInstUserTaskErr)
+			panic(addInstUserTaskErr)
+		}
+	}
+	if utils.IsNotEmptySlice(editInstUserTasks) {
+		for _, editInstUserTask := range editInstUserTasks {
+			editInstUserTaskErr := tx.Where("inst_task_id = ? and user_task_id = ?", execution.InstTaskID, editInstUserTask.UserTaskID).Updates(editInstUserTask).Error
+			if editInstUserTaskErr != nil {
+				hlog.Error("实例任务[%v]更新实例用户任务失败", execution.InstTaskID, editInstUserTaskErr)
+				panic(editInstUserTaskErr)
+			}
+		}
+	}
+	if utils.IsNotEmptySlice(delInstUserTasks) {
+		delInstUserTaskIds := make([]string, 0)
+		for _, delInstUserTask := range delInstUserTasks {
+			delInstUserTaskIds = append(delInstUserTaskIds, delInstUserTask.NodeTaskID)
+		}
+		delInstUserTaskErr := tx.Where("inst_task_id = ? and user_task_id IN ?", execution.InstTaskID, delInstUserTaskIds).Delete(&model.InstUserTask{}).Error
+		if delInstUserTaskErr != nil {
+			hlog.Error("实例任务[%v]删除实例用户任务失败", execution.InstTaskID, delInstUserTaskErr)
+			panic(delInstUserTaskErr)
+		}
+	}
+	//保存实例任务日志
+	if utils.IsNotEmptySlice(addInstTaskOpLogs) {
+		addInstTaskFormPerErr := tx.CreateInBatches(addInstTaskOpLogs, len(addInstTaskOpLogs)).Error
+		if addInstTaskFormPerErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务日志失败", execution.InstTaskID, addInstTaskFormPerErr)
+			panic(addInstTaskFormPerErr)
+		}
+	}
+	//保存实例节点任务表单权限
+	if utils.IsNotEmptySlice(addInstTaskFormPers) {
+		addInstTaskFormPerErr := tx.CreateInBatches(addInstTaskFormPers, len(addInstTaskFormPers)).Error
+		if addInstTaskFormPerErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务表单权限失败", execution.InstTaskID, addInstTaskFormPerErr)
+			panic(addInstTaskFormPerErr)
+		}
+	}
+	//保存实例任务参数
+	if addInstTaskParams != nil && len(addInstTaskParams) > 0 {
+		//删除实例任务参数
+		delInstTaskParamErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskParam{}).Error
+		if delInstTaskParamErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, delInstTaskParamErr)
+			panic(delInstTaskParamErr)
+		}
 		addInstTaskParamErr := tx.CreateInBatches(addInstTaskParams, len(addInstTaskParams)).Error
 		if addInstTaskParamErr != nil {
 			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, addInstTaskParamErr)

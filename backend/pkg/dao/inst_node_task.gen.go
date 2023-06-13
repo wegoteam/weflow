@@ -68,7 +68,7 @@ type instNodeTask struct {
 	ApproveType    field.Int32  // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
 	NoneHandler    field.Int32  // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
 	AppointHandler field.String // 审批人为空时指定审批人ID
-	HandleMode     field.Int32  // 审批方式【依次审批：1、会签（需要完成人数的审批人同意或拒绝才可完成节点）：2、或签（其中一名审批人同意或拒绝即可）：3】默认会签2
+	HandleMode     field.Int32  // 审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 	FinishMode     field.Int32  // 完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0）
 	BranchMode     field.Int32  // 分支执行方式【单分支：1；多分支：2】默认多分支2
 	DefaultBranch  field.Int32  // 单分支处理需要默认分支，在条件优先级无法处理时候执行默认分支，取值分支下标

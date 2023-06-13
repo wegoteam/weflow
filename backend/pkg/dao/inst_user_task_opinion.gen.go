@@ -56,7 +56,7 @@ type instUserTaskOpinion struct {
 	UserTaskID  field.String // 用户任务id
 	NodeID      field.String // 节点id
 	OpinionID   field.String // 意见id
-	Opinion     field.Int32  // 处理意见【1：未处理；2：已阅；3：同意；4：不同意；5：回退；6：终止】
+	Opinion     field.Int32  // 处理意见【1：未处理；2：同意；3：不同意；4：回退；5：终止；6：撤回】
 	OpinionDesc field.String // 处理意见描述
 	OpUserID    field.String // 操作用户id
 	OpUserName  field.String // 操作用户名称
