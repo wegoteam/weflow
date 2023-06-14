@@ -236,7 +236,7 @@ create table `inst_node_task_formper` (
                                             `per` tinyint(4) not null default '2' comment '表单权限【可编辑：1；只读：2；隐藏：3;必填：4】默认只读2',
 
                                             primary key (`id`),
-                                            key `process_def_id_index` (`inst_task_id`,`node_task_id`)
+                                            key `inst_node_task_id_index` (`node_task_id`,`inst_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='实例节点任务表单权限表';
 
 drop table if exists inst_user_task;
@@ -263,7 +263,7 @@ create table `inst_user_task` (
                                   `opinion_desc` varchar(3000) not null default '' comment '处理意见描述',
                                   primary key (`id`),
                                   unique key `inst_user_task_unique` (`inst_task_id`,`user_task_id`),
-                                  key `inst_user_task_index` (`inst_task_id`,`node_task_id`)
+                                  key `inst_user_task_index` (`node_task_id`,`inst_task_id`)
 ) engine=innodb default charset=utf8mb4 comment='实例用户任务表';
 
 
@@ -700,3 +700,57 @@ INSERT INTO `model_detail` (`model_id`, `model_title`, `process_def_id`, `form_d
 INSERT INTO `model_group` (`group_id`, `group_name`, `remark`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES ('1665958955971575812', '测试组', '', 'xuch01', 'xuch01', '2023-05-24 13:32:46', '2023-05-24 13:32:46');
 INSERT INTO `model_version` (`model_id`, `model_title`, `version_id`, `process_def_id`, `form_def_id`, `use_status`, `remark`, `create_time`, `create_user`, `update_time`, `update_user`, `notice_url`, `title_props`) VALUES ('420915317174341', '测试模板', '1681335332954505235', '1640993392605401001', '1681467241063842637',  1, '', '2023-05-24 13:37:09', '', '2023-05-24 13:37:09', '', '', '');
 
+-- 查询当前待办任务
+explain
+select
+    ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,
+    nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,
+    itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime
+from inst_user_task ut
+    left join inst_node_task nt on ut.node_task_id = nt.node_task_id
+    left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id
+where ut.op_user_id = 547 and ut.status = 1 and nt.status = 2 and itd.status = 2
+union all
+select
+    ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,
+    nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,
+    itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime
+from inst_user_task ut
+         left join inst_node_task nt on ut.node_task_id = nt.node_task_id
+         left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id
+where ut.op_user_id = 547 and ut.status = 1  and nt.node_model = 4
+order by UCreateTime desc;
+
+-- 查询当前待办任务
+explain
+select
+    ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,
+    nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,
+    itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime
+from inst_user_task ut
+         left join inst_node_task nt on ut.node_task_id = nt.node_task_id
+         left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id
+where ut.op_user_id = 547 and ((ut.status = 1 and nt.status = 2 and itd.status = 2) or (ut.status = 1  and nt.node_model = 4))
+order by ut.create_time desc;
+
+-- 查询已办任务
+explain
+select
+    ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,
+    nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,
+    itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime
+from inst_user_task ut
+         left join inst_node_task nt on ut.node_task_id = nt.node_task_id
+         left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id
+where ut.op_user_id = 547 and ut.status in (2,3,4,5)
+order by ut.create_time desc;
+
+-- 查询已办任务
+SELECT
+    inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc,
+    inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime,
+    inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime
+FROM `inst_user_task`
+    left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id
+    left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id
+WHERE inst_user_task.status in (2,3,4,5) AND inst_user_task.op_user_id = '547' ORDER BY inst_user_task.create_time desc

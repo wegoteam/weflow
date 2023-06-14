@@ -74,3 +74,23 @@ func TestGetExecNodeTaskMap(t *testing.T) {
 	execNodeTaskMap := GetExecNodeTaskMap("425247133954117")
 	hlog.Infof("execNodeTaskMap= %v", execNodeTaskMap)
 }
+
+func TestGetTodoUserTask(t *testing.T) {
+	userTask := GetTodoUserTask("547")
+	hlog.Infof("userTask= %v", userTask)
+}
+
+func TestGetDoneUserTask(t *testing.T) {
+	userTask := GetDoneUserTask("547")
+	hlog.Infof("userTask= %v", userTask)
+}
+
+func TestGetInitiatingInstTask(t *testing.T) {
+	initiatingInstTasks := GetInitiatingInstTask("547")
+	hlog.Infof("initiatingInstTasks= %v", initiatingInstTasks)
+}
+
+func TestGetDraftInstTask(t *testing.T) {
+	draftInstTask := GetDraftInstTask("547")
+	hlog.Infof("draftInstTask= %v", draftInstTask)
+}

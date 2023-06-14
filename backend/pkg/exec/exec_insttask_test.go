@@ -103,7 +103,7 @@ func TestInstTaskExecution(t *testing.T) {
 		OpUserID:   "547",
 		OpUserName: "xuch01",
 	}
-	instTaskExecution.execInstData()
+	instTaskExecution.execStartInstData()
 }
 
 func TestTransformInstTaskParam(t *testing.T) {
@@ -240,6 +240,6 @@ func TestStartProcessInstTask(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam22222"
 	instTaskParamMap["testparam3"] = "testparam33333"
 	instTaskParamMap["testparam3"] = "testparam4"
-	instTaskId := StartProcessInstTask(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId := Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 }

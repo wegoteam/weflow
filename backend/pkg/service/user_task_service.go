@@ -16,7 +16,7 @@ func GetInstNodeUserTask(userTaskID string) *entity.InstNodeAndUserTaskResult {
 	}
 	var instNodeUserTask entity.InstNodeAndUserTaskResult
 	MysqlDB.Raw("select"+
-		" ut.id UID, ut.user_task_id UserTaskId, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,"+
+		" ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,"+
 		" nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,"+
 		" itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime"+
 		" from inst_user_task ut"+
@@ -24,6 +24,42 @@ func GetInstNodeUserTask(userTaskID string) *entity.InstNodeAndUserTaskResult {
 		" left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id"+
 		" where ut.user_task_id = ?", userTaskID).First(&instNodeUserTask)
 	return &instNodeUserTask
+}
+
+// GetTodoUserTask
+// @Description: 获取待办用户任务
+// @param userID
+// @return *[]entity.InstNodeAndUserTaskResult
+func GetTodoUserTask(userID string) *[]entity.InstNodeAndUserTaskResult {
+
+	var userTasks []entity.InstNodeAndUserTaskResult
+	MysqlDB.Raw("select"+
+		" ut.id UID, ut.user_task_id UserTaskID, ut.type Type, ut.strategy Strategy, ut.node_user_name NodeUserName, ut.node_user_id NodeUserID, ut.sort Sort, ut.obj Obj, ut.relative Relative, ut.status UStatus, ut.create_time UCreateTime, ut.update_time UUpdateTime, ut.handle_time HandleTime, ut.op_user_id OpUserID, ut.op_user_name OpUserName, ut.opinion Opinion, ut.opinion_desc OpinionDesc,"+
+		" nt.id NID, nt.node_task_id NodeTaskID, nt.node_id NodeID, nt.parent_id ParentID, nt.node_model NodeModel, nt.node_name NodeName, nt.approve_type ApproveType, nt.none_handler NoneHandler, nt.appoint_handler AppointHandler, nt.handle_mode HandleMode, nt.finish_mode FinishMode, nt.branch_mode BranchMode, nt.default_branch DefaultBranch, nt.branch_level BranchLevel, nt.condition_group ConditionGroup, nt.condition_expr ConditionExpr, nt.remark NRemark, nt.status NStatus, nt.create_time NCreateTime, nt.update_time NUpdateTime,"+
+		" itd.id TID, itd.inst_task_id InstTaskID, itd.model_id ModelID, itd.process_def_id ProcessDefID, itd.form_def_id FormDefID, itd.version_id VersionID, itd.task_name TaskName, itd.status TStatus, itd.remark TRemark, itd.create_time TCreateTime, itd.create_user_id CreateUserID, itd.create_user_name CreateUserName, itd.update_time TUpdateTime, itd.update_user_id UpdateUserID, itd.update_user_name UpdateUserName, itd.start_time StartTime, itd.end_time EndTime"+
+		" from inst_user_task ut"+
+		" left join inst_node_task nt on ut.node_task_id = nt.node_task_id"+
+		" left join inst_task_detail itd on nt.inst_task_id = itd.inst_task_id"+
+		" where ((ut.status = 1 and nt.status = 2 and itd.status = 2) or (ut.status = 1  and nt.node_model = 4)) and ut.op_user_id = ?"+
+		" order by ut.create_time desc", userID).Find(&userTasks)
+	return &userTasks
+}
+
+// GetDoneUserTask
+// @Description: 获取已办用户任务
+// @param userID
+// @return *[]entity.InstNodeAndUserTaskResult
+func GetDoneUserTask(userID string) *[]entity.InstNodeAndUserTaskResult {
+	var userTasks []entity.InstNodeAndUserTaskResult
+	tx := MysqlDB.Model(&model.InstUserTask{}).
+		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
+			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime," +
+			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
+		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id")
+	tx.Where("inst_user_task.status in (2,3,4,5)")
+	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
+	return &userTasks
 }
 
 // GetExecNodeTaskMap

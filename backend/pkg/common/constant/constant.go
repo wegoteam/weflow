@@ -60,6 +60,7 @@ const (
 	InstanceUserTaskStatusDisagree = 3 //不通过（不同意）
 	InstanceUserTaskStatusRollback = 4 //回退
 	InstanceUserTaskStatusStop     = 5 //终止
+	InstanceUserTaskStatusSave     = 6 //保存
 )
 
 /**
@@ -69,6 +70,9 @@ const (
 	InstanceUserTaskOpinionNotPublish = 1 //未发表
 	InstanceUserTaskOpinionAgree      = 2 //同意
 	InstanceUserTaskOpinionDisagree   = 3 //不同意
+	InstanceUserTaskOpinionRollback   = 4 //回退
+	InstanceUserTaskOpinionStop       = 5 //终止
+	InstanceUserTaskOpinionSave       = 6 //保存
 )
 
 /**

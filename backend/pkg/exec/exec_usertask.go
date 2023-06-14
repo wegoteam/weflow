@@ -18,17 +18,34 @@ import (
 // @return bool
 func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) bool {
 	userTaskExecution := NewUserTaskExecution(userTaskID)
-	currUserId := userTaskExecution.OpUserID
-	//验证当前用户是否有权限操作该任务
-	if currUserId != opUserID {
-		hlog.Errorf("当前用户[%s]无权限操作该任务[%s]", currUserId, userTaskID)
-		panic("当前用户无权限操作该任务")
-	}
+	//验证用户任务信息
+	userTaskExecution.verify(opUserID)
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusAgree
+	userTaskExecution.Opinion = constant.InstanceUserTaskStatusAgree
 	userTaskExecution.agree(userTaskID, params)
+	return true
+}
+
+// Save
+// @Description: 保存
+// @param userTaskID 用户任务ID
+// @param opUserID 操作用户ID
+// @param OpUserName 操作用户名称
+// @param opinionDesc 意见描述
+// @param params 参数
+// @return bool
+func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) bool {
+	userTaskExecution := NewUserTaskExecution(userTaskID)
+	//验证用户任务信息
+	userTaskExecution.verify(opUserID)
+	userTaskExecution.OpUserID = opUserID
+	userTaskExecution.OpUserName = opUserName
+	userTaskExecution.OpinionDesc = opinionDesc
+	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionSave
+	userTaskExecution.save(userTaskID, params)
 	return true
 }
 
@@ -41,16 +58,13 @@ func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[stri
 // @return bool
 func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) bool {
 	userTaskExecution := NewUserTaskExecution(userTaskID)
-	currUserId := userTaskExecution.OpUserID
-	//验证当前用户是否有权限操作该任务
-	if currUserId != opUserID {
-		hlog.Errorf("当前用户[%s]无权限操作该任务[%s]", currUserId, userTaskID)
-		panic("当前用户无权限操作该任务")
-	}
+	//验证用户任务信息
+	userTaskExecution.verify(opUserID)
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusDisagree
+	userTaskExecution.Opinion = constant.InstanceUserTaskStatusDisagree
 	userTaskExecution.disagree(userTaskID)
 	return true
 }
@@ -65,14 +79,15 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) bool {
 func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[string]any) bool {
 	execution := userTaskExecution.Execution
 	execution.InstTaskParamMap = params
-	//验证表单权限
+	//执行流转
 	execNodeTask(userTaskExecution)
 	//修改当前用户任务
 	userTasks := execution.UserTasks
 	editUserTask := &entity.UserTaskBO{
-		ExecOpType:  constant.OperationTypeUpdate,
-		UserTaskID:  userTaskID,
-		Status:      constant.InstanceUserTaskStatusAgree,
+		ExecOpType: constant.OperationTypeUpdate,
+		UserTaskID: userTaskID,
+		Status:     constant.InstanceUserTaskStatusAgree,
+		//Opinion:     int32(userTaskExecution.Opinion),
 		OpinionDesc: userTaskExecution.OpinionDesc,
 		UpdateTime:  execution.Now,
 	}
@@ -81,6 +96,50 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 	userTaskExecution.execInstUserTaskData()
 	hlog.Infof("当前节点任务[%s]同意操作，节点任务已完成", userTaskID)
 	return true
+}
+
+// save
+// @Description: 保存
+// @receiver userTaskExecution
+// @param userTaskID 用户任务ID
+// @param params 参数
+// @return bool
+func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[string]any) bool {
+	execution := userTaskExecution.Execution
+	execution.InstTaskParamMap = params
+
+	//执行数据
+	userTaskExecution.execInstUserTaskData()
+	return true
+}
+
+// verify
+// @Description: 验证用户任务信息
+// @receiver userTaskExecution
+func (userTaskExecution *UserTaskExecution) verify(opUserID string) {
+	//用户任务状态是否是进行中
+	if userTaskExecution.UserTaskStatus != constant.InstanceUserTaskStatusDoing {
+		hlog.Errorf("当前用户任务[%s]状态不是进行中", userTaskExecution.UserTaskID)
+		//panic("当前用户任务状态不是进行中")
+	}
+	//用户任务操作员与提交处理人任务操作员是否一致
+	if userTaskExecution.OpUserID != opUserID {
+		hlog.Errorf("当前用户[%s]无权限操作该任务[%s]", opUserID, userTaskExecution.UserTaskID)
+		panic("当前用户无权限操作该任务")
+	}
+	if userTaskExecution.NodeModel == constant.NotifyNodeModel {
+		return
+	}
+	//实例任务状态是否是进行中
+	if userTaskExecution.Execution.InstTaskStatus != constant.InstanceTaskStatusDoing {
+		hlog.Errorf("当前实例任务[%s]状态不是进行中", userTaskExecution.Execution.InstTaskID)
+		panic("当前实例任务状态不是进行中")
+	}
+	//节点任务状态是否是进行中、节点任务权限模式是否是知会
+	if userTaskExecution.NodeTaskStatus != constant.InstanceNodeTaskStatusDoing {
+		hlog.Errorf("当前节点任务[%s]状态不是进行中", userTaskExecution.UserTaskID)
+		panic("当前节点任务状态不是进行中")
+	}
 }
 
 // execUserTask
@@ -119,6 +178,10 @@ func execNodeTask(userTaskExecution *UserTaskExecution) {
 		UpdateTime: execution.Now,
 	}
 	*nodeTasks = append(*nodeTasks, *editNodeTask)
+	//抄送任务不继续流转
+	if userTaskExecution.NodeModel == constant.NotifyNodeModel {
+		return
+	}
 	//执行下一个节点
 	execNextNode(&currNodeModelBO, execution)
 }
@@ -289,6 +352,8 @@ func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) bool {
 		UpdateTime:  execution.Now,
 	}
 	*userTasks = append(*userTasks, *editUserTask)
+	//执行数据
+	userTaskExecution.execInstUserTaskData()
 	hlog.Infof("当前节点任务[%s]不同意操作，节点任务已完成", userTaskID)
 	return true
 }
@@ -361,15 +426,6 @@ func (userTaskExecution *UserTaskExecution) cancel() bool {
 // @receiver userTaskExecution
 // @return bool
 func (userTaskExecution *UserTaskExecution) urge() bool {
-
-	return true
-}
-
-// save
-// @Description: 保存
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) save() bool {
 
 	return true
 }

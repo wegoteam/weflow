@@ -10,11 +10,10 @@ import (
 	"github.com/wegoteam/wepkg/snowflake"
 )
 
-// execInstData
-// @Description: 保存实例数据
+// execStartInstData
+// @Description: 发起执行的实例数据，进行数据处理
 // @receiver instTaskExecution
-func (instTaskExecution *InstTaskExecution) execInstData() {
-
+func (instTaskExecution *InstTaskExecution) execStartInstData() {
 	execution := instTaskExecution.Execution
 	//转换实例任务
 	addInstTask := transformInstTaskExecution(instTaskExecution)
@@ -125,7 +124,55 @@ func (instTaskExecution *InstTaskExecution) execInstData() {
 	tx.Commit()
 }
 
-// execInstData
+// execStopInstData
+// @Description: 终止操作执行的实例数据，进行数据处理
+// @receiver instTaskExecution
+func (instTaskExecution *InstTaskExecution) execStopInstData() {
+	//开启事务
+	tx := MysqlDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	//提交事务
+	tx.Commit()
+}
+
+// execSuspendInstData
+// @Description: 挂起实例任务操作执行的实例数据，进行数据处理
+// @receiver instTaskExecution
+func (instTaskExecution *InstTaskExecution) execSuspendInstData() {
+	//开启事务
+	tx := MysqlDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	//提交事务
+	tx.Commit()
+}
+
+// execResumeInstData
+// @Description: 终止操作执行的实例数据，进行数据处理
+// @receiver instTaskExecution
+func (instTaskExecution *InstTaskExecution) execResumeInstData() {
+	//开启事务
+	tx := MysqlDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	//提交事务
+	tx.Commit()
+}
+
+// execStartInstData
 // @Description: 保存实例数据
 // @receiver instTaskExecution
 func (userTaskExecution *UserTaskExecution) execInstUserTaskData() {
@@ -155,7 +202,7 @@ func (userTaskExecution *UserTaskExecution) execInstUserTaskData() {
 		UserTaskID:  userTaskExecution.UserTaskID,
 		NodeID:      userTaskExecution.NodeID,
 		OpinionID:   snowflake.GetSnowflakeId(),
-		Opinion:     int32(userTaskExecution.UserTaskStatus),
+		Opinion:     int32(userTaskExecution.Opinion),
 		OpinionDesc: userTaskExecution.OpinionDesc,
 		OpUserID:    userTaskExecution.OpUserID,
 		OpUserName:  userTaskExecution.OpUserName,

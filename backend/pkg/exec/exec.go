@@ -2,6 +2,7 @@ package exec
 
 import (
 	"github.com/wegoteam/weflow/pkg/common/config"
+	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/parser"
 	"github.com/wegoteam/weflow/pkg/service"
@@ -9,9 +10,10 @@ import (
 )
 
 var (
-	MysqlDB     = config.MysqlDB
-	RedisCliet  = config.RedisCliet
-	MongoClient = config.MongoClient
+	MysqlDB         = config.MysqlDB
+	RedisCliet      = config.RedisCliet
+	MongoClient     = config.MongoClient
+	instCanStopList = []int{constant.InstanceTaskStatusDoing, constant.InstanceTaskStatusHangUp, constant.InstanceTaskStatusRollback, constant.InstanceTaskStatusCreate}
 )
 
 // IExecution
@@ -21,7 +23,7 @@ type IExecution interface {
 	start(modelID string, params map[string]any) string
 	//停止
 	stop(instTaskID string) bool
-	//暂停
+	//暂停，挂起
 	suspend(instTaskID string) bool
 	//恢复
 	resume(instTaskID string) bool
@@ -32,6 +34,8 @@ type IExecution interface {
 type ITaskExecution interface {
 	//同意处理审批、办理、抄送、自定义节点的任务
 	agree(userTaskID string, params map[string]any) bool
+	//保存
+	save(userTaskID string, params map[string]any) bool
 	//不同意处理审批、办理、抄送、自定义节点的任务
 	disagree(userTaskID string) bool
 	//转办任务，将任务交接给他人办理，办理完成后继续下步骤
@@ -50,8 +54,6 @@ type ITaskExecution interface {
 	cancel() bool
 	//催办
 	urge() bool
-	//保存
-	save() bool
 	//加签
 	addSign() bool
 	//减签
@@ -83,13 +85,15 @@ type Execution struct {
 	InstTaskOpLogs   *[]entity.InstTaskOpLogBO        //实例任务操作日志
 }
 
-// InstTaskExecution 执行实例
+// InstTaskExecution 执行实例任务
 type InstTaskExecution struct {
-	Execution  *Execution //执行对象
-	ModelID    string     //模型ID
-	VersionID  string     //版本ID
-	OpUserID   string     //操作用户ID
-	OpUserName string     //操作用户名称
+	Execution   *Execution //执行对象
+	ModelID     string     //模型ID
+	VersionID   string     //版本ID
+	OpUserID    string     //操作用户ID
+	OpUserName  string     //操作用户名称
+	OpinionDesc string     //意见描述
+	Opinion     int        //意见
 }
 
 // UserTaskExecution 执行用户任务
@@ -98,6 +102,7 @@ type UserTaskExecution struct {
 	ModelID        string     //模型ID
 	VersionID      string     //版本ID
 	NodeID         string     //节点ID
+	NodeModel      int        //节点模型
 	NodeTaskID     string     //节点任务ID
 	ApproveType    int        // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
 	NoneHandler    int        // 审批人为空时【自动通过：1；自动转交管理员：2；指定审批人：3】默认自动通过1
@@ -110,7 +115,7 @@ type UserTaskExecution struct {
 	OpUserID       string     //操作用户ID
 	OpUserName     string     //操作用户名称
 	OpinionDesc    string     //意见描述
-	Opinion        string     //意见
+	Opinion        int        //意见
 	OpSort         int        //操作排序
 }
 
@@ -208,6 +213,7 @@ func NewUserTaskExecution(userTaskID string) *UserTaskExecution {
 		ModelID:        instNodeUserTask.ModelID,
 		VersionID:      instNodeUserTask.VersionID,
 		NodeID:         instNodeUserTask.NodeID,
+		NodeModel:      int(instNodeUserTask.NodeModel),
 		NodeTaskID:     instNodeUserTask.NodeTaskID,
 		ApproveType:    int(instNodeUserTask.ApproveType),
 		NoneHandler:    int(instNodeUserTask.NoneHandler),
@@ -215,9 +221,10 @@ func NewUserTaskExecution(userTaskID string) *UserTaskExecution {
 		HandleMode:     int(instNodeUserTask.HandleMode),
 		FinishMode:     int(instNodeUserTask.FinishMode),
 		NodeTaskStatus: int(instNodeUserTask.NStatus),
+		UserTaskID:     instNodeUserTask.UserTaskID,
+		UserTaskStatus: int(instNodeUserTask.UStatus),
 		OpUserID:       instNodeUserTask.OpUserID,
 		OpUserName:     instNodeUserTask.OpUserName,
-		UserTaskID:     instNodeUserTask.UserTaskID,
 		OpSort:         int(instNodeUserTask.Sort),
 	}
 }
