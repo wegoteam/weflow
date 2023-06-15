@@ -143,6 +143,7 @@ func (execNotifyNode *ExecNotifyNode) execPreNodeModels(nodeModelMap map[string]
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Infof("节点[%v]的上节点不存在", execNotifyNode.NodeID)
+			continue
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -157,6 +158,7 @@ func (execNotifyNode *ExecNotifyNode) execNextNodeModels(nodeModelMap map[string
 			next, ok := nodeModelMap[val]
 			if !ok {
 				hlog.Infof("节点[%s]的下节点不存在", execNotifyNode.NodeID)
+				continue
 			}
 			nextNodes = append(nextNodes, next)
 		}

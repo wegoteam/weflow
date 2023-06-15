@@ -19,7 +19,7 @@ import (
 )
 
 func TestStartInstTask(t *testing.T) {
-	processDefModel := parser.GetProcessDefModel("1640993392605401001")
+	processDefModel, _ := parser.GetProcessDefModel("1640993392605401001")
 
 	execution := &Execution{}
 	execution.ProcessDefModel = processDefModel
@@ -59,7 +59,7 @@ func TestStartInstTask(t *testing.T) {
 }
 
 func TestInstTaskExecution(t *testing.T) {
-	processDefModel := parser.GetProcessDefModel("1640993392605401001")
+	processDefModel, _ := parser.GetProcessDefModel("1640993392605401001")
 
 	execution := &Execution{}
 	execution.ProcessDefModel = processDefModel
@@ -240,6 +240,6 @@ func TestStartProcessInstTask(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam22222"
 	instTaskParamMap["testparam3"] = "testparam33333"
 	instTaskParamMap["testparam3"] = "testparam4"
-	instTaskId := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 }

@@ -73,6 +73,9 @@ const (
 	InstanceUserTaskOpinionRollback   = 4 //回退
 	InstanceUserTaskOpinionStop       = 5 //终止
 	InstanceUserTaskOpinionSave       = 6 //保存
+	InstanceUserTaskOpinionStart      = 7 //发起
+	InstanceUserTaskOpinionSuspend    = 8 //挂起
+	InstanceUserTaskOpinionSesume     = 9 //恢复
 )
 
 /**

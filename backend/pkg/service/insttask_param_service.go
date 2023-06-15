@@ -46,15 +46,12 @@ func TransformInstTaskParam(instTaskID string, instTaskParamMap map[string]inter
 // @return []model.InstTaskParam
 func GetInstTaskParam(instTaskID string) map[string]interface{} {
 	var instTaskParamMap = make(map[string]interface{})
-
 	var instTaskParams []model.InstTaskParam
 	MysqlDB.Model(&model.InstTaskParam{}).Where("inst_task_id = ?", instTaskID).Find(&instTaskParams)
-
 	if instTaskParams == nil {
 		return instTaskParamMap
 	}
 	for _, instTaskParam := range instTaskParams {
-
 		var obj interface{}
 		err := sonic.Unmarshal(instTaskParam.ParamBinary, &obj)
 		if err != nil {
@@ -63,7 +60,6 @@ func GetInstTaskParam(instTaskID string) map[string]interface{} {
 		}
 		instTaskParamMap[instTaskParam.ParamID] = obj
 	}
-
 	return instTaskParamMap
 }
 

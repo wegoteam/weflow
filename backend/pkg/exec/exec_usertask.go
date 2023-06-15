@@ -2,6 +2,7 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
@@ -16,17 +17,23 @@ import (
 // @param opinionDesc 意见描述
 // @param params 参数
 // @return bool
-func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) bool {
-	userTaskExecution := NewUserTaskExecution(userTaskID)
+func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
+	//创建用户任务执行对象
+	userTaskExecution, err := NewUserTaskExecution(userTaskID)
+	if err != nil {
+		return err
+	}
 	//验证用户任务信息
-	userTaskExecution.verify(opUserID)
+	verifyErr := userTaskExecution.verify(opUserID)
+	if verifyErr != nil {
+		return verifyErr
+	}
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusAgree
 	userTaskExecution.Opinion = constant.InstanceUserTaskStatusAgree
-	userTaskExecution.agree(userTaskID, params)
-	return true
+	return userTaskExecution.agree(userTaskID, params)
 }
 
 // Save
@@ -37,16 +44,19 @@ func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[stri
 // @param opinionDesc 意见描述
 // @param params 参数
 // @return bool
-func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) bool {
-	userTaskExecution := NewUserTaskExecution(userTaskID)
+func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
+	//创建用户任务执行对象
+	userTaskExecution, err := NewUserTaskExecution(userTaskID)
+	if err != nil {
+		return err
+	}
 	//验证用户任务信息
 	userTaskExecution.verify(opUserID)
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionSave
-	userTaskExecution.save(userTaskID, params)
-	return true
+	return userTaskExecution.save(userTaskID, params)
 }
 
 // Disagree
@@ -56,8 +66,12 @@ func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[strin
 // @param OpUserName 操作用户名称
 // @param opinionDesc 意见描述
 // @return bool
-func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) bool {
-	userTaskExecution := NewUserTaskExecution(userTaskID)
+func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
+	//创建用户任务执行对象
+	userTaskExecution, err := NewUserTaskExecution(userTaskID)
+	if err != nil {
+		return err
+	}
 	//验证用户任务信息
 	userTaskExecution.verify(opUserID)
 	userTaskExecution.OpUserID = opUserID
@@ -65,8 +79,7 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) bool {
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusDisagree
 	userTaskExecution.Opinion = constant.InstanceUserTaskStatusDisagree
-	userTaskExecution.disagree(userTaskID)
-	return true
+	return userTaskExecution.disagree(userTaskID)
 }
 
 // agree
@@ -76,7 +89,7 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) bool {
 // @param userTaskID 用户任务ID
 // @param params 参数
 // @return bool
-func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[string]any) bool {
+func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[string]any) error {
 	execution := userTaskExecution.Execution
 	execution.InstTaskParamMap = params
 	//执行流转
@@ -93,9 +106,12 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 	}
 	*userTasks = append(*userTasks, *editUserTask)
 	//执行数据
-	userTaskExecution.execInstUserTaskData()
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
 	hlog.Infof("当前节点任务[%s]同意操作，节点任务已完成", userTaskID)
-	return true
+	return nil
 }
 
 // save
@@ -104,42 +120,193 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 // @param userTaskID 用户任务ID
 // @param params 参数
 // @return bool
-func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[string]any) bool {
+func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[string]any) error {
 	execution := userTaskExecution.Execution
 	execution.InstTaskParamMap = params
 
 	//执行数据
-	userTaskExecution.execInstUserTaskData()
-	return true
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// disagree
+// @Description: 不同意
+// @receiver userTaskExecution
+// @param userTaskID
+// @param params
+// @return bool
+func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) error {
+	execution := userTaskExecution.Execution
+	//execution.InstTaskParamMap = params
+	//验证表单权限
+	execNodeTask(userTaskExecution)
+	//修改当前用户任务
+	userTasks := execution.UserTasks
+	editUserTask := &entity.UserTaskBO{
+		ExecOpType:  constant.OperationTypeUpdate,
+		UserTaskID:  userTaskID,
+		Status:      constant.InstanceUserTaskStatusDisagree,
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		UpdateTime:  execution.Now,
+	}
+	*userTasks = append(*userTasks, *editUserTask)
+	//执行数据
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
+	hlog.Infof("当前节点任务[%s]不同意操作，节点任务已完成", userTaskID)
+	return nil
+}
+
+// turn
+// @Description: 转办
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) turn() error {
+
+	return nil
+}
+
+// delegate
+// @Description: 委托
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) delegate() error {
+
+	return nil
+}
+
+// rollback
+// @Description: 回退上节点
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) rollback() error {
+
+	return nil
+}
+
+// rollbackStartNode
+// @Description: 回退发起节点
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) rollbackStartNode() error {
+
+	return nil
+}
+
+// rollbackAnyNode
+// @Description: 回退任意节点
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) rollbackAnyNode() error {
+
+	return nil
+}
+
+// revoke
+// @Description: 撤回
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) revoke() error {
+
+	return nil
+}
+
+// cancel
+// @Description: 取消
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) cancel() error {
+
+	return nil
+}
+
+// urge
+// @Description: 催办
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) urge() error {
+
+	return nil
+}
+
+// addSign
+// @Description: 加签
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) addSign() error {
+
+	return nil
+}
+
+// reduceSign
+// @Description: 减签
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) reduceSign() error {
+
+	return nil
+}
+
+// cc
+// @Description: 抄送
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) cc() error {
+
+	return nil
+}
+
+// ccReply
+// @Description: 抄送回复
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) ccReply() error {
+
+	return nil
+}
+
+// ccRevoke
+// @Description: 抄送撤回
+// @receiver userTaskExecution
+// @return bool
+func (userTaskExecution *UserTaskExecution) ccRevoke() error {
+
+	return nil
 }
 
 // verify
 // @Description: 验证用户任务信息
 // @receiver userTaskExecution
-func (userTaskExecution *UserTaskExecution) verify(opUserID string) {
+func (userTaskExecution *UserTaskExecution) verify(opUserID string) error {
 	//用户任务状态是否是进行中
 	if userTaskExecution.UserTaskStatus != constant.InstanceUserTaskStatusDoing {
 		hlog.Errorf("当前用户任务[%s]状态不是进行中", userTaskExecution.UserTaskID)
-		//panic("当前用户任务状态不是进行中")
+		return errors.New("当前用户任务状态不是进行中")
 	}
 	//用户任务操作员与提交处理人任务操作员是否一致
 	if userTaskExecution.OpUserID != opUserID {
 		hlog.Errorf("当前用户[%s]无权限操作该任务[%s]", opUserID, userTaskExecution.UserTaskID)
-		panic("当前用户无权限操作该任务")
+		return errors.New("当前用户无权限操作该任务")
 	}
 	if userTaskExecution.NodeModel == constant.NotifyNodeModel {
-		return
+		return nil
 	}
 	//实例任务状态是否是进行中
 	if userTaskExecution.Execution.InstTaskStatus != constant.InstanceTaskStatusDoing {
 		hlog.Errorf("当前实例任务[%s]状态不是进行中", userTaskExecution.Execution.InstTaskID)
-		panic("当前实例任务状态不是进行中")
+		return errors.New("当前实例任务状态不是进行中")
 	}
 	//节点任务状态是否是进行中、节点任务权限模式是否是知会
 	if userTaskExecution.NodeTaskStatus != constant.InstanceNodeTaskStatusDoing {
 		hlog.Errorf("当前节点任务[%s]状态不是进行中", userTaskExecution.UserTaskID)
-		panic("当前节点任务状态不是进行中")
+		return errors.New("当前节点任务状态不是进行中")
 	}
+	return nil
 }
 
 // execUserTask
@@ -191,7 +358,6 @@ func execNodeTask(userTaskExecution *UserTaskExecution) {
 //审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 // @return bool
 func isFinish(userTaskExecution *UserTaskExecution) bool {
-
 	switch userTaskExecution.HandleMode {
 	case constant.ApprovalWayOrder:
 		return execApprovalWayOrder(userTaskExecution)
@@ -211,7 +377,6 @@ func execApprovalWayOrder(userTaskExecution *UserTaskExecution) bool {
 	if utils.IsEmptySlice(userTasks) {
 		return false
 	}
-
 	var finishCount = 0
 	for _, userTask := range userTasks {
 		if userTask.UserTaskID == userTaskExecution.UserTaskID {
@@ -228,7 +393,6 @@ func execApprovalWayOrder(userTaskExecution *UserTaskExecution) bool {
 	if finishCount == len(userTasks) {
 		return true
 	}
-
 	return false
 }
 
@@ -241,7 +405,6 @@ func execApprovalWayCount(userTaskExecution *UserTaskExecution) bool {
 	}
 	//完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0），为0时候比较同意和拒绝的人数判断
 	finishModeCount := userTaskExecution.FinishMode
-
 	var finishCount = 0
 	for _, userTask := range userTasks {
 		if userTask.UserTaskID == userTaskExecution.UserTaskID {
@@ -261,7 +424,6 @@ func execApprovalWayCount(userTaskExecution *UserTaskExecution) bool {
 	if finishModeCount == 0 {
 		return true
 	}
-
 	return finishCount >= finishModeCount
 }
 
@@ -274,7 +436,6 @@ func execApprovalWayOr(userTaskExecution *UserTaskExecution) bool {
 	}
 	//完成人数：依次审批默认0所有人不可选人，会签默认0所有人（可选人大于0），或签默认1一个人（可选人大于0），为0时候比较同意和拒绝的人数判断
 	finishModeCount := userTaskExecution.FinishMode
-
 	var agreeCount = 0
 	var disagreeCount = 0
 	for _, userTask := range userTasks {
@@ -303,7 +464,6 @@ func execApprovalWayOr(userTaskExecution *UserTaskExecution) bool {
 			return true
 		}
 	}
-
 	if finishModeCount != 0 {
 		return false
 	}
@@ -327,150 +487,5 @@ func execApprovalWayOr(userTaskExecution *UserTaskExecution) bool {
 			return true
 		}
 	}
-
 	return false
-}
-
-// disagree
-// @Description: 不同意
-// @receiver userTaskExecution
-// @param userTaskID
-// @param params
-// @return bool
-func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) bool {
-	execution := userTaskExecution.Execution
-	//execution.InstTaskParamMap = params
-	//验证表单权限
-	execNodeTask(userTaskExecution)
-	//修改当前用户任务
-	userTasks := execution.UserTasks
-	editUserTask := &entity.UserTaskBO{
-		ExecOpType:  constant.OperationTypeUpdate,
-		UserTaskID:  userTaskID,
-		Status:      constant.InstanceUserTaskStatusDisagree,
-		OpinionDesc: userTaskExecution.OpinionDesc,
-		UpdateTime:  execution.Now,
-	}
-	*userTasks = append(*userTasks, *editUserTask)
-	//执行数据
-	userTaskExecution.execInstUserTaskData()
-	hlog.Infof("当前节点任务[%s]不同意操作，节点任务已完成", userTaskID)
-	return true
-}
-
-// turn
-// @Description: 转办
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) turn() bool {
-
-	return true
-}
-
-// delegate
-// @Description: 委托
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) delegate() bool {
-
-	return true
-}
-
-// rollback
-// @Description: 回退上节点
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) rollback() bool {
-
-	return true
-}
-
-// rollbackStartNode
-// @Description: 回退发起节点
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) rollbackStartNode() bool {
-
-	return true
-}
-
-// rollbackAnyNode
-// @Description: 回退任意节点
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) rollbackAnyNode() bool {
-
-	return true
-}
-
-// revoke
-// @Description: 撤回
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) revoke() bool {
-
-	return true
-}
-
-// cancel
-// @Description: 取消
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) cancel() bool {
-
-	return true
-}
-
-// urge
-// @Description: 催办
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) urge() bool {
-
-	return true
-}
-
-// addSign
-// @Description: 加签
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) addSign() bool {
-
-	return true
-}
-
-// reduceSign
-// @Description: 减签
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) reduceSign() bool {
-
-	return true
-}
-
-// cc
-// @Description: 抄送
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) cc() bool {
-
-	return true
-}
-
-// ccReply
-// @Description: 抄送回复
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) ccReply() bool {
-
-	return true
-}
-
-// ccRevoke
-// @Description: 抄送撤回
-// @receiver userTaskExecution
-// @return bool
-func (userTaskExecution *UserTaskExecution) ccRevoke() bool {
-
-	return true
 }

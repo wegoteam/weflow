@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/config"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
@@ -20,24 +21,24 @@ var (
 // @Description: 执行接口
 type IExecution interface {
 	//开始
-	start(modelID string, params map[string]any) string
+	start(modelID string, params map[string]any) (string, error)
 	//停止
-	stop(instTaskID string) bool
+	stop(instTaskID string) error
 	//暂停，挂起
-	suspend(instTaskID string) bool
+	suspend(instTaskID string) error
 	//恢复
-	resume(instTaskID string) bool
+	resume(instTaskID string) error
 }
 
 // ITaskExecution
 // @Description: 执行接口
 type ITaskExecution interface {
 	//同意处理审批、办理、抄送、自定义节点的任务
-	agree(userTaskID string, params map[string]any) bool
+	agree(userTaskID string, params map[string]any) error
 	//保存
-	save(userTaskID string, params map[string]any) bool
+	save(userTaskID string, params map[string]any) error
 	//不同意处理审批、办理、抄送、自定义节点的任务
-	disagree(userTaskID string) bool
+	disagree(userTaskID string) error
 	//转办任务，将任务交接给他人办理，办理完成后继续下步骤
 	turn() bool
 	//委托任务，将任务委托给他人，他人办理完成后再回到委托人
@@ -123,15 +124,18 @@ type UserTaskExecution struct {
 // @Description: 创建实例任务执行对象
 // @param instTaskID
 // @return *InstTaskExecution
-func NewInstTaskExecution(instTaskID string) *InstTaskExecution {
+func NewInstTaskExecution(instTaskID string) (*InstTaskExecution, error) {
 	//实例任务
 	instTask := service.GetInstTask(instTaskID)
 	if instTask == nil {
-		panic("实例任务不存在")
+		return nil, errors.New("实例任务不存在")
 	}
 	var execution = &Execution{}
 	//获取流程定义模型
-	processDefModel := parser.GetProcessDefModel(instTask.ProcessDefID)
+	processDefModel, modelErr := parser.GetProcessDefModel(instTask.ProcessDefID)
+	if modelErr != nil {
+		return nil, errors.New("创建实例任务执行对象失败")
+	}
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = instTask.InstTaskID
 	execution.ProcessDefId = instTask.ProcessDefID
@@ -159,28 +163,32 @@ func NewInstTaskExecution(instTaskID string) *InstTaskExecution {
 	//实例任务操作日志
 	var instTaskOpLogs = make([]entity.InstTaskOpLogBO, 0)
 	execution.InstTaskOpLogs = &instTaskOpLogs
-	return &InstTaskExecution{
+	instTaskExecution := &InstTaskExecution{
 		Execution:  execution,
 		ModelID:    instTask.ModelID,
 		VersionID:  instTask.VersionID,
 		OpUserID:   instTask.CreateUserID,
 		OpUserName: instTask.CreateUserName,
 	}
+	return instTaskExecution, nil
 }
 
 // NewUserTaskExecution
 // @Description: 创建用户任务执行对象
 // @param userTaskID
 // @return *UserTaskExecution
-func NewUserTaskExecution(userTaskID string) *UserTaskExecution {
+func NewUserTaskExecution(userTaskID string) (*UserTaskExecution, error) {
 	//实例任务
 	instNodeUserTask := service.GetInstNodeUserTask(userTaskID)
 	if instNodeUserTask == nil {
-		panic("实例用户任务不存在")
+		return nil, errors.New("实例用户任务不存在")
 	}
 	var execution = &Execution{}
 	//获取流程定义模型
-	processDefModel := parser.GetProcessDefModel(instNodeUserTask.ProcessDefID)
+	processDefModel, modelErr := parser.GetProcessDefModel(instNodeUserTask.ProcessDefID)
+	if modelErr != nil {
+		return nil, errors.New("创建实例任务执行对象失败")
+	}
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = instNodeUserTask.InstTaskID
 	execution.ProcessDefId = instNodeUserTask.ProcessDefID
@@ -208,7 +216,7 @@ func NewUserTaskExecution(userTaskID string) *UserTaskExecution {
 	//实例任务操作日志
 	var instTaskOpLogs = make([]entity.InstTaskOpLogBO, 0)
 	execution.InstTaskOpLogs = &instTaskOpLogs
-	return &UserTaskExecution{
+	userTaskExecution := &UserTaskExecution{
 		Execution:      execution,
 		ModelID:        instNodeUserTask.ModelID,
 		VersionID:      instNodeUserTask.VersionID,
@@ -227,4 +235,5 @@ func NewUserTaskExecution(userTaskID string) *UserTaskExecution {
 		OpUserName:     instNodeUserTask.OpUserName,
 		OpSort:         int(instNodeUserTask.Sort),
 	}
+	return userTaskExecution, nil
 }

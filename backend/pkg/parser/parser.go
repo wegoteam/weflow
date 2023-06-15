@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/config"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
@@ -23,19 +24,18 @@ var (
 	RedisCliet = config.RedisCliet
 )
 
-//
 // GetProcessDefModel
 //  @Description: 获取流程定义模型
 //获取缓存的数据，不存在则部署
 //  @param processDefId
 //  @return *entity.ProcessDefModel
-//
-func GetProcessDefModel(processDefId string) *entity.ProcessDefModel {
+func GetProcessDefModel(processDefId string) (*entity.ProcessDefModel, error) {
 	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()
 	hasKey, existErr := RedisCliet.Exists(ctx, processDefKey).Result()
 	if existErr != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", existErr.Error())
+		return nil, errors.New("获取流程定义模型失败")
 	}
 	//存在，获取Redis内存的数据
 	if hasKey == constant.HasRedisProcessDefModel {
@@ -44,9 +44,8 @@ func GetProcessDefModel(processDefId string) *entity.ProcessDefModel {
 	return buildProcessDefOnDB(processDefId)
 }
 
-/**
-获取表单定义模型
-*/
+// GetFormDefModel
+// @Description: 获取表单定义模型
 func GetFormDefModel() {
 
 }

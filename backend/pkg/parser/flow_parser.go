@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
@@ -12,12 +13,11 @@ import (
 	"time"
 )
 
-/*
-*
-将字符串解析为节点实体
-*/
+// Parser
+// @Description: 将字符串解析为节点实体
+// @param data
+// @return *[]entity.NodeModelBO
 func Parser(data string) *[]entity.NodeModelBO {
-
 	var nodes = make([]entity.NodeModelEntity, 0)
 	var datas = make([]entity.NodeModelBO, 0)
 	if utils.IsStrBlank(data) {
@@ -28,7 +28,6 @@ func Parser(data string) *[]entity.NodeModelBO {
 	if err != nil {
 		hlog.Warnf("解析流程图失败，错误信息：%s", err.Error())
 	}
-
 	//遍历解析节点
 	nodeLen := len(nodes)
 	for nodeInd, node := range nodes {
@@ -57,17 +56,12 @@ func Parser(data string) *[]entity.NodeModelBO {
 	return &datas
 }
 
-/**
-解析节点：开始节点、审批节点、知会节点、条件节点
-节点：上节点、下节点、节点下标、尾节点等基础信息
-*/
+// parserNodeModel
+// @Description: 解析节点：开始节点、审批节点、知会节点、条件节点
+//节点：上节点、下节点、节点下标、尾节点等基础信息
+// @param node
+// @return *entity.NodeModelBO
 func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
-	//var bo = &entity.NodeModelBO{}
-	//err := utils.BeanCopy(bo, node)
-	//if err != nil {
-	//	hlog.Errorf("节点属性转换失败%v\n", err)
-	//}
-	//return bo
 	return &entity.NodeModelBO{
 		NodeID:         node.NodeID,
 		NodeName:       node.NodeName,
@@ -89,10 +83,12 @@ func parserNodeModel(node *entity.NodeModelEntity) *entity.NodeModelBO {
 	}
 }
 
-/**
-解析节点：分支节点
-节点：上节点、下节点、节点下标、尾节点等基础信息
-*/
+// parserBranchNodeModel
+// @Description: 解析节点：分支节点
+//节点：上节点、下节点、节点下标、尾节点等基础信息
+// @param nodeBO
+// @param childs
+// @param datas
 func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeModelEntity, datas *[]entity.NodeModelBO) {
 	if nodeBO.NodeModel != constant.BranchNodeModel {
 		return
@@ -139,22 +135,23 @@ func parserBranchNodeModel(nodeBO *entity.NodeModelBO, childs [][]entity.NodeMod
 		}
 		branchIds[branch] = branchChildIds
 	}
-
 }
 
-/**
-在数据库中获取流程定义节点信息，部署到Redis中
-*/
-func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
+// buildProcessDefOnDB
+// @Description: 在数据库中获取流程定义节点信息，部署到Redis中
+// @param processDefId
+// @return *entity.ProcessDefModel
+func buildProcessDefOnDB(processDefId string) (*entity.ProcessDefModel, error) {
 	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()
 	var processDefInfo = &model.ProcessDefInfo{}
 	dbErr := MysqlDB.WithContext(ctx).Where(&model.ProcessDefInfo{ProcessDefID: processDefId}).First(processDefInfo).Error
 	if dbErr != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", dbErr.Error())
+		return nil, errors.Wrapf(dbErr, "获取流程定义模型失败，错误信息：%v", dbErr.Error())
 	}
 	if processDefInfo == nil {
-		return nil
+		return nil, errors.New("流程定义不存在")
 	}
 	//流程定义模型
 	var processDefModel = &entity.ProcessDefModel{}
@@ -175,36 +172,40 @@ func buildProcessDefOnDB(processDefId string) *entity.ProcessDefModel {
 	})
 	if err != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+		return nil, errors.Wrapf(err, "获取流程定义模型失败，错误信息：%v", err.Error())
 	}
 	//设置过期时间
 	err = RedisCliet.Expire(ctx, processDefKey, time.Hour*72).Err()
 	if err != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+		return nil, errors.Wrapf(err, "获取流程定义模型失败，错误信息：%v", err.Error())
 	}
 	processDefModel.ProcessDefId = processDefId
 	processDefModel.NodeModelMap = nodeModelMap
-	return processDefModel
+	return processDefModel, nil
 }
 
-/**
-从Redis中获取流程定义的节点信息
-*/
-func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
+// buildProcessDefOnRedis
+// @Description: 从Redis中获取流程定义的节点信息
+// @param processDefId
+// @return *entity.ProcessDefModel
+func buildProcessDefOnRedis(processDefId string) (*entity.ProcessDefModel, error) {
 	var processDefKey = constant.RedisProcessDefModel + processDefId
 	ctx := context.Background()
 	var nodeStrMap map[string]string
 	nodeStrMap, err := RedisCliet.HGetAll(ctx, processDefKey).Result()
 	if err != nil {
 		hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+		return nil, errors.Wrapf(err, "获取流程定义模型失败，错误信息：%v", err.Error())
 	}
 	var processDefModel = &entity.ProcessDefModel{}
 	var nodeModelMap = make(map[string]entity.NodeModelBO)
 	var nodes = make([]entity.NodeModelBO, 0)
 	for key, val := range nodeStrMap {
 		var node = &entity.NodeModelBO{}
-		err := sonic.Unmarshal([]byte(val), node)
-		if err != nil {
-			hlog.Warnf("获取流程定义模型失败，错误信息：%s", err.Error())
+		jsonerr := sonic.Unmarshal([]byte(val), node)
+		if jsonerr != nil {
+			hlog.Warnf("获取流程定义模型失败，错误信息：%s", jsonerr.Error())
 		}
 		if node.NodeModel == constant.StartNodeModel {
 			processDefModel.StartNodeId = node.NodeID
@@ -215,5 +216,5 @@ func buildProcessDefOnRedis(processDefId string) *entity.ProcessDefModel {
 	processDefModel.NodeModels = &nodes
 	processDefModel.NodeModelMap = nodeModelMap
 	processDefModel.ProcessDefId = processDefId
-	return processDefModel
+	return processDefModel, nil
 }

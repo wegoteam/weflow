@@ -320,6 +320,7 @@ func (execBranchNode *ExecBranchNode) execPreNodeModels(nodeModelMap map[string]
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Warnf("节点[%v]的上节点不存在", execBranchNode.NodeID)
+			continue
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -334,6 +335,7 @@ func (execBranchNode *ExecBranchNode) execNextNodeModels(nodeModelMap map[string
 			next, ok := nodeModelMap[val]
 			if !ok {
 				hlog.Warnf("节点[%s]的下节点不存在", execBranchNode.NodeID)
+				continue
 			}
 			nextNodes = append(nextNodes, next)
 		}

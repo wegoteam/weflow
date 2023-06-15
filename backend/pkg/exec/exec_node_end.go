@@ -106,6 +106,7 @@ func (execEndNode *ExecEndNode) execPreNodeModels(nodeModelMap map[string]entity
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Infof("节点[%v]的上节点不存在", execEndNode.NodeID)
+			continue
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -121,6 +122,7 @@ func (execEndNode *ExecEndNode) execNextNodeModels(nodeModelMap map[string]entit
 		next, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Infof("节点[%v]的下节点不存在", execEndNode.NodeID)
+			continue
 		}
 		nextNodes = append(nextNodes, next)
 	}

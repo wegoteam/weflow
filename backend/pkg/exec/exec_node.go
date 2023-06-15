@@ -102,7 +102,6 @@ func execNextTask(currNode *entity.NodeModelBO, userTaskExecution *UserTaskExecu
 	execution := userTaskExecution.Execution
 	userTasks := execution.UserTasks
 	*userTasks = append(*userTasks, addUserTasks...)
-
 }
 
 // isParent

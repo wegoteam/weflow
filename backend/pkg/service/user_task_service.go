@@ -66,7 +66,6 @@ func GetDoneUserTask(userID string) *[]entity.InstNodeAndUserTaskResult {
 // @Description: 获取实例任务的执行节点任务信息
 // @param instTaskID
 func GetExecNodeTaskMap(instTaskID string) map[string]entity.ExecNodeTaskBO {
-
 	execNodeTaskMap := make(map[string]entity.ExecNodeTaskBO)
 	if utils.IsStrBlank(instTaskID) {
 		return execNodeTaskMap
@@ -77,7 +76,6 @@ func GetExecNodeTaskMap(instTaskID string) map[string]entity.ExecNodeTaskBO {
 		return execNodeTaskMap
 	}
 	for _, nodeTask := range nodeTaskList {
-
 		execNodeTaskMap[nodeTask.NodeID] = entity.ExecNodeTaskBO{
 			NodeTaskID: nodeTask.NodeTaskID,
 			NodeID:     nodeTask.NodeID,
@@ -85,7 +83,6 @@ func GetExecNodeTaskMap(instTaskID string) map[string]entity.ExecNodeTaskBO {
 			NodeModel:  int8(nodeTask.NodeModel),
 		}
 	}
-
 	return execNodeTaskMap
 }
 

@@ -211,6 +211,7 @@ func (execConditionNode *ExecConditionNode) execPreNodeModels(nodeModelMap map[s
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Infof("节点[%v]的上节点不存在", execConditionNode.NodeID)
+			continue
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -230,6 +231,7 @@ func (execConditionNode *ExecConditionNode) execNextNodeModels(nodeModelMap map[
 			next, ok := nodeModelMap[val]
 			if !ok {
 				hlog.Infof("节点[%s]的下节点不存在", execConditionNode.NodeID)
+				continue
 			}
 			nextNodes = append(nextNodes, next)
 		}

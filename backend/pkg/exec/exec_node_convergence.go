@@ -102,6 +102,7 @@ func (execConvergenceNode *ExecConvergenceNode) execPreNodeModels(nodeModelMap m
 		pre, ok := nodeModelMap[val]
 		if !ok {
 			hlog.Infof("节点[%v]的上节点不存在", execConvergenceNode.NodeID)
+			continue
 		}
 		preNodes = append(preNodes, pre)
 	}
@@ -117,6 +118,7 @@ func (execConvergenceNode *ExecConvergenceNode) execNextNodeModels(nodeModelMap 
 			next, ok := nodeModelMap[val]
 			if !ok {
 				hlog.Infof("节点[%s]的下节点不存在", execConvergenceNode.NodeID)
+				continue
 			}
 			nextNodes = append(nextNodes, next)
 		}

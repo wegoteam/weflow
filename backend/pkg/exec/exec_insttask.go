@@ -2,6 +2,7 @@ package exec
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
@@ -17,14 +18,19 @@ import (
 // @param userID 发起人ID
 // @param userName 发起人名称
 // @param params 参数
-func Start(modelID, userID, userName string, params map[string]any) string {
+func Start(modelID, userID, userName string, params map[string]any) (string, error) {
 	instTaskExecution := &InstTaskExecution{
 		Execution:  &Execution{},
 		ModelID:    modelID,
 		OpUserName: userName,
 		OpUserID:   userID,
+		Opinion:    constant.InstanceUserTaskOpinionStart,
 	}
-	return instTaskExecution.start(modelID, params)
+	instTaskID, err := instTaskExecution.start(modelID, params)
+	if err != nil {
+		return "", err
+	}
+	return instTaskID, nil
 }
 
 // Stop
@@ -34,13 +40,16 @@ func Start(modelID, userID, userName string, params map[string]any) string {
 // @param opUserName 操作人名称
 // @param opinionDesc 意见描述
 // @return bool
-func Stop(instTaskID, opUserID, opUserName, opinionDesc string) bool {
-	instTaskExecution := NewInstTaskExecution(instTaskID)
+func Stop(instTaskID, opUserID, opUserName, opinionDesc string) error {
+	instTaskExecution, err := NewInstTaskExecution(instTaskID)
+	if err != nil {
+		return err
+	}
 	instTaskExecution.OpUserID = opUserID
 	instTaskExecution.OpUserName = opUserName
 	instTaskExecution.OpinionDesc = opinionDesc
-	instTaskExecution.stop(instTaskID)
-	return true
+	instTaskExecution.Opinion = constant.InstanceUserTaskOpinionStop
+	return instTaskExecution.stop(instTaskID)
 }
 
 // Suspend
@@ -50,13 +59,16 @@ func Stop(instTaskID, opUserID, opUserName, opinionDesc string) bool {
 // @param opUserName 操作人名称
 // @param opinionDesc 意见描述
 // @return bool
-func Suspend(instTaskID, opUserID, opUserName, opinionDesc string) bool {
-	instTaskExecution := NewInstTaskExecution(instTaskID)
+func Suspend(instTaskID, opUserID, opUserName, opinionDesc string) error {
+	instTaskExecution, err := NewInstTaskExecution(instTaskID)
+	if err != nil {
+		return err
+	}
 	instTaskExecution.OpUserID = opUserID
 	instTaskExecution.OpUserName = opUserName
 	instTaskExecution.OpinionDesc = opinionDesc
-	instTaskExecution.suspend(instTaskID)
-	return true
+	instTaskExecution.Opinion = constant.InstanceUserTaskOpinionSuspend
+	return instTaskExecution.suspend(instTaskID)
 }
 
 // Sesume
@@ -66,13 +78,16 @@ func Suspend(instTaskID, opUserID, opUserName, opinionDesc string) bool {
 // @param opUserName 操作人名称
 // @param opinionDesc 意见描述
 // @return bool
-func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) bool {
-	instTaskExecution := NewInstTaskExecution(instTaskID)
+func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) error {
+	instTaskExecution, err := NewInstTaskExecution(instTaskID)
+	if err != nil {
+		return err
+	}
 	instTaskExecution.OpUserID = opUserID
 	instTaskExecution.OpUserName = opUserName
 	instTaskExecution.OpinionDesc = opinionDesc
-	instTaskExecution.resume(instTaskID)
-	return true
+	instTaskExecution.Opinion = constant.InstanceUserTaskOpinionSesume
+	return instTaskExecution.resume(instTaskID)
 }
 
 // start
@@ -83,12 +98,12 @@ func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) bool {
 // @param userID 发起人ID
 // @param params 参数
 // @return string
-func (instTaskExecution *InstTaskExecution) start(modelID string, params map[string]any) string {
+func (instTaskExecution *InstTaskExecution) start(modelID string, params map[string]any) (string, error) {
 	execution := instTaskExecution.Execution
 	modelVersion := service.GetEnableModelVersion(modelID)
 	if modelVersion == nil {
-		hlog.Errorf("模板ID[{}]不存在或者模板未发布可用版本", modelID)
-		panic("模板不存在或者模板未发布可用版本")
+		hlog.Errorf("模板ID[%s]不存在或者模板未发布可用版本", modelID)
+		return "", errors.New("模板不存在或者模板未发布可用版本")
 	}
 	instTaskExecution.VersionID = modelVersion.VersionID
 	execution.CreateUserName = instTaskExecution.OpUserName
@@ -96,7 +111,10 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 	execution.ProcessDefId = modelVersion.ProcessDefID
 	execution.FormDefId = modelVersion.FormDefID
 	//获取流程定义模型
-	processDefModel := parser.GetProcessDefModel(modelVersion.ProcessDefID)
+	processDefModel, modelErr := parser.GetProcessDefModel(modelVersion.ProcessDefID)
+	if modelErr != nil {
+		return "", errors.New("发起实例任务失败，获取流程定义模型失败")
+	}
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = snowflake.GetSnowflakeId()
 	execution.InstTaskName = modelVersion.ModelTitle
@@ -129,9 +147,12 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 	//执行节点
 	execNode(&startNode, execution)
 	//实例任务数据
-	instTaskExecution.execStartInstData()
+	err := instTaskExecution.execStartInstData()
+	if err != nil {
+		return "", err
+	}
 	hlog.Infof("实例任务[%v]的发起人[%v]发起版本[%v]的实例任务执行成功，发起参数为%v", execution.InstTaskID, instTaskExecution.OpUserID, instTaskExecution.VersionID, params)
-	return execution.InstTaskID
+	return execution.InstTaskID, nil
 }
 
 // stop
@@ -139,16 +160,18 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 // @receiver instTaskExecution
 // @param instTaskID
 // @return bool
-func (instTaskExecution *InstTaskExecution) stop(instTaskID string) bool {
+func (instTaskExecution *InstTaskExecution) stop(instTaskID string) error {
 	execution := instTaskExecution.Execution
-
 	if utils.IsNotContainsSlice(instCanStopList, int(execution.InstTaskStatus)) {
-		panic("该实例任务状态不允许终止，请检查实例任务状态")
+		return errors.New("该实例任务状态不允许终止，请检查实例任务状态")
 	}
 	//终止操作执行的实例数据，进行数据处理
-	instTaskExecution.execStopInstData()
+	err := instTaskExecution.execStopInstData()
+	if err != nil {
+		return err
+	}
 	hlog.Infof("实例任务[%v]的版本[%v]的实例任务终止执行成功", instTaskID, instTaskExecution.VersionID)
-	return true
+	return nil
 }
 
 // suspend
@@ -156,12 +179,18 @@ func (instTaskExecution *InstTaskExecution) stop(instTaskID string) bool {
 // @receiver instTaskExecution
 // @param instTaskID
 // @return bool
-func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) bool {
-
+func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) error {
+	execution := instTaskExecution.Execution
+	if int(execution.InstTaskStatus) == constant.InstanceTaskStatusDoing {
+		return errors.New("实例任务为进行中状态才允许挂起，请检查实例任务状态")
+	}
 	//挂起实例任务操作执行的实例数据，进行数据处理
-	instTaskExecution.execSuspendInstData()
+	err := instTaskExecution.execSuspendInstData()
+	if err != nil {
+		return err
+	}
 	hlog.Infof("实例任务[%v]的版本[%v]的实例任务挂起执行成功", instTaskID, instTaskExecution.VersionID)
-	return true
+	return nil
 }
 
 // resume
@@ -169,10 +198,16 @@ func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) bool {
 // @receiver instTaskExecution
 // @param instTaskID
 // @return bool
-func (instTaskExecution *InstTaskExecution) resume(instTaskID string) bool {
-
+func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
+	execution := instTaskExecution.Execution
+	if int(execution.InstTaskStatus) == constant.InstanceTaskStatusHangUp {
+		return errors.New("实例任务为挂起状态才允许恢复，请检查实例任务状态")
+	}
 	//终止操作执行的实例数据，进行数据处理
-	instTaskExecution.execResumeInstData()
+	err := instTaskExecution.execResumeInstData()
+	if err != nil {
+		return err
+	}
 	hlog.Infof("实例任务[%v]的版本[%v]的实例任务恢复执行成功", instTaskID, instTaskExecution.VersionID)
-	return true
+	return nil
 }
