@@ -67,8 +67,7 @@ func (execConditionNode *ExecConditionNode) execCurrNodeModel(execution *Executi
 	paramMap := execution.InstTaskParamMap
 	//执行条件
 	flag := expr.ExecExpr(conditions, paramMap)
-	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions)
-	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, paramMap)
+	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的表达式：[%v] 条件参数：%v", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName, conditions, paramMap)
 	if !flag {
 		return buildNoPassResult(execution, execConditionNode)
 	}

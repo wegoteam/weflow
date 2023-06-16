@@ -32,7 +32,7 @@ func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[stri
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusAgree
-	userTaskExecution.Opinion = constant.InstanceUserTaskStatusAgree
+	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionAgree
 	return userTaskExecution.agree(userTaskID, params)
 }
 
@@ -51,7 +51,10 @@ func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[strin
 		return err
 	}
 	//验证用户任务信息
-	userTaskExecution.verify(opUserID)
+	verifyErr := userTaskExecution.verify(opUserID)
+	if verifyErr != nil {
+		return verifyErr
+	}
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
@@ -73,12 +76,15 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
 		return err
 	}
 	//验证用户任务信息
-	userTaskExecution.verify(opUserID)
+	verifyErr := userTaskExecution.verify(opUserID)
+	if verifyErr != nil {
+		return verifyErr
+	}
 	userTaskExecution.OpUserID = opUserID
 	userTaskExecution.OpUserName = opUserName
 	userTaskExecution.OpinionDesc = opinionDesc
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusDisagree
-	userTaskExecution.Opinion = constant.InstanceUserTaskStatusDisagree
+	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionDisagree
 	return userTaskExecution.disagree(userTaskID)
 }
 
@@ -93,14 +99,17 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 	execution := userTaskExecution.Execution
 	execution.InstTaskParamMap = params
 	//执行流转
-	execNodeTask(userTaskExecution)
+	execErr := execNodeTask(userTaskExecution)
+	if execErr != nil {
+		return execErr
+	}
 	//修改当前用户任务
 	userTasks := execution.UserTasks
 	editUserTask := &entity.UserTaskBO{
-		ExecOpType: constant.OperationTypeUpdate,
-		UserTaskID: userTaskID,
-		Status:     constant.InstanceUserTaskStatusAgree,
-		//Opinion:     int32(userTaskExecution.Opinion),
+		ExecOpType:  constant.OperationTypeUpdate,
+		UserTaskID:  userTaskID,
+		Status:      constant.InstanceUserTaskStatusAgree,
+		Opinion:     int32(userTaskExecution.Opinion),
 		OpinionDesc: userTaskExecution.OpinionDesc,
 		UpdateTime:  execution.Now,
 	}
@@ -110,7 +119,7 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 	if err != nil {
 		return err
 	}
-	hlog.Infof("当前节点任务[%s]同意操作，节点任务已完成", userTaskID)
+	hlog.Infof("实例任务[%s]的当前节点任务[%s]同意操作执行成功", execution.InstTaskID, userTaskID)
 	return nil
 }
 
@@ -129,6 +138,7 @@ func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[s
 	if err != nil {
 		return err
 	}
+	hlog.Infof("实例任务[%s]的当前节点任务[%s]保存操作执行成功", execution.InstTaskID, userTaskID)
 	return nil
 }
 
@@ -140,9 +150,10 @@ func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[s
 // @return bool
 func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) error {
 	execution := userTaskExecution.Execution
-	//execution.InstTaskParamMap = params
-	//验证表单权限
-	execNodeTask(userTaskExecution)
+	execErr := execNodeTask(userTaskExecution)
+	if execErr != nil {
+		return execErr
+	}
 	//修改当前用户任务
 	userTasks := execution.UserTasks
 	editUserTask := &entity.UserTaskBO{
@@ -158,7 +169,7 @@ func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) error {
 	if err != nil {
 		return err
 	}
-	hlog.Infof("当前节点任务[%s]不同意操作，节点任务已完成", userTaskID)
+	hlog.Infof("实例任务[%s]的当前节点任务[%s]不同意操作执行成功", execution.InstTaskID, userTaskID)
 	return nil
 }
 
@@ -313,29 +324,35 @@ func (userTaskExecution *UserTaskExecution) verify(opUserID string) error {
 // @Description: 执行用户任务，串行任务，并行任务，会签、或签
 //审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
 // @param userTaskExecution
-func execNodeTask(userTaskExecution *UserTaskExecution) {
+func execNodeTask(userTaskExecution *UserTaskExecution) error {
 	//判断当前的节点任务是否完成
 	finishFlag := isFinish(userTaskExecution)
 	if !finishFlag {
 		//执行数据
-		userTaskExecution.execInstUserTaskData()
+		err := userTaskExecution.execInstUserTaskData()
+		if err != nil {
+			return err
+		}
 		hlog.Infof("当前节点任务[%s]同意操作，节点任务未完成", userTaskExecution.UserTaskID)
-		return
+		return nil
 	}
 	execution := userTaskExecution.Execution
 	//验证节点任务：依次审批、会签、或签；取决于流转用户任务还是流转节点任务
 	//执行流转节点获取是流转任务
 	processDefModel := execution.ProcessDefModel
-	currNodeModelBO := processDefModel.NodeModelMap[userTaskExecution.NodeID]
-	//依次审批
-	if userTaskExecution.HandleMode == constant.ApprovalWayOrder {
-		//判断当前节点任务依次审批的用户任务最大处理顺序
-		maxOpSort := service.GetUserTaskMaxOpSort(&currNodeModelBO)
-		if userTaskExecution.OpSort != maxOpSort {
-			//执行下任务
-			execNextTask(&currNodeModelBO, userTaskExecution)
-		}
+	currNodeModelBO, ok := processDefModel.NodeModelMap[userTaskExecution.NodeID]
+	if !ok {
+		hlog.Errorf("当前节点[%s]不存在", userTaskExecution.NodeID)
+		return errors.New("当前节点不存在")
 	}
+	//修改当前节点任务的执行
+	execNodeTaskBO := entity.ExecNodeTaskBO{
+		NodeTaskID: userTaskExecution.NodeTaskID,
+		NodeID:     userTaskExecution.NodeID,
+		NodeModel:  int8(userTaskExecution.NodeModel),
+		Status:     int8(userTaskExecution.NodeTaskStatus),
+	}
+	execution.ExecNodeTaskMap[userTaskExecution.NodeID] = execNodeTaskBO
 	//修改当前节点任务
 	nodeTasks := execution.InstNodeTasks
 	editNodeTask := &entity.InstNodeTaskBO{
@@ -345,12 +362,36 @@ func execNodeTask(userTaskExecution *UserTaskExecution) {
 		UpdateTime: execution.Now,
 	}
 	*nodeTasks = append(*nodeTasks, *editNodeTask)
+	//依次审批
+	if userTaskExecution.HandleMode == constant.ApprovalWayOrder {
+		//判断当前节点任务依次审批的用户任务最大处理顺序
+		maxOpSort := service.GetUserTaskMaxOpSort(&currNodeModelBO)
+		if userTaskExecution.OpSort != maxOpSort {
+			//执行下任务
+			execNextTask(&currNodeModelBO, userTaskExecution)
+		}
+	}
 	//抄送任务不继续流转
 	if userTaskExecution.NodeModel == constant.NotifyNodeModel {
-		return
+		return nil
+	}
+	//当前节点任务不通过，且是顶层节点的时候，流程结束；否则流转至分支节点决策
+	if userTaskExecution.NodeTaskStatus == constant.InstanceNodeTaskStatusNotPass {
+		if isParent(userTaskExecution.ParentID) {
+			execution.InstTaskStatus = constant.InstanceTaskStatusStop
+		} else {
+			pNodeModelBO, pok := processDefModel.NodeModelMap[userTaskExecution.ParentID]
+			if !pok {
+				hlog.Errorf("当前节点[%s]的父节点不存在", userTaskExecution.NodeID)
+				return errors.New("当前节点的父节点不存在")
+			}
+			execNode(&pNodeModelBO, execution)
+		}
+		return nil
 	}
 	//执行下一个节点
 	execNextNode(&currNodeModelBO, execution)
+	return nil
 }
 
 // isFinish
@@ -373,6 +414,10 @@ func isFinish(userTaskExecution *UserTaskExecution) bool {
 // execApprovalWayOrder
 // @Description: 依次审批默认0所有人不可选人，所有人依次审批
 func execApprovalWayOrder(userTaskExecution *UserTaskExecution) bool {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionDisagree {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusNotPass
+		return true
+	}
 	userTasks := service.GetOpSortUserTasks(userTaskExecution.Execution.InstTaskID, userTaskExecution.NodeTaskID, userTaskExecution.OpSort)
 	if utils.IsEmptySlice(userTasks) {
 		return false
@@ -386,11 +431,12 @@ func execApprovalWayOrder(userTaskExecution *UserTaskExecution) bool {
 			finishCount++
 		}
 	}
-	if userTaskExecution.UserTaskStatus == constant.InstanceUserTaskStatusAgree {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionAgree {
 		finishCount++
 	}
 	//当前节点完成
 	if finishCount == len(userTasks) {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusComplete
 		return true
 	}
 	return false
@@ -399,6 +445,10 @@ func execApprovalWayOrder(userTaskExecution *UserTaskExecution) bool {
 // execApprovalWayCount
 // @Description: 会签默认0所有人（可选人大于0），需要所有人同意
 func execApprovalWayCount(userTaskExecution *UserTaskExecution) bool {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionDisagree {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusNotPass
+		return true
+	}
 	userTasks := service.GetOpUserTasks(userTaskExecution.Execution.InstTaskID, userTaskExecution.NodeTaskID)
 	if utils.IsEmptySlice(userTasks) {
 		return false
@@ -414,17 +464,23 @@ func execApprovalWayCount(userTaskExecution *UserTaskExecution) bool {
 			finishCount++
 		}
 	}
-	if userTaskExecution.UserTaskStatus == constant.InstanceUserTaskStatusAgree {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionAgree {
 		finishCount++
 	}
 	//当前节点完成
 	if finishCount == len(userTasks) {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusComplete
 		return true
 	}
 	if finishModeCount == 0 {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusComplete
 		return true
 	}
-	return finishCount >= finishModeCount
+	if finishCount >= finishModeCount {
+		userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusComplete
+		return true
+	}
+	return false
 }
 
 // execApprovalWayOr
@@ -450,14 +506,14 @@ func execApprovalWayOr(userTaskExecution *UserTaskExecution) bool {
 		}
 	}
 	//为0所有人时候比较同意和拒绝的人数判断，不为0不是所有人判断同意或者拒绝的人数大于等于完成人数
-	if userTaskExecution.UserTaskStatus == constant.InstanceUserTaskStatusAgree {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionAgree {
 		agreeCount++
 		if finishModeCount != 0 && agreeCount > finishModeCount {
 			userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusComplete
 			return true
 		}
 	}
-	if userTaskExecution.UserTaskStatus == constant.InstanceUserTaskStatusDisagree {
+	if userTaskExecution.Opinion == constant.InstanceUserTaskOpinionDisagree {
 		disagreeCount++
 		if finishModeCount != 0 && disagreeCount > finishModeCount {
 			userTaskExecution.NodeTaskStatus = constant.InstanceNodeTaskStatusNotPass

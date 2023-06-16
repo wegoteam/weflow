@@ -301,6 +301,75 @@ func (instTaskExecution *InstTaskExecution) execResumeInstData() error {
 	return nil
 }
 
+// execDeleteInstData
+// @Description: 删除操作执行的实例数据，进行数据处理
+// @receiver instTaskExecution
+// @return error
+func (instTaskExecution *InstTaskExecution) execDeleteInstData() error {
+	//开启事务
+	tx := MysqlDB.Begin()
+	execution := instTaskExecution.Execution
+	//删除实例任务
+	delInstTaskErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskDetail{}).Error
+	if delInstTaskErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务失败", execution.InstTaskID, delInstTaskErr)
+		tx.Rollback()
+		return delInstTaskErr
+	}
+	//删除实例节点任务
+	delInstNodeTaskErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstNodeTask{}).Error
+	if delInstNodeTaskErr != nil {
+		hlog.Error("实例任务[%v]删除实例节点任务失败", execution.InstTaskID, delInstNodeTaskErr)
+		tx.Rollback()
+		return delInstNodeTaskErr
+	}
+	//删除实例用户任务
+	delInstUserTaskErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstUserTask{}).Error
+	if delInstUserTaskErr != nil {
+		hlog.Error("实例任务[%v]删除实例用户任务失败", execution.InstTaskID, delInstUserTaskErr)
+		tx.Rollback()
+		return delInstUserTaskErr
+	}
+	//删除实例任务参数
+	delInstTaskParamErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskParam{}).Error
+	if delInstTaskParamErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务参数失败", execution.InstTaskID, delInstTaskParamErr)
+		tx.Rollback()
+		return delInstTaskParamErr
+	}
+	//删除实例任务参数属性
+	delInstTaskParamAttrErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskParamAttr{}).Error
+	if delInstTaskParamAttrErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务参数属性失败", execution.InstTaskID, delInstTaskParamAttrErr)
+		tx.Rollback()
+		return delInstTaskParamAttrErr
+	}
+	//删除实例任务表单权限
+	delInstTaskFormPerErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstNodeTaskFormper{}).Error
+	if delInstTaskFormPerErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务表单权限失败", execution.InstTaskID, delInstTaskFormPerErr)
+		tx.Rollback()
+		return delInstTaskFormPerErr
+	}
+	//删除实例任务日志
+	delInstTaskOpLogErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskOpLog{}).Error
+	if delInstTaskOpLogErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务日志失败", execution.InstTaskID, delInstTaskOpLogErr)
+		tx.Rollback()
+		return delInstTaskOpLogErr
+	}
+	//删除实例任务评论
+	delInstUserTaskOpinionErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstUserTaskOpinion{}).Error
+	if delInstUserTaskOpinionErr != nil {
+		hlog.Error("实例任务[%v]删除实例任务评论失败", execution.InstTaskID, delInstUserTaskOpinionErr)
+		tx.Rollback()
+		return delInstUserTaskOpinionErr
+	}
+	//提交事务
+	tx.Commit()
+	return nil
+}
+
 // execStartInstData
 // @Description: 保存实例数据
 // @receiver instTaskExecution
@@ -318,6 +387,13 @@ func (userTaskExecution *UserTaskExecution) execInstUserTaskData() error {
 	addInstTaskParams := service.TransformInstTaskParam(execution.InstTaskID, execution.InstTaskParamMap, execution.Now)
 	//开启事务
 	tx := MysqlDB.Begin()
+	//修改实例任务
+	notifyErr := userTaskExecution.execInstTaskNotice(tx)
+	if notifyErr != nil {
+		hlog.Error("实例任务[%v]修改实例任务失败", execution.InstTaskID, notifyErr)
+		tx.Rollback()
+		return notifyErr
+	}
 	//保存用户任务评论
 	addInstUserTaskOpinion := &model.InstUserTaskOpinion{
 		InstTaskID:  execution.InstTaskID,

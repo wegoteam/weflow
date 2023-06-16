@@ -90,6 +90,24 @@ func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) error {
 	return instTaskExecution.resume(instTaskID)
 }
 
+// Delete
+// @Description: 删除实例任务
+// @param instTaskID 实例任务ID
+// @param opUserID 操作人ID
+// @param opUserName 操作人名称
+// @param opinionDesc 意见描述
+// @return error
+func Delete(instTaskID, opUserID, opUserName, opinionDesc string) error {
+	instTaskExecution, err := NewInstTaskExecution(instTaskID)
+	if err != nil {
+		return err
+	}
+	instTaskExecution.OpUserID = opUserID
+	instTaskExecution.OpUserName = opUserName
+	instTaskExecution.OpinionDesc = opinionDesc
+	return instTaskExecution.delete(instTaskID)
+}
+
 // start
 // @Description: 发起实例任务
 // @receiver execution
@@ -156,7 +174,7 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 }
 
 // stop
-// @Description: 停止实例任务
+// @Description: 终止实例任务
 // @receiver instTaskExecution
 // @param instTaskID
 // @return bool
@@ -181,7 +199,7 @@ func (instTaskExecution *InstTaskExecution) stop(instTaskID string) error {
 // @return bool
 func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) error {
 	execution := instTaskExecution.Execution
-	if int(execution.InstTaskStatus) == constant.InstanceTaskStatusDoing {
+	if int(execution.InstTaskStatus) != constant.InstanceTaskStatusDoing {
 		return errors.New("实例任务为进行中状态才允许挂起，请检查实例任务状态")
 	}
 	//挂起实例任务操作执行的实例数据，进行数据处理
@@ -200,7 +218,7 @@ func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) error {
 // @return bool
 func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
 	execution := instTaskExecution.Execution
-	if int(execution.InstTaskStatus) == constant.InstanceTaskStatusHangUp {
+	if int(execution.InstTaskStatus) != constant.InstanceTaskStatusHangUp {
 		return errors.New("实例任务为挂起状态才允许恢复，请检查实例任务状态")
 	}
 	//终止操作执行的实例数据，进行数据处理
@@ -209,5 +227,19 @@ func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
 		return err
 	}
 	hlog.Infof("实例任务[%v]的版本[%v]的实例任务恢复执行成功", instTaskID, instTaskExecution.VersionID)
+	return nil
+}
+
+func (instTaskExecution *InstTaskExecution) delete(instTaskID string) error {
+	execution := instTaskExecution.Execution
+	if utils.IsNotContainsSlice(instDelStopList, int(execution.InstTaskStatus)) {
+		return errors.New("实例任务为挂起和终止状态才允许删除，请检查实例任务状态")
+	}
+	//终止操作执行的实例数据，进行数据处理
+	err := instTaskExecution.execDeleteInstData()
+	if err != nil {
+		return err
+	}
+	hlog.Infof("实例任务[%v]的版本[%v]的实例任务删除执行成功", instTaskID, instTaskExecution.VersionID)
 	return nil
 }

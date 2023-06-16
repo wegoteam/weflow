@@ -15,6 +15,7 @@ var (
 	RedisCliet      = config.RedisCliet
 	MongoClient     = config.MongoClient
 	instCanStopList = []int{constant.InstanceTaskStatusDoing, constant.InstanceTaskStatusHangUp, constant.InstanceTaskStatusRollback, constant.InstanceTaskStatusCreate}
+	instDelStopList = []int{constant.InstanceTaskStatusHangUp, constant.InstanceTaskStatusStop}
 )
 
 // IExecution
@@ -22,12 +23,14 @@ var (
 type IExecution interface {
 	//开始
 	start(modelID string, params map[string]any) (string, error)
-	//停止
+	//终止
 	stop(instTaskID string) error
 	//暂停，挂起
 	suspend(instTaskID string) error
 	//恢复
 	resume(instTaskID string) error
+	//删除
+	delete(instTaskID string) error
 }
 
 // ITaskExecution
@@ -103,6 +106,7 @@ type UserTaskExecution struct {
 	ModelID        string     //模型ID
 	VersionID      string     //版本ID
 	NodeID         string     //节点ID
+	ParentID       string     //父节点ID
 	NodeModel      int        //节点模型
 	NodeTaskID     string     //节点任务ID
 	ApproveType    int        // 审批类型【人工审批：1；自动通过：2；自动拒绝】默认人工审批1
@@ -221,6 +225,7 @@ func NewUserTaskExecution(userTaskID string) (*UserTaskExecution, error) {
 		ModelID:        instNodeUserTask.ModelID,
 		VersionID:      instNodeUserTask.VersionID,
 		NodeID:         instNodeUserTask.NodeID,
+		ParentID:       instNodeUserTask.ParentID,
 		NodeModel:      int(instNodeUserTask.NodeModel),
 		NodeTaskID:     instNodeUserTask.NodeTaskID,
 		ApproveType:    int(instNodeUserTask.ApproveType),
@@ -233,6 +238,7 @@ func NewUserTaskExecution(userTaskID string) (*UserTaskExecution, error) {
 		UserTaskStatus: int(instNodeUserTask.UStatus),
 		OpUserID:       instNodeUserTask.OpUserID,
 		OpUserName:     instNodeUserTask.OpUserName,
+		Opinion:        int(instNodeUserTask.Opinion),
 		OpSort:         int(instNodeUserTask.Sort),
 	}
 	return userTaskExecution, nil
