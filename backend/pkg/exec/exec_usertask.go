@@ -6,7 +6,9 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
+	"github.com/wegoteam/weflow/pkg/model"
 	"github.com/wegoteam/weflow/pkg/service"
+	"github.com/wegoteam/wepkg/snowflake"
 )
 
 // Agree
@@ -133,11 +135,48 @@ func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[s
 	execution := userTaskExecution.Execution
 	execution.InstTaskParamMap = params
 
-	//执行数据
-	err := userTaskExecution.execInstUserTaskData()
-	if err != nil {
-		return err
+	//开启事务
+	tx := MysqlDB.Begin()
+	//保存用户任务评论
+	addInstUserTaskOpinion := &model.InstUserTaskOpinion{
+		InstTaskID:  execution.InstTaskID,
+		NodeTaskID:  userTaskExecution.NodeTaskID,
+		UserTaskID:  userTaskExecution.UserTaskID,
+		NodeID:      userTaskExecution.NodeID,
+		OpinionID:   snowflake.GetSnowflakeId(),
+		Opinion:     int32(userTaskExecution.Opinion),
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		OpUserID:    userTaskExecution.OpUserID,
+		OpUserName:  userTaskExecution.OpUserName,
+		CreateTime:  execution.Now,
+		UpdateTime:  execution.Now,
+		OpinionTime: execution.Now,
 	}
+	addInstUserTaskOpinionErr := tx.Create(addInstUserTaskOpinion).Error
+	if addInstUserTaskOpinionErr != nil {
+		hlog.Error("实例任务[%v]保存用户任务评论失败", execution.InstTaskID, addInstUserTaskOpinionErr)
+		tx.Rollback()
+		return addInstUserTaskOpinionErr
+	}
+	//转换实例任务参数
+	addInstTaskParams := service.TransformInstTaskParam(execution.InstTaskID, execution.InstTaskParamMap, execution.Now)
+	//保存实例任务参数
+	if addInstTaskParams != nil && len(addInstTaskParams) > 0 {
+		//删除实例任务参数
+		delInstTaskParamErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Delete(&model.InstTaskParam{}).Error
+		if delInstTaskParamErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, delInstTaskParamErr)
+			tx.Rollback()
+			return delInstTaskParamErr
+		}
+		addInstTaskParamErr := tx.CreateInBatches(addInstTaskParams, len(addInstTaskParams)).Error
+		if addInstTaskParamErr != nil {
+			hlog.Error("实例任务[%v]保存实例任务参数失败", execution.InstTaskID, addInstTaskParamErr)
+			tx.Rollback()
+			return addInstTaskParamErr
+		}
+	}
+	tx.Commit()
 	hlog.Infof("实例任务[%s]的当前节点任务[%s]保存操作执行成功", execution.InstTaskID, userTaskID)
 	return nil
 }

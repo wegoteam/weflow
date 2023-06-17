@@ -1,0 +1,34 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    name: hertz-contrib
+    url: https://github.com/hertz-contrib
+  description: weflow swagger api documention.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: weflow
+  version: "1.0"
+paths:
+  /model/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取模板列表
+      produces:
+      - application/json
+      responses: {}
+      summary: 获取模板列表
+  /snowflake:
+    get:
+      consumes:
+      - application/json
+      description: 获取雪花算法唯一ID
+      produces:
+      - application/json
+      responses: {}
+      summary: 获取雪花算法唯一ID
+schemes:
+- http
+swagger: "2.0"

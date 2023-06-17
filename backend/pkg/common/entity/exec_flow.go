@@ -2,25 +2,6 @@ package entity
 
 import "time"
 
-// Execution 执行对象
-//type Execution struct {
-//	InstTaskID       string                           `json:"instTaskId"`       //实例任务ID
-//	ProcessDefId     string                           `json:"processDefId"`     //流程定义ID
-//	FormDefId        string                           `json:"formDefId"`        //表单定义ID
-//	InstTaskStatus   int8                             `json:"instTaskStatus"`   //实例任务状态
-//	InstTaskName     string                           `json:"instTaskName"`     //实例任务名称
-//	OpUserID     string                           `json:"createUserId"`     //创建人ID
-//	OpUserName   string                           `json:"createUserName"`   //创建人名称
-//	Now              time.Time                        `json:"now"`              //当前时间
-//	ProcessDefModel  *ProcessDefModel          `json:"processDefModel"`  //流程定义
-//	InstTaskParamMap map[string]interface{}           `json:"instTaskParamMap"` //实例任务参数
-//	ExecNodeTaskMap  map[string]ExecNodeTaskBO `json:"execNodeTaskMap"`  //实例节点任务执行缓存数据
-//	UserTasks        *[]UserTaskBO             `json:"userTasks"`        //用户任务
-//	InstNodeTasks    *[]InstNodeTaskBO         `json:"instNodeTasks"`    //实例节点任务
-//	TaskFormPers     *[]TaskFormPerBO          `json:"taskFormPers"`     //实例节点任务表单权限
-//	InstTaskOpLogs   *[]InstTaskOpLogBO        `json:"instTaskOpLogs"`   //实例任务操作日志
-//}
-
 // ExecNodeTaskBO 执行的节点任务，执行流转任务
 type ExecNodeTaskBO struct {
 	NodeTaskID string // 节点任务id

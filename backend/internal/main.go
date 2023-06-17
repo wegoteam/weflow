@@ -3,41 +3,51 @@
 package main
 
 import (
-	"context"
-	"github.com/wegoteam/wepkg/snowflake"
-
-	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/cloudwego/hertz/pkg/common/utils"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
+	"github.com/hertz-contrib/swagger"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/wegoteam/weflow/internal/biz/handler/comm"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/conf"
+	_ "github.com/wegoteam/weflow/internal/docs"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// @title weflow
+// @version 1.0
+// @description weflow swagger api documention.
+
+// @contact.name hertz-contrib
+// @contact.url https://github.com/hertz-contrib
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+// @schemes http
 func main() {
 	// init dal
 	// dal.Init()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 
-	// add a ping route to test
-	h.GET("/snowflake", func(c context.Context, ctx *app.RequestContext) {
-		snowflakeId := snowflake.GetSnowflakeId()
-		ctx.JSON(consts.StatusOK, utils.H{"snowflakeId": snowflakeId})
-	})
+	// 获取雪花算法唯一ID
+	h.GET("/snowflake", comm.GetSnowflake)
 
-	router.GeneratedRegister(h)
 	// do what you wanted
 	// add some render data: <no value>
+	swaggerURL := swagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swaggerURL, swagger.DefaultModelsExpandDepth(-1)))
 
+	router.GeneratedRegister(h)
 	registerMiddleware(h)
 
 	h.Spin()

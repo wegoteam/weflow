@@ -1,0 +1,49 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "weflow swagger api documention.",
+        "title": "weflow",
+        "contact": {
+            "name": "hertz-contrib",
+            "url": "https://github.com/hertz-contrib"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/model/list": {
+            "get": {
+                "description": "获取模板列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取模板列表",
+                "responses": {}
+            }
+        },
+        "/snowflake": {
+            "get": {
+                "description": "获取雪花算法唯一ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取雪花算法唯一ID",
+                "responses": {}
+            }
+        }
+    }
+}

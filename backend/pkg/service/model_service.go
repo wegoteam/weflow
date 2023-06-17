@@ -2,8 +2,40 @@ package service
 
 import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
 )
+
+func GetModelList() []entity.ModelDetailResult {
+	var models = make([]entity.ModelDetailResult, 0)
+
+	var modelDetails []model.ModelDetail
+	MysqlDB.Debug().Where("").Find(&modelDetails)
+
+	if utils.IsEmptySlice(modelDetails) {
+		return models
+	}
+	for _, modelDetail := range modelDetails {
+		modelBO := entity.ModelDetailResult{
+			ID:           modelDetail.ID,
+			ModelID:      modelDetail.ModelID,
+			ModelTitle:   modelDetail.ModelTitle,
+			ProcessDefID: modelDetail.ProcessDefID,
+			FormDefID:    modelDetail.FormDefID,
+			ModelGroupID: modelDetail.ModelGroupID,
+			IconURL:      modelDetail.IconURL,
+			Status:       modelDetail.Status,
+			Remark:       modelDetail.Remark,
+			CreateTime:   modelDetail.CreateTime,
+			CreateUser:   modelDetail.CreateUser,
+			UpdateTime:   modelDetail.UpdateTime,
+			UpdateUser:   modelDetail.UpdateUser,
+		}
+		models = append(models, modelBO)
+	}
+
+	return models
+}
 
 // GetModelVersionList
 // @Description: 获取模型版本

@@ -51,7 +51,7 @@ type NodeSetting struct {
 type FormPer struct {
 	ElemID  string `json:"elemId"`  //表单元素ID
 	ElemPID string `json:"elemPId"` //表单元素父ID
-	Per     int    `json:"per"`     // 表单权限【可编辑：1；只读：2；隐藏：3】默认只读2
+	Per     int    `json:"per"`     // 表单权限【可编辑：1；只读：2；隐藏：3;必填：4】默认只读2
 }
 
 type NodeModelBO struct {

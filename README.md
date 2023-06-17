@@ -27,11 +27,13 @@ Workflow (a Golang-based flow engine, rule engine, form engine), form editor, pr
 |       |-- config # 配置模型
 |       |-- cron # 定时任务功能模块
 |       |   `-- job
+|       |-- common # 数据库模型
 |       |-- model # 数据库模型
 |       |-- pkg # 功能类库
 |       |-- dao # 数据处理层
 |       |-- service # 业务逻辑层
-|       |-- test
+|       |-- controller # 控制层
+|       |-- router # 路由层
 |       `-- transport
 |           |-- grpc
 |           |   |-- api # proto 文件目录
@@ -554,3 +556,9 @@ OPTIONS:
 
 ```
 
+2.swagger语法
+```shell
+swag init --parseDependency --parseInternal --parseDepth 6 --instanceName "weflow"
+
+swag init
+```

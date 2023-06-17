@@ -94,3 +94,8 @@ func TestGetDraftInstTask(t *testing.T) {
 	draftInstTask := GetDraftInstTask("547")
 	hlog.Infof("draftInstTask= %v", draftInstTask)
 }
+
+func TestGetModelList(t *testing.T) {
+	modelList := GetModelList()
+	hlog.Infof("modelList= %v", modelList)
+}

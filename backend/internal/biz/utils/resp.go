@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
