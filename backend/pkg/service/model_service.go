@@ -10,7 +10,7 @@ func GetModelList() []entity.ModelDetailResult {
 	var models = make([]entity.ModelDetailResult, 0)
 
 	var modelDetails []model.ModelDetail
-	MysqlDB.Debug().Where("").Find(&modelDetails)
+	MysqlDB.Where("").Find(&modelDetails)
 
 	if utils.IsEmptySlice(modelDetails) {
 		return models

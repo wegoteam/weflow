@@ -6,3 +6,7 @@ func IsStrBlank(data string) bool {
 	}
 	return false
 }
+
+func IsStrNotBlank(data string) bool {
+	return !IsStrBlank(data)
+}

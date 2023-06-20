@@ -17,7 +17,7 @@ func TestUserTaskExecution_agree(t *testing.T) {
 	userName := "xuch01"
 	desc := "测试"
 
-	userTasks := service.GetTodoUserTask(userID)
+	userTasks := service.GetTodoUserTasks(userID)
 	if userTasks == nil || len(*userTasks) == 0 {
 		hlog.Info("当前待办任务为空")
 		return
@@ -38,7 +38,7 @@ func TestUserTaskExecution_disagree(t *testing.T) {
 	userName := "xuch01"
 	desc := "测试"
 
-	userTasks := service.GetTodoUserTask(userID)
+	userTasks := service.GetTodoUserTasks(userID)
 	if userTasks == nil || len(*userTasks) == 0 {
 		hlog.Info("当前待办任务为空")
 		return
@@ -59,7 +59,7 @@ func TestSave(t *testing.T) {
 	userName := "xuch01"
 	desc := "测试"
 
-	userTasks := service.GetTodoUserTask(userID)
+	userTasks := service.GetTodoUserTasks(userID)
 	if userTasks == nil || len(*userTasks) == 0 {
 		hlog.Info("当前待办任务为空")
 		return

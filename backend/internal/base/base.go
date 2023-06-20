@@ -9,9 +9,9 @@ import (
 // Response
 // @Description: 响应体
 type Response struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-	Msg  string      `json:"msg"`
+	Code int         `json:"code"` // 0:成功，其他：失败
+	Data interface{} `json:"data"` // 数据
+	Msg  string      `json:"msg"`  // 错误信息
 }
 
 // ReqContext
@@ -23,9 +23,9 @@ type ReqContext struct {
 
 // Error
 // @Description: 响应错误
-// @receiver base
-// @param code
-// @param err
+// @receiver: base
+// @param: code
+// @param: err
 func (base *ReqContext) Error(code int, err error) {
 	var res = &Response{
 		Code: code,
@@ -38,9 +38,9 @@ func (base *ReqContext) Error(code int, err error) {
 // ErrorData
 // @Description: 响应错误
 // @receiver base
-// @param code
-// @param data
-// @param err
+// @param: code
+// @param: data
+// @param: err
 func (base *ReqContext) ErrorData(code int, data interface{}, err string) {
 	var res = &Response{
 		Code: code,
@@ -52,8 +52,8 @@ func (base *ReqContext) ErrorData(code int, data interface{}, err string) {
 
 // OK
 // @Description: 响应成功
-// @receiver base
-// @param data
+// @receiver: base
+// @param: data
 func (base *ReqContext) OK(data interface{}) {
 	var res = &Response{
 		Code: 0,
@@ -65,8 +65,8 @@ func (base *ReqContext) OK(data interface{}) {
 
 // OkMsg
 // @Description: 响应成功
-// @receiver base
-// @param data
+// @receiver: base
+// @param: data
 func (base *ReqContext) OkMsg(data interface{}, err string) {
 	var res = &Response{
 		Code: 0,

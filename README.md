@@ -562,3 +562,7 @@ swag init --parseDependency --parseInternal --parseDepth 6 --instanceName "weflo
 
 swag init
 ```
+
+https://github.com/swaggo/swag/blob/master/README.md#declarative-comments-format
+
+https://github.com/swaggo/swag/blob/master/README_zh-CN.md

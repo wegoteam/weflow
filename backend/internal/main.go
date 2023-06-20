@@ -13,7 +13,6 @@ import (
 	"github.com/hertz-contrib/pprof"
 	"github.com/hertz-contrib/swagger"
 	swaggerFiles "github.com/swaggo/files"
-	"github.com/wegoteam/weflow/internal/biz/handler/comm"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/conf"
 	_ "github.com/wegoteam/weflow/internal/docs"
@@ -38,10 +37,6 @@ func main() {
 	// dal.Init()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
-
-	// 获取雪花算法唯一ID
-	h.GET("/snowflake", comm.GetSnowflake)
-
 	// do what you wanted
 	// add some render data: <no value>
 	swaggerURL := swagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition

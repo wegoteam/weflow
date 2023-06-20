@@ -35,7 +35,10 @@ func TestGetOrgUserInfo(t *testing.T) {
 	userInfos := GetOrgUserInfo(orgIds)
 	hlog.Info(userInfos)
 	users := &[]model.UserInfo{}
-
-	MysqlDB.Debug().Model(&model.UserInfo{}).Where("org_id in (?)", orgIds).Find(&users)
+	pageNum := 1
+	pageSize := 10
+	offset := (pageNum - 1) * pageSize
+	MysqlDB.Debug().Model(&model.UserInfo{}).Offset(offset).Limit(pageSize).Where("org_id in (?)", orgIds).Find(&users)
+	hlog.Info(users)
 	//MysqlDB.Debug().Where("org_id in (?)", orgIds).Find(&users)
 }

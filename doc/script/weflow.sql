@@ -753,4 +753,7 @@ SELECT
 FROM `inst_user_task`
     left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id
     left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id
-WHERE inst_user_task.status in (2,3,4,5) AND inst_user_task.op_user_id = '547' ORDER BY inst_user_task.create_time desc
+WHERE inst_user_task.status in (2,3,4,5) AND inst_user_task.op_user_id = '547' ORDER BY inst_user_task.create_time desc;
+
+
+SELECT count(*) FROM `inst_user_task` left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id WHERE ((inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)) AND inst_user_task.op_user_id = '547';

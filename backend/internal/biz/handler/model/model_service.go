@@ -1,15 +1,13 @@
 package model
 
 import (
-	"github.com/wegoteam/weflow/base"
+	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/service"
 )
 
 // GetModelList
 // @Description: 获取模板列表
-// @param reqCtx
-func GetModelList(reqCtx *base.ReqContext) {
+func GetModelList() []entity.ModelDetailResult {
 	modelList := service.GetModelList()
-
-	reqCtx.OK(modelList)
+	return modelList
 }

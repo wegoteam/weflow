@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/wegoteam/weflow/pkg/common/entity"
 	"reflect"
 	"testing"
 )
@@ -76,17 +77,26 @@ func TestGetExecNodeTaskMap(t *testing.T) {
 }
 
 func TestGetTodoUserTask(t *testing.T) {
-	userTask := GetTodoUserTask("547")
+	param := &entity.UserTaskQueryBO{
+		PageNum:         2,
+		PageSize:        1,
+		InstStatus:      2,
+		CreateTimeStart: "2020-8-5 13:14:15",
+		CreateTimeEnd:   "2024-8-5 13:14:15",
+	}
+	userTask := GetTodoUserTasks("547")
+	page := PageTodoUserTasks("547", param)
 	hlog.Infof("userTask= %v", userTask)
+	hlog.Infof("page= %v", page)
 }
 
 func TestGetDoneUserTask(t *testing.T) {
-	userTask := GetDoneUserTask("547")
+	userTask := GetDoneUserTasks("547")
 	hlog.Infof("userTask= %v", userTask)
 }
 
 func TestGetInitiatingInstTask(t *testing.T) {
-	initiatingInstTasks := GetInitiatingInstTask("547")
+	initiatingInstTasks := GetInitiatingInstTasks("547")
 	hlog.Infof("initiatingInstTasks= %v", initiatingInstTasks)
 }
 
