@@ -26,7 +26,7 @@ func Register(h *server.Hertz) {
 // @Description 获取发起的实例任务列表（已发起）
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.InstTaskResult
+// @Success 200 {object} base.Response{data=bo.InstTaskResult} "返回结果"
 // @Router /insttask/initiated [get]
 func GetInitiateInstTaskList(ctx context.Context, rc *app.RequestContext) {
 	var req vo.InstTaskQueryVO

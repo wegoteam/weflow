@@ -50,7 +50,7 @@ func GetTodoUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 func GetDoneUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 	pageResult, err := service.PageDoneUserTasks(param)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	usertask := make([]bo.UserTaskResult, len(pageResult.Records))
 	for i, val := range pageResult.Records {

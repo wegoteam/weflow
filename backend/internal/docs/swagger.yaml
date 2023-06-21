@@ -335,7 +335,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bo.InstTaskResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.InstTaskResult'
+              type: object
       summary: 获取发起的实例任务列表（已发起）
       tags:
       - 实例任务
@@ -512,7 +517,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bo.UserTaskResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.UserTaskResult'
+              type: object
       summary: 获取已办用户任务列表（已处理）
       tags:
       - 用户任务
@@ -578,7 +588,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bo.UserTaskResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.UserTaskResult'
+              type: object
       summary: 获取用户任务列表（我收到的）
       tags:
       - 用户任务
@@ -644,7 +659,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bo.UserTaskTodoResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.UserTaskTodoResult'
+              type: object
       summary: 获取待办用户任务列表（待处理）
       tags:
       - 用户任务

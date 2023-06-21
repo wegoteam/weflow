@@ -28,7 +28,7 @@ func Register(h *server.Hertz) {
 // @Description 获取待办用户任务列表（待处理）
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.UserTaskTodoResult
+// @Success 200 {object} base.Response{data=bo.UserTaskTodoResult} "返回结果"
 // @Router /usertask/todo [get]
 func GetTodoUserTaskList(c context.Context, rc *app.RequestContext) {
 	// 获取请求参数
@@ -58,7 +58,7 @@ func GetTodoUserTaskList(c context.Context, rc *app.RequestContext) {
 // @Param UserTaskQueryVO query vo.UserTaskQueryVO true "已处理的请求参数"
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.UserTaskResult
+// @Success 200 {object} base.Response{data=bo.UserTaskResult} "返回结果"
 // @Router /usertask/done [get]
 func GetDoneUserTaskList(c context.Context, rc *app.RequestContext) {
 	// 获取请求参数
@@ -88,7 +88,7 @@ func GetDoneUserTaskList(c context.Context, rc *app.RequestContext) {
 // @Param UserTaskQueryVO query vo.UserTaskQueryVO true "我收到的的请求参数"
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.UserTaskResult
+// @Success 200 {object} base.Response{data=bo.UserTaskResult} "返回结果"
 // @Router /usertask/received [get]
 func GetReceivedUserTaskList(ctx context.Context, rc *app.RequestContext) {
 	// 获取请求参数
