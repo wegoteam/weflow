@@ -25,8 +25,8 @@ type UserTaskTodoResult struct {
 	InstTaskID     string    `json:"instTaskID"`     // 实例任务id
 	TaskName       string    `json:"taskName"`       // 实例任务名称
 	InstStatus     int32     `json:"instStatus"`     // 任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
-	StartTime      time.Time `json:"startTime"`      // 发起时间
-	EndTime        time.Time `json:"endTime"`        // 结束时间
+	StartTime      time.Time `json:"startTime"`      // 发起时间 yyyy-MM-dd HH:mm:ss:SSS
+	EndTime        time.Time `json:"endTime"`        // 结束时间 yyyy-MM-dd HH:mm:ss:SSS
 	CreateUserID   string    `json:"createUserID"`   // 创建人id
 	CreateUserName string    `json:"createUserName"` // 创建人名称
 	NodeTaskID     string    `json:"nodeTaskID"`     // 节点任务id

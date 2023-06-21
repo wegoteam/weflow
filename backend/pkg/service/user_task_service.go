@@ -1,7 +1,9 @@
 package service
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/golang-module/carbon/v2"
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
@@ -59,7 +61,7 @@ func GetTodoUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 // @Description: 查询待办任务
 // @param: userID
 // @return *[]entity.InstNodeAndUserTaskResult
-func QueryTodoUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.InstNodeAndUserTaskResult {
+func QueryTodoUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
@@ -68,29 +70,37 @@ func QueryTodoUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
 	tx.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
-	return &userTasks
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err != nil {
+		hlog.Errorf("查询待办用户任务失败:%s", err.Error())
+		return nil, errors.New("查询待办用户任务失败")
+	}
+	return &userTasks, nil
 }
 
 // PageTodoUserTasks
 // @Description: 分页待办用户任务
 // @param: userID
 // @return *entity.Page[entity.InstNodeAndUserTaskResult]
-func PageTodoUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Page[entity.InstNodeAndUserTaskResult] {
+func PageTodoUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstNodeAndUserTaskResult], error) {
 	//查询总数
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
 	tx.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Count(&total)
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Count(&total).Error
+	if err != nil {
+		hlog.Errorf("查询待办用户任务失败:%s", err.Error())
+		return nil, errors.New("查询待办用户任务失败")
+	}
 	if total == 0 {
 		return &entity.Page[entity.InstNodeAndUserTaskResult]{
 			Total:    total,
 			Records:  []entity.InstNodeAndUserTaskResult{},
 			PageNum:  param.PageNum,
 			PageSize: param.PageSize,
-		}
+		}, nil
 	}
 	//分页查询
 	var userTasks []entity.InstNodeAndUserTaskResult
@@ -101,14 +111,18 @@ func PageTodoUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Pag
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
 	tx2.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
-	tx2.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
+	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err2 != nil {
+		hlog.Errorf("查询待办用户任务失败:%s", err2.Error())
+		return nil, errors.New("查询待办用户任务失败")
+	}
 	//返回分页数据
 	return &entity.Page[entity.InstNodeAndUserTaskResult]{
 		Total:    total,
 		Records:  userTasks,
 		PageNum:  param.PageNum,
 		PageSize: param.PageSize,
-	}
+	}, nil
 }
 
 // BuildUserTaskQuery
@@ -142,7 +156,7 @@ func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.D
 // @Description: 获取已办用户任务
 // @param userID 用户ID
 // @return *[]entity.InstNodeAndUserTaskResult
-func GetDoneUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
+func GetDoneUserTasks(userID string) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
@@ -151,8 +165,12 @@ func GetDoneUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id")
 	tx.Where("inst_user_task.status in (2,3,4,5)")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
-	return &userTasks
+	err := tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err != nil {
+		hlog.Errorf("查询已办用户任务失败 error：%s", err.Error())
+		return nil, errors.New("分页查询已办用户任务失败")
+	}
+	return &userTasks, nil
 }
 
 // QueryDoneUserTasks
@@ -160,7 +178,7 @@ func GetDoneUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 // @param: userID 用户ID
 // @param: param 查询参数
 // @return *[]entity.InstNodeAndUserTaskResult
-func QueryDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.InstNodeAndUserTaskResult {
+func QueryDoneUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
@@ -169,8 +187,12 @@ func QueryDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
 	tx.Where("inst_user_task.status in (2,3,4,5)")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
-	return &userTasks
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err != nil {
+		hlog.Errorf("查询已办用户任务失败 error：%s", err.Error())
+		return nil, errors.New("分页查询已办用户任务失败")
+	}
+	return &userTasks, nil
 }
 
 // PageDoneUserTasks
@@ -178,21 +200,25 @@ func QueryDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.
 // @param: userID 用户ID
 // @param: param 查询参数
 // @return *[]entity.InstNodeAndUserTaskResult
-func PageDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Page[entity.InstNodeAndUserTaskResult] {
+func PageDoneUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstNodeAndUserTaskResult], error) {
 	//查询总数
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
 	tx.Where("inst_user_task.status in (2,3,4,5)")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Count(&total)
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Count(&total).Error
+	if err != nil {
+		hlog.Errorf("查询已办用户任务失败 error：%s", err.Error())
+		return nil, errors.New("分页查询已办用户任务失败")
+	}
 	if total == 0 {
 		return &entity.Page[entity.InstNodeAndUserTaskResult]{
 			Total:    total,
 			Records:  []entity.InstNodeAndUserTaskResult{},
 			PageNum:  param.PageNum,
 			PageSize: param.PageSize,
-		}
+		}, nil
 	}
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx2 := MysqlDB.Model(&model.InstUserTask{}).
@@ -202,7 +228,11 @@ func PageDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Pag
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
 	tx2.Where("inst_user_task.status in (2,3,4,5)")
-	tx2.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
+	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err2 != nil {
+		hlog.Errorf("查询已办用户任务失败 error：%s", err2.Error())
+		return nil, errors.New("分页查询已办用户任务失败")
+	}
 	//返回分页数据
 	page := &entity.Page[entity.InstNodeAndUserTaskResult]{
 		Total:    total,
@@ -210,14 +240,14 @@ func PageDoneUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Pag
 		PageNum:  param.PageNum,
 		PageSize: param.PageSize,
 	}
-	return page
+	return page, nil
 }
 
 // GetReceivedUserTasks
 // @Description: 查询已办用户任务
 // @param: userID 用户ID
 // @return *[]entity.InstNodeAndUserTaskResult
-func GetReceivedUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
+func GetReceivedUserTasks(userID string) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
@@ -225,8 +255,12 @@ func GetReceivedUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id")
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
-	return &userTasks
+	err := tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err != nil {
+		hlog.Errorf("查询我收到的用户任务失败 error=%v", err.Error())
+		return nil, err
+	}
+	return &userTasks, nil
 }
 
 // QueryReceivedUserTasks
@@ -234,7 +268,7 @@ func GetReceivedUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 // @param: userID 用户ID
 // @param: param 查询参数
 // @return *[]entity.InstNodeAndUserTaskResult
-func QueryReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *[]entity.InstNodeAndUserTaskResult {
+func QueryReceivedUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Select(" inst_user_task.id UID,inst_user_task.user_task_id UserTaskID, inst_user_task.type Type, inst_user_task.strategy Strategy, inst_user_task.node_user_name NodeUserName, inst_user_task.node_user_id NodeUserID, inst_user_task.sort Sort, inst_user_task.obj Obj, inst_user_task.relative Relative, inst_user_task.status UStatus, inst_user_task.create_time UCreateTime, inst_user_task.update_time UUpdateTime, inst_user_task.handle_time HandleTime, inst_user_task.op_user_id OpUserID, inst_user_task.op_user_name OpUserName, inst_user_task.opinion Opinion, inst_user_task.opinion_desc OpinionDesc," +
@@ -242,8 +276,12 @@ func QueryReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *[]ent
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
-	return &userTasks
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err != nil {
+		hlog.Errorf("查询我收到的用户任务失败 error=%v", err.Error())
+		return nil, err
+	}
+	return &userTasks, nil
 }
 
 // PageReceivedUserTasks
@@ -251,20 +289,24 @@ func QueryReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *[]ent
 // @param: userID 用户ID
 // @param: param 查询参数
 // @return *entity.Page[entity.InstNodeAndUserTaskResult]
-func PageReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *entity.Page[entity.InstNodeAndUserTaskResult] {
+func PageReceivedUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstNodeAndUserTaskResult], error) {
 	//查询总数
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
-	tx.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Count(&total)
+	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Count(&total).Error
+	if err != nil {
+		hlog.Errorf("查询我收到的用户任务失败 error=%v", err.Error())
+		return nil, errors.New("查询我收到的用户任务失败")
+	}
 	if total == 0 {
 		return &entity.Page[entity.InstNodeAndUserTaskResult]{
 			Total:    total,
 			Records:  []entity.InstNodeAndUserTaskResult{},
 			PageNum:  param.PageNum,
 			PageSize: param.PageSize,
-		}
+		}, nil
 	}
 	var userTasks []entity.InstNodeAndUserTaskResult
 	tx2 := MysqlDB.Model(&model.InstUserTask{}).
@@ -273,7 +315,11 @@ func PageReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *entity
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
 		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
-	tx2.Where("inst_user_task.op_user_id = ?", userID).Order("inst_user_task.create_time desc").Find(&userTasks)
+	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
+	if err2 != nil {
+		hlog.Errorf("查询我收到的用户任务失败 error=%v", err2.Error())
+		return nil, errors.New("查询我收到的用户任务失败")
+	}
 	//返回分页数据
 	page := &entity.Page[entity.InstNodeAndUserTaskResult]{
 		Total:    total,
@@ -281,7 +327,7 @@ func PageReceivedUserTasks(userID string, param *entity.UserTaskQueryBO) *entity
 		PageNum:  param.PageNum,
 		PageSize: param.PageSize,
 	}
-	return page
+	return page, nil
 }
 
 // GetExecNodeTaskMap

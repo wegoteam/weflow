@@ -38,3 +38,43 @@ type ModelDetailResult struct {
 	UpdateTime   time.Time `json:"updateTime"`   // 更新时间
 	UpdateUser   string    `json:"updateUser"`   // 更新人
 }
+
+// ModelGroupResult
+// @Description: 模型组
+type ModelGroupResult struct {
+	ID         int64     // 唯一id
+	GroupID    string    // 组id
+	GroupName  string    // 组名称
+	Remark     string    // 描述
+	CreateUser string    // 创建人
+	UpdateUser string    // 更新人
+	CreateTime time.Time // 创建时间
+	UpdateTime time.Time // 更新时间
+}
+
+// ModelGroupAddBO
+// @Description: 模型组添加BO
+type ModelGroupAddBO struct {
+	GroupName  string    `json:"groupName"`  // 组名称
+	Remark     string    `json:"remark"`     // 描述
+	CreateUser string    `json:"createUser"` // 创建人
+	UpdateUser string    `json:"updateUser"` // 更新人
+	CreateTime time.Time `json:"createTime"` // 创建时间
+	UpdateTime time.Time `json:"updateTime"` // 更新时间
+}
+
+// ModelGroupEditBO
+// @Description: 模型组编辑BO
+type ModelGroupEditBO struct {
+	GroupID    string    `json:"groupID"`    // 组id
+	GroupName  string    `json:"groupName"`  // 组名称
+	Remark     string    `json:"remark"`     // 描述
+	UpdateUser string    `json:"updateUser"` // 更新人
+	UpdateTime time.Time `json:"updateTime"` // 更新时间
+}
+
+// ModelGroupDelBO
+// @Description: 模型组删除BO
+type ModelGroupDelBO struct {
+	GroupID string `json:"groupID"` // 组id
+}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"github.com/wegoteam/weflow/internal/base"
+	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
-	"github.com/wegoteam/weflow/internal/biz/handler/usertask"
+	usertaskService "github.com/wegoteam/weflow/internal/biz/handler/usertask"
+	"github.com/wegoteam/weflow/internal/consts"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 )
 
@@ -28,13 +28,14 @@ func Register(h *server.Hertz) {
 // @Description 获取待办用户任务列表（待处理）
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} base.Response{data=base.Page[bo.UserTaskTodoResult]{records=[]bo.UserTaskTodoResult}}
+// @Success 200 {object} bo.UserTaskTodoResult
 // @Router /usertask/todo [get]
 func GetTodoUserTaskList(c context.Context, rc *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	rc.Bind(&req)
 	param := &entity.UserTaskQueryBO{
+		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
 		PageNum:         req.PageNum,
 		TaskName:        req.TaskName,
@@ -46,11 +47,8 @@ func GetTodoUserTaskList(c context.Context, rc *app.RequestContext) {
 		FinishTimeStart: req.FinishTimeStart,
 		FinishTimeEnd:   req.FinishTimeEnd,
 	}
-	userTaskList := usertask.GetTodoUserTaskList(param)
-	res := &base.Response{
-		Data: userTaskList,
-	}
-	rc.JSON(consts.StatusOK, res)
+	res := usertaskService.GetTodoUserTaskList(param)
+	rc.JSON(hertzconsts.StatusOK, res)
 }
 
 // GetDoneUserTaskList 获取已办用户任务列表（已处理）
@@ -60,13 +58,14 @@ func GetTodoUserTaskList(c context.Context, rc *app.RequestContext) {
 // @Param UserTaskQueryVO query vo.UserTaskQueryVO true "已处理的请求参数"
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} base.Response{data=base.Page[bo.UserTaskResult]{records=[]bo.UserTaskResult}}
+// @Success 200 {object} bo.UserTaskResult
 // @Router /usertask/done [get]
 func GetDoneUserTaskList(c context.Context, rc *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	rc.Bind(&req)
 	param := &entity.UserTaskQueryBO{
+		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
 		PageNum:         req.PageNum,
 		TaskName:        req.TaskName,
@@ -78,11 +77,8 @@ func GetDoneUserTaskList(c context.Context, rc *app.RequestContext) {
 		FinishTimeStart: req.FinishTimeStart,
 		FinishTimeEnd:   req.FinishTimeEnd,
 	}
-	userTaskList := usertask.GetDoneUserTaskList(param)
-	res := &base.Response{
-		Data: userTaskList,
-	}
-	rc.JSON(consts.StatusOK, res)
+	res := usertaskService.GetDoneUserTaskList(param)
+	rc.JSON(hertzconsts.StatusOK, res)
 }
 
 // GetReceivedUserTaskList 获取用户任务列表（我收到的）
@@ -92,13 +88,14 @@ func GetDoneUserTaskList(c context.Context, rc *app.RequestContext) {
 // @Param UserTaskQueryVO query vo.UserTaskQueryVO true "我收到的的请求参数"
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} base.Response{data=base.Page[bo.UserTaskResult]{records=[]bo.UserTaskResult}}
+// @Success 200 {object} bo.UserTaskResult
 // @Router /usertask/received [get]
 func GetReceivedUserTaskList(ctx context.Context, rc *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	rc.Bind(&req)
 	param := &entity.UserTaskQueryBO{
+		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
 		PageNum:         req.PageNum,
 		TaskName:        req.TaskName,
@@ -110,9 +107,6 @@ func GetReceivedUserTaskList(ctx context.Context, rc *app.RequestContext) {
 		FinishTimeStart: req.FinishTimeStart,
 		FinishTimeEnd:   req.FinishTimeEnd,
 	}
-	userTaskList := usertask.GetReceivedUserTaskList(param)
-	res := &base.Response{
-		Data: userTaskList,
-	}
-	rc.JSON(consts.StatusOK, res)
+	res := usertaskService.GetReceivedUserTaskList(param)
+	rc.JSON(hertzconsts.StatusOK, res)
 }

@@ -1,7 +1,9 @@
 package service
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/golang-module/carbon/v2"
+	"github.com/pkg/errors"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
@@ -14,13 +16,11 @@ import (
 // @param instTaskID 实例任务ID
 // @return *entity.InstTaskResult
 func GetInstTask(instTaskID string) *entity.InstTaskResult {
-
 	if utils.IsStrBlank(instTaskID) {
 		panic("实例任务id不能为空")
 	}
 	var instTask = &model.InstTaskDetail{}
 	MysqlDB.Where("inst_task_id = ?", instTaskID).Find(instTask)
-
 	if instTask == nil {
 		return nil
 	}
@@ -89,13 +89,13 @@ func GetInitiatingInstTasks(userID string) []entity.InstTaskResult {
 // @param: userID 发起人用户ID
 // @param: param 查询参数
 // @return []entity.InstTaskResult
-func QueryInitiatingInstTasks(userID string, param *entity.InstTaskQueryBO) []entity.InstTaskResult {
+func QueryInitiatingInstTasks(param *entity.InstTaskQueryBO) []entity.InstTaskResult {
 	var instTaskList = make([]entity.InstTaskResult, 0)
-	if utils.IsStrBlank(userID) {
+	if utils.IsStrBlank(param.UserID) {
 		return instTaskList
 	}
 	var instTasks = []model.InstTaskDetail{}
-	MysqlDB.Model(&model.InstTaskDetail{}).Scopes(BuildInstTaskQuery(param)).Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", userID).Order("inst_task_detail.start_time desc").Find(&instTasks)
+	MysqlDB.Model(&model.InstTaskDetail{}).Scopes(BuildInstTaskQuery(param)).Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", param.UserID).Order("inst_task_detail.start_time desc").Find(&instTasks)
 	if utils.IsEmptySlice(instTasks) {
 		return instTaskList
 	}
@@ -129,35 +129,45 @@ func QueryInitiatingInstTasks(userID string, param *entity.InstTaskQueryBO) []en
 // @param: userID 发起人用户ID
 // @param: param 查询参数
 // @return []entity.InstTaskResult
-func PageInitiatingInstTasks(userID string, param *entity.InstTaskQueryBO) *entity.Page[entity.InstTaskResult] {
+func PageInitiatingInstTasks(param *entity.InstTaskQueryBO) (*entity.Page[entity.InstTaskResult], error) {
 	var instTaskList = make([]entity.InstTaskResult, 0)
-	if utils.IsStrBlank(userID) {
+	if utils.IsStrBlank(param.UserID) {
 		return &entity.Page[entity.InstTaskResult]{
 			Records:  instTaskList,
 			Total:    0,
 			PageSize: param.PageSize,
 			PageNum:  param.PageNum,
-		}
+		}, nil
 	}
 	var total int64
-	MysqlDB.Model(&model.InstTaskDetail{}).Scopes(BuildInstTaskQuery(param)).Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", userID).Order("inst_task_detail.start_time desc").Count(&total)
+	err := MysqlDB.Model(&model.InstTaskDetail{}).Scopes(BuildInstTaskQuery(param)).Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", param.UserID).Order("inst_task_detail.start_time desc").Count(&total).Error
+	if err != nil {
+		hlog.Errorf("查询发起人的实例任务失败 error: %v", err)
+		return nil, errors.New("查询发起人的实例任务失败")
+	}
 	if total == 0 {
 		return &entity.Page[entity.InstTaskResult]{
 			Records:  instTaskList,
 			Total:    total,
 			PageSize: param.PageSize,
 			PageNum:  param.PageNum,
-		}
+		}, nil
 	}
 	var instTasks = []model.InstTaskDetail{}
-	MysqlDB.Model(&model.InstTaskDetail{}).Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildInstTaskQuery(param)).Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", userID).Order("inst_task_detail.start_time desc").Find(&instTasks)
+	err2 := MysqlDB.Model(&model.InstTaskDetail{}).Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildInstTaskQuery(param)).
+		Where("inst_task_detail.create_user_id = ? and inst_task_detail.status in (2,3,4,5,6,7,8)", param.UserID).
+		Order("inst_task_detail.start_time desc").Find(&instTasks).Error
+	if err2 != nil {
+		hlog.Errorf("查询发起人的实例任务失败 error: %v", err2)
+		return nil, errors.New("查询发起人的实例任务失败")
+	}
 	if utils.IsEmptySlice(instTasks) {
 		return &entity.Page[entity.InstTaskResult]{
 			Records:  instTaskList,
 			Total:    0,
 			PageSize: param.PageSize,
 			PageNum:  param.PageNum,
-		}
+		}, nil
 	}
 	for _, instTask := range instTasks {
 		instTaskBO := &entity.InstTaskResult{
@@ -186,7 +196,7 @@ func PageInitiatingInstTasks(userID string, param *entity.InstTaskQueryBO) *enti
 		Total:    total,
 		PageSize: param.PageSize,
 		PageNum:  param.PageNum,
-	}
+	}, nil
 }
 
 // BuildInstTaskQuery
@@ -250,6 +260,5 @@ func GetDraftInstTask(userID string) []entity.InstTaskResult {
 		}
 		instTaskList = append(instTaskList, *instTaskBO)
 	}
-
 	return instTaskList
 }

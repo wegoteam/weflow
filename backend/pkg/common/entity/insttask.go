@@ -114,6 +114,7 @@ type InstUserTaskResult struct {
 // InstTaskQueryBO
 // @Description: 实例任务查询
 type InstTaskQueryBO struct {
+	UserID          string `json:"userID"`          // 用户id
 	PageSize        int    `json:"pageSize"`        // 每页条数
 	PageNum         int    `json:"pageNum"`         // 页码
 	TaskName        string `json:"taskName"`        // 任务名称

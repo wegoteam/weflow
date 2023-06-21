@@ -1,10 +1,6 @@
 package base
 
-import (
-	"context"
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
-)
+import "github.com/wegoteam/weflow/internal/consts"
 
 // Response
 // @Description: 响应体
@@ -14,64 +10,129 @@ type Response struct {
 	Msg  string      `json:"msg"`  // 错误信息
 }
 
-// ReqContext
-// @Description: 基础请求上下文
-type ReqContext struct {
-	Ctx context.Context
-	Req *app.RequestContext
+// NewResponse
+// @Description: 创建响应体
+// @return *Response
+func NewResponse() *Response {
+	return &Response{}
 }
 
-// Error
+// Fail
 // @Description: 响应错误
 // @receiver: base
 // @param: code
 // @param: err
-func (base *ReqContext) Error(code int, err error) {
-	var res = &Response{
-		Code: code,
-		Data: nil,
-		Msg:  err.Error(),
-	}
-	base.Req.JSON(consts.StatusOK, res)
+func (response *Response) Fail(code int, err string) *Response {
+	response.Code = code
+	response.Msg = err
+	return response
 }
 
-// ErrorData
+// Fail
 // @Description: 响应错误
-// @receiver base
+// @param: code
+// @param: err
+// @return *Response
+func Fail(code int, err string) *Response {
+	return &Response{
+		Code: code,
+		Msg:  err,
+	}
+}
+
+// FailData
+// @Description: 响应错误
+// @receiver: response
 // @param: code
 // @param: data
 // @param: err
-func (base *ReqContext) ErrorData(code int, data interface{}, err string) {
-	var res = &Response{
+func (response *Response) FailData(code int, data interface{}, err string) *Response {
+	response.Code = code
+	response.Msg = err
+	response.Data = data
+	return response
+}
+
+// FailData
+// @Description: 响应错误
+// @param: code
+// @param: data
+// @param: err
+// @return *Response
+func FailData(code int, data interface{}, err string) *Response {
+	return &Response{
 		Code: code,
-		Data: data,
 		Msg:  err,
+		Data: data,
 	}
-	base.Req.JSON(consts.StatusOK, res)
+}
+
+// Success
+// @Description: 响应成功
+// @receiver: response
+// @param: data
+func (response *Response) Success() *Response {
+	response.Code = consts.SUCCESS
+	response.Data = ""
+	response.Msg = ""
+	return response
+}
+
+// Success
+// @Description: 响应成功
+// @return *Response
+func Success() *Response {
+	return &Response{
+		Code: consts.SUCCESS,
+		Msg:  "",
+		Data: "",
+	}
 }
 
 // OK
 // @Description: 响应成功
-// @receiver: base
+// @receiver: response
 // @param: data
-func (base *ReqContext) OK(data interface{}) {
-	var res = &Response{
-		Code: 0,
-		Data: data,
+func (response *Response) OK(data interface{}) *Response {
+	response.Code = consts.SUCCESS
+	response.Data = data
+	response.Msg = ""
+	return response
+}
+
+// OK
+// @Description: 响应成功
+// @param: data
+// @return *Response
+func OK(data interface{}) *Response {
+	return &Response{
+		Code: consts.SUCCESS,
 		Msg:  "",
+		Data: data,
 	}
-	base.Req.JSON(consts.StatusOK, res)
 }
 
 // OkMsg
 // @Description: 响应成功
-// @receiver: base
+// @receiver: response
 // @param: data
-func (base *ReqContext) OkMsg(data interface{}, err string) {
-	var res = &Response{
-		Code: 0,
-		Data: data,
+// @param: err
+func (response *Response) OkMsg(data interface{}, err string) *Response {
+	response.Code = consts.SUCCESS
+	response.Data = data
+	response.Msg = err
+	return response
+}
+
+// OkMsg
+// @Description: 响应成功
+// @param: data
+// @param: err
+// @return *Response
+func OkMsg(data interface{}, err string) *Response {
+	return &Response{
+		Code: consts.SUCCESS,
 		Msg:  err,
+		Data: data,
 	}
-	base.Req.JSON(consts.StatusOK, res)
 }

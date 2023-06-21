@@ -5,8 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"github.com/wegoteam/weflow/internal/base"
-	"github.com/wegoteam/weflow/internal/biz/handler/comm"
+	commService "github.com/wegoteam/weflow/internal/biz/handler/comm"
 )
 
 // Register
@@ -27,9 +26,6 @@ func Register(h *server.Hertz) {
 // @Success 200 {object} base.Response{data=string}
 // @Router /comm/snowflake [get]
 func GetSnowflake(ctx context.Context, rc *app.RequestContext) {
-	snowflakeID := comm.GetSnowflake()
-	res := &base.Response{
-		Data: snowflakeID,
-	}
+	res := commService.GetSnowflake()
 	rc.JSON(consts.StatusOK, res)
 }

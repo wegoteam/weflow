@@ -1,56 +1,5 @@
 basePath: /
 definitions:
-  base.Page-bo_InstTaskResult:
-    properties:
-      pageNum:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页条数
-        type: integer
-      records:
-        description: 数据
-        items:
-          $ref: '#/definitions/bo.InstTaskResult'
-        type: array
-      total:
-        description: 总条数
-        type: integer
-    type: object
-  base.Page-bo_UserTaskResult:
-    properties:
-      pageNum:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页条数
-        type: integer
-      records:
-        description: 数据
-        items:
-          $ref: '#/definitions/bo.UserTaskResult'
-        type: array
-      total:
-        description: 总条数
-        type: integer
-    type: object
-  base.Page-bo_UserTaskTodoResult:
-    properties:
-      pageNum:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页条数
-        type: integer
-      records:
-        description: 数据
-        items:
-          $ref: '#/definitions/bo.UserTaskTodoResult'
-        type: array
-      total:
-        description: 总条数
-        type: integer
-    type: object
   base.Response:
     properties:
       code:
@@ -65,7 +14,7 @@ definitions:
   bo.InstTaskResult:
     properties:
       createTime:
-        description: 创建时间
+        description: 创建时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       createUserID:
         description: 创建人id
@@ -74,7 +23,7 @@ definitions:
         description: 创建人名称
         type: string
       endTime:
-        description: 结束时间
+        description: 结束时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       formDefID:
         description: 表单定义id
@@ -95,7 +44,7 @@ definitions:
         description: 描述
         type: string
       startTime:
-        description: 发起时间
+        description: 发起时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       status:
         description: 任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
@@ -104,7 +53,7 @@ definitions:
         description: 实例任务名称
         type: string
       updateTime:
-        description: 更新时间
+        description: 更新时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       updateUserID:
         description: 更新人id
@@ -114,6 +63,75 @@ definitions:
         type: string
       versionID:
         description: 版本id
+        type: string
+    type: object
+  bo.ModelDetailResult:
+    properties:
+      createTime:
+        description: 创建时间 yyyy-MM-dd HH:mm:ss:SSS
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      formDefID:
+        description: 表单定义id
+        type: string
+      iconURL:
+        description: icon图标地址
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      modelGroupID:
+        description: 模版组id
+        type: string
+      modelID:
+        description: 模板id
+        type: string
+      modelTitle:
+        description: 模板标题
+        type: string
+      processDefID:
+        description: 流程定义id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      status:
+        description: 模板状态【1：草稿；2：发布；3：停用】默认草稿
+        type: integer
+      updateTime:
+        description: 更新时间 yyyy-MM-dd HH:mm:ss:SSS
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+    type: object
+  bo.ModelGroupResult:
+    properties:
+      createTime:
+        description: 创建时间 yyyy-MM-dd HH:mm:ss:SSS
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      groupID:
+        description: 组id
+        type: string
+      groupName:
+        description: 组名称
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      remark:
+        description: 描述
+        type: string
+      updateTime:
+        description: 更新时间 yyyy-MM-dd HH:mm:ss:SSS
+        type: string
+      updateUser:
+        description: 更新人
         type: string
     type: object
   bo.UserTaskResult:
@@ -167,7 +185,7 @@ definitions:
         description: 创建人名称
         type: string
       endTime:
-        description: 结束时间
+        description: 结束时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       instStatus:
         description: 任务状态【1：创建中(草稿)；2：进行中； 3：终止； 4：完成； 5：挂起；6：回退】
@@ -191,13 +209,40 @@ definitions:
         description: 父节点id
         type: string
       startTime:
-        description: 发起时间
+        description: 发起时间 yyyy-MM-dd HH:mm:ss:SSS
         type: string
       taskName:
         description: 实例任务名称
         type: string
       userTaskID:
         description: 处理人任务id
+        type: string
+    type: object
+  vo.ModelGroupAddVO:
+    properties:
+      groupName:
+        description: 组名称
+        type: string
+      remark:
+        description: 描述
+        type: string
+    type: object
+  vo.ModelGroupDelVO:
+    properties:
+      groupID:
+        description: 组id
+        type: string
+    type: object
+  vo.ModelGroupEditVO:
+    properties:
+      groupID:
+        description: 组id
+        type: string
+      groupName:
+        description: 组名称
+        type: string
+      remark:
+        description: 描述
         type: string
     type: object
 host: localhost:8080
@@ -239,22 +284,22 @@ paths:
       - application/json
       description: 获取发起的实例任务列表（已发起）
       parameters:
-      - description: 提交审批时间-结束
+      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeEnd
         type: string
-      - description: 提交审批时间-开始 格式2021-01-28 13:14:15
+      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeStart
         type: string
-      - description: 完成审批时间-结束
+      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeEnd
         type: string
-      - description: 完成审批时间-开始
+      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeStart
@@ -290,22 +335,91 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/base.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/base.Page-bo_InstTaskResult'
-                  - properties:
-                      records:
-                        items:
-                          $ref: '#/definitions/bo.InstTaskResult'
-                        type: array
-                    type: object
-              type: object
+            $ref: '#/definitions/bo.InstTaskResult'
       summary: 获取发起的实例任务列表（已发起）
       tags:
       - 实例任务
+  /model/group/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加模板组
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelGroupAddVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelGroupAddVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 添加模板组
+      tags:
+      - 模板
+  /model/group/del:
+    post:
+      consumes:
+      - application/json
+      description: 删除模板组
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelGroupDelVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelGroupDelVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 删除模板组
+      tags:
+      - 模板
+  /model/group/edit:
+    post:
+      consumes:
+      - application/json
+      description: 编辑模板组
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelGroupEditVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelGroupEditVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 编辑模板组
+      tags:
+      - 模板
+  /model/group/list:
+    get:
+      consumes:
+      - application/json
+      description: 查询获取模板组列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bo.ModelGroupResult'
+      summary: 查询获取模板组列表
+      tags:
+      - 模板
   /model/list:
     get:
       consumes:
@@ -317,7 +431,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.Response'
+            $ref: '#/definitions/bo.ModelDetailResult'
       summary: 获取模板列表
       tags:
       - 模板
@@ -332,7 +446,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.Response'
+            $ref: '#/definitions/bo.ModelDetailResult'
       summary: 分页获取模板列表
       tags:
       - 模板
@@ -342,12 +456,12 @@ paths:
       - application/json
       description: 获取已办用户任务列表（已处理）
       parameters:
-      - description: 提交审批时间-结束
+      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeEnd
         type: string
-      - description: 提交审批时间-开始 格式2021-01-28 13:14:15
+      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeStart
@@ -357,12 +471,12 @@ paths:
         in: query
         name: createUserId
         type: string
-      - description: 完成审批时间-结束
+      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeEnd
         type: string
-      - description: 完成审批时间-开始
+      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeStart
@@ -398,19 +512,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/base.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/base.Page-bo_UserTaskResult'
-                  - properties:
-                      records:
-                        items:
-                          $ref: '#/definitions/bo.UserTaskResult'
-                        type: array
-                    type: object
-              type: object
+            $ref: '#/definitions/bo.UserTaskResult'
       summary: 获取已办用户任务列表（已处理）
       tags:
       - 用户任务
@@ -420,12 +522,12 @@ paths:
       - application/json
       description: 获取用户任务列表（我收到的）
       parameters:
-      - description: 提交审批时间-结束
+      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeEnd
         type: string
-      - description: 提交审批时间-开始 格式2021-01-28 13:14:15
+      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeStart
@@ -435,12 +537,12 @@ paths:
         in: query
         name: createUserId
         type: string
-      - description: 完成审批时间-结束
+      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeEnd
         type: string
-      - description: 完成审批时间-开始
+      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeStart
@@ -476,19 +578,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/base.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/base.Page-bo_UserTaskResult'
-                  - properties:
-                      records:
-                        items:
-                          $ref: '#/definitions/bo.UserTaskResult'
-                        type: array
-                    type: object
-              type: object
+            $ref: '#/definitions/bo.UserTaskResult'
       summary: 获取用户任务列表（我收到的）
       tags:
       - 用户任务
@@ -498,12 +588,12 @@ paths:
       - application/json
       description: 获取待办用户任务列表（待处理）
       parameters:
-      - description: 提交审批时间-结束
+      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeEnd
         type: string
-      - description: 提交审批时间-开始 格式2021-01-28 13:14:15
+      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 提交审批时间
         in: query
         name: createTimeStart
@@ -513,12 +603,12 @@ paths:
         in: query
         name: createUserId
         type: string
-      - description: 完成审批时间-结束
+      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeEnd
         type: string
-      - description: 完成审批时间-开始
+      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
         in: query
         name: finishTimeStart
@@ -554,19 +644,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/base.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/base.Page-bo_UserTaskTodoResult'
-                  - properties:
-                      records:
-                        items:
-                          $ref: '#/definitions/bo.UserTaskTodoResult'
-                        type: array
-                    type: object
-              type: object
+            $ref: '#/definitions/bo.UserTaskTodoResult'
       summary: 获取待办用户任务列表（待处理）
       tags:
       - 用户任务

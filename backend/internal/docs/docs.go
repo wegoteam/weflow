@@ -76,28 +76,28 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-结束",
+                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-开始 格式2021-01-28 13:14:15",
+                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeStart",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-结束",
+                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-开始",
+                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeStart",
                         "in": "query"
                     },
@@ -141,34 +141,132 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/base.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/base.Page-bo_InstTaskResult"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "records": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/bo.InstTaskResult"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/bo.InstTaskResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/group/add": {
+            "post": {
+                "description": "添加模板组",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "添加模板组",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelGroupAddVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelGroupAddVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/group/del": {
+            "post": {
+                "description": "删除模板组",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "删除模板组",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelGroupDelVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelGroupDelVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/group/edit": {
+            "post": {
+                "description": "编辑模板组",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "编辑模板组",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelGroupEditVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelGroupEditVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/group/list": {
+            "get": {
+                "description": "查询获取模板组列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "查询获取模板组列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/bo.ModelGroupResult"
                         }
                     }
                 }
@@ -191,7 +289,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.Response"
+                            "$ref": "#/definitions/bo.ModelDetailResult"
                         }
                     }
                 }
@@ -214,7 +312,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.Response"
+                            "$ref": "#/definitions/bo.ModelDetailResult"
                         }
                     }
                 }
@@ -237,14 +335,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-结束",
+                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-开始 格式2021-01-28 13:14:15",
+                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeStart",
                         "in": "query"
                     },
@@ -258,14 +356,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-结束",
+                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-开始",
+                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeStart",
                         "in": "query"
                     },
@@ -309,34 +407,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/base.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/base.Page-bo_UserTaskResult"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "records": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/bo.UserTaskResult"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/bo.UserTaskResult"
                         }
                     }
                 }
@@ -359,14 +430,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-结束",
+                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-开始 格式2021-01-28 13:14:15",
+                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeStart",
                         "in": "query"
                     },
@@ -380,14 +451,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-结束",
+                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-开始",
+                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeStart",
                         "in": "query"
                     },
@@ -431,34 +502,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/base.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/base.Page-bo_UserTaskResult"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "records": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/bo.UserTaskResult"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/bo.UserTaskResult"
                         }
                     }
                 }
@@ -481,14 +525,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-结束",
+                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "提交审批时间",
-                        "description": "提交审批时间-开始 格式2021-01-28 13:14:15",
+                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "createTimeStart",
                         "in": "query"
                     },
@@ -502,14 +546,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-结束",
+                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeEnd",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "example": "完成审批时间",
-                        "description": "完成审批时间-开始",
+                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
                         "name": "finishTimeStart",
                         "in": "query"
                     },
@@ -553,34 +597,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/base.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/base.Page-bo_UserTaskTodoResult"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "records": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/bo.UserTaskTodoResult"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/bo.UserTaskTodoResult"
                         }
                     }
                 }
@@ -588,78 +605,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "base.Page-bo_InstTaskResult": {
-            "type": "object",
-            "properties": {
-                "pageNum": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页条数",
-                    "type": "integer"
-                },
-                "records": {
-                    "description": "数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/bo.InstTaskResult"
-                    }
-                },
-                "total": {
-                    "description": "总条数",
-                    "type": "integer"
-                }
-            }
-        },
-        "base.Page-bo_UserTaskResult": {
-            "type": "object",
-            "properties": {
-                "pageNum": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页条数",
-                    "type": "integer"
-                },
-                "records": {
-                    "description": "数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/bo.UserTaskResult"
-                    }
-                },
-                "total": {
-                    "description": "总条数",
-                    "type": "integer"
-                }
-            }
-        },
-        "base.Page-bo_UserTaskTodoResult": {
-            "type": "object",
-            "properties": {
-                "pageNum": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页条数",
-                    "type": "integer"
-                },
-                "records": {
-                    "description": "数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/bo.UserTaskTodoResult"
-                    }
-                },
-                "total": {
-                    "description": "总条数",
-                    "type": "integer"
-                }
-            }
-        },
         "base.Response": {
             "type": "object",
             "properties": {
@@ -680,7 +625,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createTime": {
-                    "description": "创建时间",
+                    "description": "创建时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "createUserID": {
@@ -692,7 +637,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "endTime": {
-                    "description": "结束时间",
+                    "description": "结束时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "formDefID": {
@@ -720,7 +665,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
-                    "description": "发起时间",
+                    "description": "发起时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "status": {
@@ -732,7 +677,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updateTime": {
-                    "description": "更新时间",
+                    "description": "更新时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "updateUserID": {
@@ -745,6 +690,100 @@ const docTemplate = `{
                 },
                 "versionID": {
                     "description": "版本id",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.ModelDetailResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "formDefID": {
+                    "description": "表单定义id",
+                    "type": "string"
+                },
+                "iconURL": {
+                    "description": "icon图标地址",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "modelGroupID": {
+                    "description": "模版组id",
+                    "type": "string"
+                },
+                "modelID": {
+                    "description": "模板id",
+                    "type": "string"
+                },
+                "modelTitle": {
+                    "description": "模板标题",
+                    "type": "string"
+                },
+                "processDefID": {
+                    "description": "流程定义id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "模板状态【1：草稿；2：发布；3：停用】默认草稿",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.ModelGroupResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "groupID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "groupName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "updateTime": {
+                    "description": "更新时间 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
                     "type": "string"
                 }
             }
@@ -818,7 +857,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "endTime": {
-                    "description": "结束时间",
+                    "description": "结束时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "instStatus": {
@@ -850,7 +889,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
-                    "description": "发起时间",
+                    "description": "发起时间 yyyy-MM-dd HH:mm:ss:SSS",
                     "type": "string"
                 },
                 "taskName": {
@@ -859,6 +898,45 @@ const docTemplate = `{
                 },
                 "userTaskID": {
                     "description": "处理人任务id",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.ModelGroupAddVO": {
+            "type": "object",
+            "properties": {
+                "groupName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.ModelGroupDelVO": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "description": "组id",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.ModelGroupEditVO": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "groupName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
                     "type": "string"
                 }
             }
