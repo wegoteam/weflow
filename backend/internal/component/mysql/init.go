@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/wegoteam/weflow/internal/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

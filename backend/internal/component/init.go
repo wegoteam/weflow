@@ -1,8 +1,8 @@
 package component
 
 import (
-	"github.com/wegoteam/weflow/internal/dal/mysql"
-	"github.com/wegoteam/weflow/internal/dal/redis"
+	"github.com/wegoteam/weflow/internal/component/mysql"
+	"github.com/wegoteam/weflow/internal/component/redis"
 )
 
 func Init() {
