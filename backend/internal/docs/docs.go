@@ -139,7 +139,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
                             "allOf": [
                                 {
@@ -276,9 +276,21 @@ const docTemplate = `{
                 "summary": "查询获取模板组列表",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
-                            "$ref": "#/definitions/bo.ModelGroupResult"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelGroupResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -299,9 +311,21 @@ const docTemplate = `{
                 "summary": "获取模板列表",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
-                            "$ref": "#/definitions/bo.ModelDetailResult"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -322,9 +346,21 @@ const docTemplate = `{
                 "summary": "分页获取模板列表",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
-                            "$ref": "#/definitions/bo.ModelDetailResult"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -417,7 +453,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
                             "allOf": [
                                 {
@@ -524,7 +560,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
                             "allOf": [
                                 {
@@ -631,7 +667,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "返回结果",
                         "schema": {
                             "allOf": [
                                 {

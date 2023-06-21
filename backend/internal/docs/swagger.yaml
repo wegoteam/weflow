@@ -333,7 +333,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
             allOf:
             - $ref: '#/definitions/base.Response'
@@ -419,9 +419,14 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
-            $ref: '#/definitions/bo.ModelGroupResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelGroupResult'
+              type: object
       summary: 查询获取模板组列表
       tags:
       - 模板
@@ -434,9 +439,14 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
-            $ref: '#/definitions/bo.ModelDetailResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelDetailResult'
+              type: object
       summary: 获取模板列表
       tags:
       - 模板
@@ -449,9 +459,14 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
-            $ref: '#/definitions/bo.ModelDetailResult'
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelDetailResult'
+              type: object
       summary: 分页获取模板列表
       tags:
       - 模板
@@ -515,7 +530,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
             allOf:
             - $ref: '#/definitions/base.Response'
@@ -586,7 +601,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
             allOf:
             - $ref: '#/definitions/base.Response'
@@ -657,7 +672,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 返回结果
           schema:
             allOf:
             - $ref: '#/definitions/base.Response'

@@ -31,7 +31,7 @@ func Register(h *server.Hertz) {
 // @Description 获取模板列表
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.ModelDetailResult
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
 // @Router /model/list [get]
 func GetModelList(ctx context.Context, rc *app.RequestContext) {
 	res := modelService.GetModelList()
@@ -44,7 +44,7 @@ func GetModelList(ctx context.Context, rc *app.RequestContext) {
 // @Description 分页获取模板列表
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.ModelDetailResult
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
 // @Router /model/page [get]
 func PageModels(ctx context.Context, rc *app.RequestContext) {
 	res := modelService.GetModelList()
@@ -57,7 +57,7 @@ func PageModels(ctx context.Context, rc *app.RequestContext) {
 // @Description 查询获取模板组列表
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} bo.ModelGroupResult
+// @Success 200 {object} base.Response{data=bo.ModelGroupResult} "返回结果"
 // @Router /model/group/list [get]
 func GetModelGroups(ctx context.Context, rc *app.RequestContext) {
 	res := modelService.GetModelGroupList()
