@@ -306,6 +306,21 @@ paths:
       summary: 获取发起的实例任务列表（已发起）
       tags:
       - 实例任务
+  /model/group/list:
+    get:
+      consumes:
+      - application/json
+      description: 查询获取模板组列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 查询获取模板组列表
+      tags:
+      - 模板
   /model/list:
     get:
       consumes:

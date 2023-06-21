@@ -6,12 +6,13 @@ import (
 	"github.com/wegoteam/weflow/pkg/model"
 )
 
+// GetModelList
+// @Description: 获取模板列表
+// @return []entity.ModelDetailResult
 func GetModelList() []entity.ModelDetailResult {
 	var models = make([]entity.ModelDetailResult, 0)
-
 	var modelDetails []model.ModelDetail
 	MysqlDB.Where("").Find(&modelDetails)
-
 	if utils.IsEmptySlice(modelDetails) {
 		return models
 	}
@@ -33,7 +34,6 @@ func GetModelList() []entity.ModelDetailResult {
 		}
 		models = append(models, modelBO)
 	}
-
 	return models
 }
 
@@ -43,12 +43,9 @@ func GetModelList() []entity.ModelDetailResult {
 // @param versionID
 // @return []entity.ModelVersionResult
 func GetModelVersionList(modelID, versionID string) []entity.ModelVersionResult {
-
 	var modelVersions = make([]entity.ModelVersionResult, 0)
-
 	var versionList []model.ModelVersion
 	MysqlDB.Where("model_id = ? and version_id = ?", modelID, versionID).Find(&versionList)
-
 	if versionList == nil {
 		return modelVersions
 	}
@@ -80,14 +77,11 @@ func GetModelVersionList(modelID, versionID string) []entity.ModelVersionResult 
 // @param versionID
 // @return []entity.ModelVersionResult
 func GetModelVersion(modelID, versionID string) *entity.ModelVersionResult {
-
 	var version = &model.ModelVersion{}
 	MysqlDB.Where("model_id = ? and version_id = ?", modelID, versionID).Find(version)
-
 	if version == nil {
 		return nil
 	}
-
 	var modelVersionBO = &entity.ModelVersionResult{
 		ID:           version.ID,
 		ModelID:      version.ModelID,
@@ -113,14 +107,11 @@ func GetModelVersion(modelID, versionID string) *entity.ModelVersionResult {
 // @param versionID
 // @return []entity.ModelVersionResult
 func GetEnableModelVersion(modelID string) *entity.ModelVersionResult {
-
 	var version = &model.ModelVersion{}
 	MysqlDB.Where("model_id = ? and use_status = ?", modelID, 1).Find(version)
-
 	if version == nil {
 		return nil
 	}
-
 	var modelVersionBO = &entity.ModelVersionResult{
 		ID:           version.ID,
 		ModelID:      version.ModelID,

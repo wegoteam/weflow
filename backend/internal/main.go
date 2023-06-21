@@ -13,9 +13,9 @@ import (
 	"github.com/hertz-contrib/pprof"
 	"github.com/hertz-contrib/swagger"
 	swaggerFiles "github.com/swaggo/files"
-	"github.com/wegoteam/weflow/internal/biz/router"
-	"github.com/wegoteam/weflow/internal/conf"
+	config "github.com/wegoteam/weflow/internal/config"
 	_ "github.com/wegoteam/weflow/internal/docs"
+	"github.com/wegoteam/weflow/internal/router"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -35,7 +35,7 @@ import (
 func main() {
 	// init dal
 	// dal.Init()
-	address := conf.GetConf().Hertz.Address
+	address := config.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 	// do what you wanted
 	// add some render data: <no value>
@@ -50,28 +50,28 @@ func main() {
 
 func registerMiddleware(h *server.Hertz) {
 	// pprof
-	if conf.GetConf().Hertz.EnablePprof {
+	if config.GetConf().Hertz.EnablePprof {
 		pprof.Register(h)
 	}
 	// gzip
-	if conf.GetConf().Hertz.EnableGzip {
+	if config.GetConf().Hertz.EnableGzip {
 		h.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 
 	// access log
-	if conf.GetConf().Hertz.EnableAccessLog {
+	if config.GetConf().Hertz.EnableAccessLog {
 		h.Use(accesslog.New())
 	}
 
 	// log
 	logger := hertzlogrus.NewLogger()
 	hlog.SetLogger(logger)
-	hlog.SetLevel(conf.LogLevel())
+	hlog.SetLevel(config.LogLevel())
 	hlog.SetOutput(&lumberjack.Logger{
-		Filename:   conf.GetConf().Hertz.LogFileName,
-		MaxSize:    conf.GetConf().Hertz.LogMaxSize,
-		MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
-		MaxAge:     conf.GetConf().Hertz.LogMaxAge,
+		Filename:   config.GetConf().Hertz.LogFileName,
+		MaxSize:    config.GetConf().Hertz.LogMaxSize,
+		MaxBackups: config.GetConf().Hertz.LogMaxBackups,
+		MaxAge:     config.GetConf().Hertz.LogMaxAge,
 	})
 
 	// recovery

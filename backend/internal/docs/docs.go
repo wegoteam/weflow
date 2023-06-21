@@ -174,6 +174,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/model/group/list": {
+            "get": {
+                "description": "查询获取模板组列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "查询获取模板组列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/model/list": {
             "get": {
                 "description": "获取模板列表",
