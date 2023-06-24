@@ -30,16 +30,16 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /
+// @BasePath /weflow
 // @schemes http
 func main() {
 	// init dal
 	// dal.Init()
 	address := conf.GetConf().Hertz.Address
-	h := server.New(server.WithHostPorts(address))
+	h := server.New(server.WithHostPorts(address), server.WithBasePath("/weflow"))
 	// do what you wanted
 	// add some render data: <no value>
-	swaggerURL := swagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+	swaggerURL := swagger.URL("http://localhost:8080/weflow/swagger/doc.json") // The url pointing to API definition
 	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swaggerURL, swagger.DefaultModelsExpandDepth(-1)))
 
 	router.GeneratedRegister(h)
@@ -48,6 +48,9 @@ func main() {
 	h.Spin()
 }
 
+// registerMiddleware
+// @Description: 注册中间件
+// @param: h
 func registerMiddleware(h *server.Hertz) {
 	// pprof
 	if conf.GetConf().Hertz.EnablePprof {

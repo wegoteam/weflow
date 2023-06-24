@@ -25,7 +25,7 @@ func Register(h *server.Hertz) {
 // @Produce application/json
 // @Success 200 {object} base.Response{data=string}
 // @Router /comm/snowflake [get]
-func GetSnowflake(ctx context.Context, rc *app.RequestContext) {
+func GetSnowflake(ctx context.Context, reqCtx *app.RequestContext) {
 	res := commService.GetSnowflake()
-	rc.JSON(consts.StatusOK, res)
+	reqCtx.JSON(consts.StatusOK, res)
 }

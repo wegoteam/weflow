@@ -1,4 +1,4 @@
-basePath: /
+basePath: /weflow
 definitions:
   base.Response:
     properties:
@@ -278,6 +278,21 @@ paths:
       summary: 获取雪花算法唯一ID
       tags:
       - 公共
+  /insttask/del:
+    post:
+      consumes:
+      - application/json
+      description: 删除实例任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 删除实例任务
+      tags:
+      - 实例任务
   /insttask/initiated:
     get:
       consumes:
@@ -342,6 +357,66 @@ paths:
                   $ref: '#/definitions/bo.InstTaskResult'
               type: object
       summary: 获取发起的实例任务列表（已发起）
+      tags:
+      - 实例任务
+  /insttask/resume:
+    post:
+      consumes:
+      - application/json
+      description: 恢复实例任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 恢复实例任务
+      tags:
+      - 实例任务
+  /insttask/start:
+    post:
+      consumes:
+      - application/json
+      description: 发起实例任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 发起实例任务
+      tags:
+      - 实例任务
+  /insttask/stop:
+    post:
+      consumes:
+      - application/json
+      description: 终止实例任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 终止实例任务
+      tags:
+      - 实例任务
+  /insttask/suspend:
+    post:
+      consumes:
+      - application/json
+      description: 挂起实例任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 挂起实例任务
       tags:
       - 实例任务
   /model/group/add:
@@ -470,6 +545,36 @@ paths:
       summary: 分页获取模板列表
       tags:
       - 模板
+  /usertask/agree:
+    post:
+      consumes:
+      - application/json
+      description: 同意用户任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 同意用户任务
+      tags:
+      - 用户任务
+  /usertask/disagree:
+    post:
+      consumes:
+      - application/json
+      description: 不同意用户任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 不同意用户任务
+      tags:
+      - 用户任务
   /usertask/done:
     get:
       consumes:
@@ -610,6 +715,21 @@ paths:
                   $ref: '#/definitions/bo.UserTaskResult'
               type: object
       summary: 获取用户任务列表（我收到的）
+      tags:
+      - 用户任务
+  /usertask/save:
+    post:
+      consumes:
+      - application/json
+      description: 保存用户任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 保存用户任务
       tags:
       - 用户任务
   /usertask/todo:

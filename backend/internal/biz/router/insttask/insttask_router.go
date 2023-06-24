@@ -17,6 +17,11 @@ import (
 func Register(h *server.Hertz) {
 	insttaskGroup := h.Group("/insttask")
 	insttaskGroup.GET("/initiated", GetInitiateInstTaskList)
+	insttaskGroup.POST("/start", StartInstTask)
+	insttaskGroup.POST("/stop", StopInstTask)
+	insttaskGroup.POST("/suspend", SuspendInstTask)
+	insttaskGroup.POST("/resume", ResumeInstTask)
+	insttaskGroup.POST("/del", DeleteInstTask)
 }
 
 // GetInitiateInstTaskList 获取发起的实例任务列表（已发起）
@@ -28,9 +33,9 @@ func Register(h *server.Hertz) {
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.InstTaskResult} "返回结果"
 // @Router /insttask/initiated [get]
-func GetInitiateInstTaskList(ctx context.Context, rc *app.RequestContext) {
+func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskQueryVO
-	rc.Bind(&req)
+	reqCtx.Bind(&req)
 	param := &entity.InstTaskQueryBO{
 		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
@@ -44,5 +49,65 @@ func GetInitiateInstTaskList(ctx context.Context, rc *app.RequestContext) {
 		FinishTimeEnd:   req.FinishTimeEnd,
 	}
 	res := insttaskService.GetInitiateInstTaskList(param)
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// StartInstTask 发起实例任务
+// @Summary 发起实例任务
+// @Tags 实例任务
+// @Description 发起实例任务
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /insttask/start [post]
+func StartInstTask(ctx context.Context, reqCtx *app.RequestContext) {
+
+}
+
+// StopInstTask 终止实例任务
+// @Summary 终止实例任务
+// @Tags 实例任务
+// @Description 终止实例任务
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /insttask/stop [post]
+func StopInstTask(ctx context.Context, reqCtx *app.RequestContext) {
+
+}
+
+// SuspendInstTask 挂起实例任务
+// @Summary 挂起实例任务
+// @Tags 实例任务
+// @Description 挂起实例任务
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /insttask/suspend [post]
+func SuspendInstTask(ctx context.Context, reqCtx *app.RequestContext) {
+
+}
+
+// ResumeInstTask 恢复实例任务
+// @Summary 恢复实例任务
+// @Tags 实例任务
+// @Description 恢复实例任务
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /insttask/resume [post]
+func ResumeInstTask(ctx context.Context, reqCtx *app.RequestContext) {
+
+}
+
+// DeleteInstTask 删除实例任务
+// @Summary 删除实例任务
+// @Tags 实例任务
+// @Description 删除实例任务
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /insttask/del [post]
+func DeleteInstTask(ctx context.Context, reqCtx *app.RequestContext) {
+
 }

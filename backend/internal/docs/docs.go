@@ -59,6 +59,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/insttask/del": {
+            "post": {
+                "description": "删除实例任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "删除实例任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/insttask/initiated": {
             "get": {
                 "description": "获取发起的实例任务列表（已发起）",
@@ -154,6 +177,98 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/insttask/resume": {
+            "post": {
+                "description": "恢复实例任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "恢复实例任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/insttask/start": {
+            "post": {
+                "description": "发起实例任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "发起实例任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/insttask/stop": {
+            "post": {
+                "description": "终止实例任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "终止实例任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/insttask/suspend": {
+            "post": {
+                "description": "挂起实例任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "挂起实例任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
                         }
                     }
                 }
@@ -361,6 +476,52 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/usertask/agree": {
+            "post": {
+                "description": "同意用户任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户任务"
+                ],
+                "summary": "同意用户任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/usertask/disagree": {
+            "post": {
+                "description": "不同意用户任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户任务"
+                ],
+                "summary": "不同意用户任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
                         }
                     }
                 }
@@ -575,6 +736,29 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/usertask/save": {
+            "post": {
+                "description": "保存用户任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户任务"
+                ],
+                "summary": "保存用户任务",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
                         }
                     }
                 }
@@ -1032,7 +1216,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/",
+	BasePath:         "/weflow",
 	Schemes:          []string{"http"},
 	Title:            "weflow",
 	Description:      "weflow swagger api documention.",

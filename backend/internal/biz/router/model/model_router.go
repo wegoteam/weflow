@@ -33,9 +33,9 @@ func Register(h *server.Hertz) {
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
 // @Router /model/list [get]
-func GetModelList(ctx context.Context, rc *app.RequestContext) {
+func GetModelList(ctx context.Context, reqCtx *app.RequestContext) {
 	res := modelService.GetModelList()
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // PageModels 分页获取模板列表
@@ -46,9 +46,9 @@ func GetModelList(ctx context.Context, rc *app.RequestContext) {
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
 // @Router /model/page [get]
-func PageModels(ctx context.Context, rc *app.RequestContext) {
+func PageModels(ctx context.Context, reqCtx *app.RequestContext) {
 	res := modelService.GetModelList()
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // GetModelGroups 查询获取模板组列表
@@ -59,9 +59,9 @@ func PageModels(ctx context.Context, rc *app.RequestContext) {
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.ModelGroupResult} "返回结果"
 // @Router /model/group/list [get]
-func GetModelGroups(ctx context.Context, rc *app.RequestContext) {
+func GetModelGroups(ctx context.Context, reqCtx *app.RequestContext) {
 	res := modelService.GetModelGroupList()
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // AddModelGroup 添加模板组
@@ -73,9 +73,9 @@ func GetModelGroups(ctx context.Context, rc *app.RequestContext) {
 // @Produce application/json
 // @Success 200 {object} base.Response{}
 // @Router /model/group/add [post]
-func AddModelGroup(ctx context.Context, rc *app.RequestContext) {
+func AddModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupAddVO
-	rc.Bind(&req)
+	reqCtx.Bind(&req)
 	now := time.Now()
 	param := &entity.ModelGroupAddBO{
 		GroupName:  req.GroupName,
@@ -86,7 +86,7 @@ func AddModelGroup(ctx context.Context, rc *app.RequestContext) {
 		UpdateTime: now,
 	}
 	res := modelService.AddModelGroup(param)
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // EditModelGroup 编辑模板组
@@ -98,9 +98,9 @@ func AddModelGroup(ctx context.Context, rc *app.RequestContext) {
 // @Produce application/json
 // @Success 200 {object} base.Response{}
 // @Router /model/group/edit [post]
-func EditModelGroup(ctx context.Context, rc *app.RequestContext) {
+func EditModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupEditVO
-	rc.Bind(&req)
+	reqCtx.Bind(&req)
 	now := time.Now()
 	param := &entity.ModelGroupEditBO{
 		GroupID:    req.GroupID,
@@ -110,7 +110,7 @@ func EditModelGroup(ctx context.Context, rc *app.RequestContext) {
 		UpdateTime: now,
 	}
 	res := modelService.EditModelGroup(param)
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // DelModelGroup 删除模板组
@@ -122,12 +122,12 @@ func EditModelGroup(ctx context.Context, rc *app.RequestContext) {
 // @Produce application/json
 // @Success 200 {object} base.Response{}
 // @Router /model/group/del [post]
-func DelModelGroup(ctx context.Context, rc *app.RequestContext) {
+func DelModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupDelVO
-	rc.Bind(&req)
+	reqCtx.Bind(&req)
 	param := &entity.ModelGroupDelBO{
 		GroupID: req.GroupID,
 	}
 	res := modelService.DelModelGroup(param)
-	rc.JSON(hertzconsts.StatusOK, res)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }

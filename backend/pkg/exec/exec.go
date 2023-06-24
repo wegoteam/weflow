@@ -43,31 +43,31 @@ type ITaskExecution interface {
 	//不同意处理审批、办理、抄送、自定义节点的任务
 	disagree(userTaskID string) error
 	//转办任务，将任务交接给他人办理，办理完成后继续下步骤
-	turn() bool
+	turn() error
 	//委托任务，将任务委托给他人，他人办理完成后再回到委托人
-	delegate() bool
+	delegate() error
 	//退回：退回上节点
-	rollback() bool
+	rollback() error
 	//退回：退回开始节点
-	rollbackStartNode() bool
+	rollbackStartNode() error
 	//退回：退回指定节点
-	rollbackAnyNode() bool
+	rollbackAnyNode() error
 	//撤回，处理人撤回
-	revoke() bool
+	revoke() error
 	//撤销：发起人撤销
-	cancel() bool
+	cancel() error
 	//催办
-	urge() bool
+	urge() error
 	//加签
-	addSign() bool
+	addSign() error
 	//减签
-	reduceSign() bool
+	reduceSign() error
 	//抄送
-	cc() bool
+	cc() error
 	//抄送回复
-	ccReply() bool
+	ccReply() error
 	//抄送撤回
-	ccRevoke() bool
+	ccRevoke() error
 }
 
 // Execution 执行对象
