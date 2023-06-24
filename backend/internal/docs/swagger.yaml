@@ -327,7 +327,7 @@ paths:
       - description: 模板ID
         example: 模板ID
         in: query
-        name: modelId
+        name: modelID
         type: string
       - description: 页码
         example: 1
@@ -594,7 +594,7 @@ paths:
       - description: 创建人id
         example: 创建人id
         in: query
-        name: createUserId
+        name: createUserID
         type: string
       - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
@@ -614,7 +614,7 @@ paths:
       - description: 模板ID
         example: 模板ID
         in: query
-        name: modelId
+        name: modelID
         type: string
       - description: 页码
         example: 1
@@ -665,7 +665,7 @@ paths:
       - description: 创建人id
         example: 创建人id
         in: query
-        name: createUserId
+        name: createUserID
         type: string
       - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
@@ -685,7 +685,7 @@ paths:
       - description: 模板ID
         example: 模板ID
         in: query
-        name: modelId
+        name: modelID
         type: string
       - description: 页码
         example: 1
@@ -751,7 +751,7 @@ paths:
       - description: 创建人id
         example: 创建人id
         in: query
-        name: createUserId
+        name: createUserID
         type: string
       - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
         example: 完成审批时间
@@ -771,7 +771,7 @@ paths:
       - description: 模板ID
         example: 模板ID
         in: query
-        name: modelId
+        name: modelID
         type: string
       - description: 页码
         example: 1

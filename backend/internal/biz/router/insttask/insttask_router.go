@@ -42,7 +42,7 @@ func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 		PageNum:         req.PageNum,
 		TaskName:        req.TaskName,
 		InstStatus:      req.InstStatus,
-		ModelId:         req.ModelId,
+		ModelID:         req.ModelID,
 		CreateTimeStart: req.CreateTimeStart,
 		CreateTimeEnd:   req.CreateTimeEnd,
 		FinishTimeStart: req.FinishTimeStart,

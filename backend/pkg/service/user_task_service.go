@@ -138,8 +138,8 @@ func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.D
 		if utils.IsStrNotBlank(param.TaskName) {
 			tx = db.Where("inst_task_detail.task_name = ?", param.TaskName)
 		}
-		if utils.IsStrNotBlank(param.CreateUserId) {
-			tx = db.Where("inst_task_detail.create_user_id = ?", param.CreateUserId)
+		if utils.IsStrNotBlank(param.CreateUserID) {
+			tx = db.Where("inst_task_detail.create_user_id = ?", param.CreateUserID)
 		}
 		if utils.IsStrNotBlank(param.CreateTimeStart) && utils.IsStrNotBlank(param.CreateTimeEnd) {
 			carbon.Parse(param.CreateTimeStart).ToStdTime()

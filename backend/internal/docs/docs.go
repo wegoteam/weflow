@@ -135,7 +135,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "模板ID",
                         "description": "模板ID",
-                        "name": "modelId",
+                        "name": "modelID",
                         "in": "query"
                     },
                     {
@@ -559,7 +559,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "创建人id",
                         "description": "创建人id",
-                        "name": "createUserId",
+                        "name": "createUserID",
                         "in": "query"
                     },
                     {
@@ -587,7 +587,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "模板ID",
                         "description": "模板ID",
-                        "name": "modelId",
+                        "name": "modelID",
                         "in": "query"
                     },
                     {
@@ -666,7 +666,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "创建人id",
                         "description": "创建人id",
-                        "name": "createUserId",
+                        "name": "createUserID",
                         "in": "query"
                     },
                     {
@@ -694,7 +694,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "模板ID",
                         "description": "模板ID",
-                        "name": "modelId",
+                        "name": "modelID",
                         "in": "query"
                     },
                     {
@@ -796,7 +796,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "创建人id",
                         "description": "创建人id",
-                        "name": "createUserId",
+                        "name": "createUserID",
                         "in": "query"
                     },
                     {
@@ -824,7 +824,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "模板ID",
                         "description": "模板ID",
-                        "name": "modelId",
+                        "name": "modelID",
                         "in": "query"
                     },
                     {
