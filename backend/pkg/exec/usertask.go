@@ -13,8 +13,8 @@ import (
 // @Description: 生成用户任务
 //处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
 //常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
-//  @param instNodeTask
-//  @param nodeHandler
+//  @param: instNodeTask
+//  @param: nodeHandler
 //  @return []entity.UserTaskBO
 func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
 	userTasks := make([]entity.UserTaskBO, 0)
@@ -47,8 +47,8 @@ func ExecUserTask(execution Execution, instNodeTask entity.InstNodeTaskBO, nodeH
 
 // ExecNextUserTask
 // @Description: 生成节点用户任务下一个串行任务
-// @param userTaskExecution
-// @param nodeHandler
+// @param: userTaskExecution
+// @param: nodeHandler
 // @return []entity.UserTaskBO
 func ExecNextUserTask(userTaskExecution *UserTaskExecution, nodeHandler entity.NodeHandler) []entity.UserTaskBO {
 	execution := userTaskExecution.Execution

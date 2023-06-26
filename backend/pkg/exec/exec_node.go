@@ -25,7 +25,7 @@ type ExecResult struct {
 
 // getExecNode
 // @Description: 获取执行节点
-// @param node
+// @param: node
 // @return IExecNode
 func getExecNode(node *entity.NodeModelBO) IExecNode {
 	var exec IExecNode
@@ -56,8 +56,8 @@ func getExecNode(node *entity.NodeModelBO) IExecNode {
 
 // execNode
 // @Description: 执行流转节点
-// @param currNode
-// @param execution
+// @param: currNode
+// @param: execution
 func execNode(currNode *entity.NodeModelBO, execution *Execution) {
 	iexec := getExecNode(currNode)
 	if iexec == nil {
@@ -76,8 +76,8 @@ func execNode(currNode *entity.NodeModelBO, execution *Execution) {
 
 // execNextNode
 // @Description: 执行下节点
-// @param currNode
-// @param execution
+// @param: currNode
+// @param: execution
 func execNextNode(currNode *entity.NodeModelBO, execution *Execution) {
 	iexec := getExecNode(currNode)
 	if iexec == nil {
@@ -95,8 +95,8 @@ func execNextNode(currNode *entity.NodeModelBO, execution *Execution) {
 
 // execNextTask
 // @Description: 执行流转串行节点任务
-// @param currNode
-// @param execution
+// @param: currNode
+// @param: execution
 func execNextTask(currNode *entity.NodeModelBO, userTaskExecution *UserTaskExecution) {
 	addUserTasks := ExecNextUserTask(userTaskExecution, currNode.NodeHandler)
 	execution := userTaskExecution.Execution
@@ -106,7 +106,7 @@ func execNextTask(currNode *entity.NodeModelBO, userTaskExecution *UserTaskExecu
 
 // isParent
 // @Description: 判断是否为父节点
-// @param parentId
+// @param: parentId
 // @return bool
 func isParent(parentId string) bool {
 	if parentId == "" || len(parentId) == 0 {

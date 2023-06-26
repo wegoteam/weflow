@@ -126,7 +126,7 @@ type UserTaskExecution struct {
 
 // NewInstTaskExecution
 // @Description: 创建实例任务执行对象
-// @param instTaskID
+// @param: instTaskID
 // @return *InstTaskExecution
 func NewInstTaskExecution(instTaskID string) (*InstTaskExecution, error) {
 	//实例任务
@@ -179,7 +179,7 @@ func NewInstTaskExecution(instTaskID string) (*InstTaskExecution, error) {
 
 // NewUserTaskExecution
 // @Description: 创建用户任务执行对象
-// @param userTaskID
+// @param: userTaskID
 // @return *UserTaskExecution
 func NewUserTaskExecution(userTaskID string) (*UserTaskExecution, error) {
 	//实例任务

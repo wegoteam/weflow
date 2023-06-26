@@ -1,6 +1,9 @@
 package base
 
-import "github.com/wegoteam/weflow/internal/consts"
+const (
+	// SUCCESS 成功状态码
+	SUCCESS = 0
+)
 
 // Response
 // @Description: 响应体
@@ -72,7 +75,7 @@ func FailData(code int, data interface{}, err string) *Response {
 // @receiver: response
 // @param: data
 func (response *Response) Success() *Response {
-	response.Code = consts.SUCCESS
+	response.Code = SUCCESS
 	response.Data = ""
 	response.Msg = ""
 	return response
@@ -83,7 +86,7 @@ func (response *Response) Success() *Response {
 // @return *Response
 func Success() *Response {
 	return &Response{
-		Code: consts.SUCCESS,
+		Code: SUCCESS,
 		Msg:  "",
 		Data: "",
 	}
@@ -94,7 +97,7 @@ func Success() *Response {
 // @receiver: response
 // @param: data
 func (response *Response) OK(data interface{}) *Response {
-	response.Code = consts.SUCCESS
+	response.Code = SUCCESS
 	response.Data = data
 	response.Msg = ""
 	return response
@@ -106,7 +109,7 @@ func (response *Response) OK(data interface{}) *Response {
 // @return *Response
 func OK(data interface{}) *Response {
 	return &Response{
-		Code: consts.SUCCESS,
+		Code: SUCCESS,
 		Msg:  "",
 		Data: data,
 	}
@@ -118,7 +121,7 @@ func OK(data interface{}) *Response {
 // @param: data
 // @param: err
 func (response *Response) OkMsg(data interface{}, err string) *Response {
-	response.Code = consts.SUCCESS
+	response.Code = SUCCESS
 	response.Data = data
 	response.Msg = err
 	return response
@@ -131,7 +134,7 @@ func (response *Response) OkMsg(data interface{}, err string) *Response {
 // @return *Response
 func OkMsg(data interface{}, err string) *Response {
 	return &Response{
-		Code: consts.SUCCESS,
+		Code: SUCCESS,
 		Msg:  err,
 		Data: data,
 	}

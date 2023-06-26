@@ -5,15 +5,15 @@ import (
 	"github.com/wegoteam/weflow/internal/base"
 	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/consts"
+	weflowApi "github.com/wegoteam/weflow/pkg/api"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
-	"github.com/wegoteam/weflow/pkg/service"
 )
 
 // GetModelList
 // @Description: 获取模板列表
 func GetModelList() *base.Response {
-	modelDetails, err := service.GetModelList()
+	modelDetails, err := weflowApi.GetModelList()
 	var models = make([]bo.ModelDetailResult, 0)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
@@ -47,7 +47,7 @@ func GetModelList() *base.Response {
 // @return []bo.ModelGroupResult
 func GetModelGroupList() *base.Response {
 	var modelGroups = make([]bo.ModelGroupResult, 0)
-	groups, err := service.GetModelGroupList()
+	groups, err := weflowApi.GetModelGroupList()
 	if err != nil {
 		base.Fail(consts.ERROR, err.Error())
 	}
@@ -75,7 +75,7 @@ func GetModelGroupList() *base.Response {
 // @param: param
 // @return bool
 func AddModelGroup(param *entity.ModelGroupAddBO) *base.Response {
-	err := service.AddModelGroup(param)
+	err := weflowApi.AddModelGroup(param)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
 	}
@@ -88,7 +88,7 @@ func AddModelGroup(param *entity.ModelGroupAddBO) *base.Response {
 // @param: param
 // @return bool
 func EditModelGroup(param *entity.ModelGroupEditBO) *base.Response {
-	err := service.EditModelGroup(param)
+	err := weflowApi.EditModelGroup(param)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
 	}
@@ -101,10 +101,25 @@ func EditModelGroup(param *entity.ModelGroupEditBO) *base.Response {
 // @param: param
 // @return bool
 func DelModelGroup(param *entity.ModelGroupDelBO) *base.Response {
-	err := service.DelModelGroup(param)
+	err := weflowApi.DelModelGroup(param)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
 	}
 	hlog.Infof("删除模板组成功,data=%v", param)
 	return base.Success()
+}
+
+// GetGroupModelDetails
+// @Description: 获取所有组的所有模版
+// @param: param
+// @return *base.Response
+func GetGroupModelDetails(param *bo.GroupModelQueryBO) *base.Response {
+	bo := &entity.GroupModelQueryBO{
+		ModelName: param.ModelName,
+	}
+	modelDetails, err := weflowApi.GetGroupModelDetails(bo)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	return base.OK(modelDetails)
 }

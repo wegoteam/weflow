@@ -7,7 +7,7 @@ import (
 
 // GetRoleUserInfo
 // @Description: 获取角色的用户信息
-// @param roleIds
+// @param: roleIds
 // @return []entity.UserInfoResult
 func GetRoleUserInfo(roleIds []string) []entity.UserInfoResult {
 	userResults := make([]entity.UserInfoResult, 0)
@@ -43,7 +43,7 @@ func GetRoleUserInfo(roleIds []string) []entity.UserInfoResult {
 
 // GetOrgUserInfo
 // @Description: 获取组织的用户信息
-// @param roleIds
+// @param: roleIds
 // @return []entity.UserInfoResult
 func GetOrgUserInfo(orgIds []string) []entity.UserInfoResult {
 	userResults := make([]entity.UserInfoResult, 0)

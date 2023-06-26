@@ -28,7 +28,7 @@ type ExecNotifyNode struct {
 
 // NewNotifyNode
 // @Description: 实例化执行审批节点对象
-// @param node
+// @param: node
 // @return *ExecNotifyNode
 func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 	return &ExecNotifyNode{
@@ -54,7 +54,7 @@ func NewNotifyNode(node *entity.NodeModelBO) *ExecNotifyNode {
 //生成知会用户任务
 //下节点
 // @receiver execNotifyNode
-// @param execution
+// @param: execution
 // @return ExecResult
 func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execNotifyNode.NodeID]
@@ -94,9 +94,13 @@ func (execNotifyNode *ExecNotifyNode) execCurrNodeModel(execution *Execution) Ex
 	//}
 }
 
-/**
-获取实例节点任务
-*/
+// GetInstNodeTask
+// @Description: 获取实例节点任务
+// @receiver: execNotifyNode
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: now
+// @return entity.InstNodeTaskBO
 func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -114,9 +118,12 @@ func (execNotifyNode *ExecNotifyNode) GetInstNodeTask(instTaskID, nodeTaskID str
 	return instNodeTask
 }
 
-/**
-获取实例节点任务表单权限
-*/
+// GetTaskFormPers
+// @Description: 获取实例节点任务表单权限
+// @receiver: execNotifyNode
+// @param: formPers
+// @param: instNodeTask
+// @return []entity.TaskFormPerBO
 func (execNotifyNode *ExecNotifyNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
 	for ind, formPer := range formPers {
@@ -134,6 +141,11 @@ func (execNotifyNode *ExecNotifyNode) GetTaskFormPers(formPers []entity.FormPer,
 	return taskFormPers
 }
 
+// execPreNodeModels
+// @Description: 执行上节点
+// @receiver: execNotifyNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execNotifyNode *ExecNotifyNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execNotifyNode.PreNodes == nil {
@@ -150,6 +162,11 @@ func (execNotifyNode *ExecNotifyNode) execPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
+// execNextNodeModels
+// @Description: 执行下节点
+// @receiver: execNotifyNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execNotifyNode *ExecNotifyNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	//判断是否有下节点

@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	insttaskService "github.com/wegoteam/weflow/internal/biz/handler/insttask"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -16,7 +17,7 @@ import (
 // @param: h
 func Register(h *server.Hertz) {
 	insttaskGroup := h.Group("/insttask")
-	insttaskGroup.GET("/initiated", GetInitiateInstTaskList)
+	insttaskGroup.POST("/initiated", GetInitiateInstTaskList)
 	insttaskGroup.POST("/start", StartInstTask)
 	insttaskGroup.POST("/stop", StopInstTask)
 	insttaskGroup.POST("/suspend", SuspendInstTask)
@@ -27,12 +28,12 @@ func Register(h *server.Hertz) {
 // GetInitiateInstTaskList 获取发起的实例任务列表（已发起）
 // @Summary 获取发起的实例任务列表（已发起）
 // @Tags 实例任务
-// @Param InstTaskQueryVO query vo.InstTaskQueryVO true "已发起的请求参数"
+// @Param InstTaskQueryVO body vo.InstTaskQueryVO true "已发起的请求参数"
 // @Description 获取发起的实例任务列表（已发起）
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.InstTaskResult} "返回结果"
-// @Router /insttask/initiated [get]
+// @Router /insttask/initiated [post]
 func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskQueryVO
 	reqCtx.Bind(&req)
@@ -56,24 +57,44 @@ func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Summary 发起实例任务
 // @Tags 实例任务
 // @Description 发起实例任务
+// @Param InstTaskStartVO body vo.InstTaskStartVO true "发起实例任务的请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /insttask/start [post]
 func StartInstTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	var req vo.InstTaskStartVO
+	reqCtx.Bind(&req)
+	param := &bo.InstTaskStartBO{
+		UserID:   consts.UserID,
+		UserName: consts.UserName,
+		ModelID:  req.ModelID,
+		Params:   req.Params,
+	}
+	res := insttaskService.Start(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // StopInstTask 终止实例任务
 // @Summary 终止实例任务
 // @Tags 实例任务
 // @Description 终止实例任务
+// @Param InstTaskStopVO body vo.InstTaskStopVO true "终止实例任务的请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /insttask/stop [post]
 func StopInstTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	var req vo.InstTaskStopVO
+	reqCtx.Bind(&req)
+	param := &bo.InstTaskStopBO{
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		InstTaskID:  req.InstTaskID,
+		OpinionDesc: req.OpinionDesc,
+	}
+	res := insttaskService.Stop(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // SuspendInstTask 挂起实例任务
@@ -81,33 +102,63 @@ func StopInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Tags 实例任务
 // @Description 挂起实例任务
 // @Accept application/json
+// @Param InstTaskSuspendVO body vo.InstTaskSuspendVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /insttask/suspend [post]
 func SuspendInstTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	var req vo.InstTaskSuspendVO
+	reqCtx.Bind(&req)
+	param := &bo.InstTaskSuspendBO{
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		InstTaskID:  req.InstTaskID,
+		OpinionDesc: req.OpinionDesc,
+	}
+	res := insttaskService.Suspend(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // ResumeInstTask 恢复实例任务
 // @Summary 恢复实例任务
 // @Tags 实例任务
 // @Description 恢复实例任务
+// @Param InstTaskSesumeVO body vo.InstTaskSesumeVO true "请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /insttask/resume [post]
 func ResumeInstTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	var req vo.InstTaskSesumeVO
+	reqCtx.Bind(&req)
+	param := &bo.InstTaskSesumeBO{
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		InstTaskID:  req.InstTaskID,
+		OpinionDesc: req.OpinionDesc,
+	}
+	res := insttaskService.Sesume(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // DeleteInstTask 删除实例任务
 // @Summary 删除实例任务
 // @Tags 实例任务
 // @Description 删除实例任务
+// @Param InstTaskDeleteVO body vo.InstTaskDeleteVO true "请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /insttask/del [post]
 func DeleteInstTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	var req vo.InstTaskDeleteVO
+	reqCtx.Bind(&req)
+	param := &bo.InstTaskDeleteBO{
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		InstTaskID:  req.InstTaskID,
+		OpinionDesc: req.OpinionDesc,
+	}
+	res := insttaskService.Delete(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }

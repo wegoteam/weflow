@@ -23,9 +23,10 @@ type ExecCustomNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-/**
-实例化执行节点对象
-*/
+// NewCustomNode
+// @Description: 实例化执行节点对象
+// @param: node
+// @return *ExecCustomNode
 func NewCustomNode(node *entity.NodeModelBO) *ExecCustomNode {
 
 	return &ExecCustomNode{
@@ -41,23 +42,22 @@ func NewCustomNode(node *entity.NodeModelBO) *ExecCustomNode {
 	}
 }
 
-/**
-执行自定义节点
-生成实例节点任务
-执行任务
-下节点
-*/
+// execCurrNodeModel
+// @Description: 执行自定义节点
+//生成实例节点任务
+//执行任务
+//下节点
+// @receiver: execCustomNode
+// @param: execution
+// @return ExecResult
 func (execCustomNode *ExecCustomNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execCustomNode.NodeID]
 	if ok {
 		hlog.Warnf("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]已经生成节点任务，该节点重复执行", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
 		return ExecResult{}
 	}
-
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行自定义节点[%s]节点名称[%s]生成节点任务", execution.InstTaskID, execution.ProcessDefId, execCustomNode.NodeID, execCustomNode.NodeName)
-
 	nodeTaskId := snowflake.GetSnowflakeId()
-
 	//生成执行节点任务
 	var execNodeTask = &entity.ExecNodeTaskBO{
 		NodeTaskID: nodeTaskId,
@@ -79,9 +79,13 @@ func (execCustomNode *ExecCustomNode) execCurrNodeModel(execution *Execution) Ex
 	}
 }
 
-/**
-获取实例节点任务
-*/
+// GetInstNodeTask
+// @Description: 获取实例节点任务
+// @receiver: execCustomNode
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: now
+// @return entity.InstNodeTaskBO
 func (execCustomNode *ExecCustomNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -99,6 +103,11 @@ func (execCustomNode *ExecCustomNode) GetInstNodeTask(instTaskID, nodeTaskID str
 	return instNodeTask
 }
 
+// execPreNodeModels
+// @Description: 执行上节点
+// @receiver: execCustomNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execCustomNode *ExecCustomNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execCustomNode.PreNodes == nil {
@@ -115,6 +124,11 @@ func (execCustomNode *ExecCustomNode) execPreNodeModels(nodeModelMap map[string]
 	return &preNodes
 }
 
+// execNextNodeModels
+// @Description: 执行下节点
+// @receiver: execCustomNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execCustomNode *ExecCustomNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 
@@ -129,7 +143,6 @@ func (execCustomNode *ExecCustomNode) execNextNodeModels(nodeModelMap map[string
 			nextNodes = append(nextNodes, next)
 		}
 	}
-
 	//判断下节点是否为父节点
 	if isParent(execCustomNode.ParentID) {
 		return &nextNodes
@@ -149,7 +162,6 @@ func (execCustomNode *ExecCustomNode) execNextNodeModels(nodeModelMap map[string
 		hlog.Warnf("节点[%s]的父节点[%s]错误，该分支节点的最后节点为空", execCustomNode.NodeID, execCustomNode.ParentID)
 		return &nextNodes
 	}
-
 	if pie.Contains(branchNodeModel.LastNodes, execCustomNode.NodeID) {
 		nextNodes = append(nextNodes, pNodeModel)
 	}

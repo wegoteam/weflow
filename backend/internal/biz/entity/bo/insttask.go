@@ -23,3 +23,48 @@ type InstTaskResult struct {
 	StartTime      time.Time `json:"startTime"`      // 发起时间 yyyy-MM-dd HH:mm:ss:SSS
 	EndTime        time.Time `json:"endTime"`        // 结束时间 yyyy-MM-dd HH:mm:ss:SSS
 }
+
+// InstTaskStartBO
+// @Description: 实例任务发起参数
+type InstTaskStartBO struct {
+	ModelID  string         // 模板ID
+	UserID   string         // 操作人id
+	UserName string         // 操作人名称
+	Params   map[string]any // 参数
+}
+
+// InstTaskStopBO
+// @Description: 实例任务停止参数
+type InstTaskStopBO struct {
+	InstTaskID  string // 实例任务ID
+	OpUserID    string // 操作人id
+	OpUserName  string // 操作人名称
+	OpinionDesc string // 操作意见
+}
+
+// InstTaskSuspendBO
+// @Description: 实例任务挂起参数
+type InstTaskSuspendBO struct {
+	InstTaskID  string // 实例任务ID
+	OpUserID    string // 操作人id
+	OpUserName  string // 操作人名称
+	OpinionDesc string // 操作意见
+}
+
+// InstTaskSesumeBO
+// @Description: 实例任务恢复参数
+type InstTaskSesumeBO struct {
+	InstTaskID  string // 实例任务ID
+	OpUserID    string // 操作人id
+	OpUserName  string // 操作人名称
+	OpinionDesc string // 操作意见
+}
+
+// InstTaskDeleteBO
+// @Description: 实例任务删除参数
+type InstTaskDeleteBO struct {
+	InstTaskID  string // 实例任务ID
+	OpUserID    string // 操作人id
+	OpUserName  string // 操作人名称
+	OpinionDesc string // 操作意见
+}

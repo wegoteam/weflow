@@ -16,6 +16,10 @@ type ICommApproverStrategy interface {
 	genUserTasks() []entity.UserTaskBO
 }
 
+// GenCommApproverStrategy
+// @Description: 生成常用审批人策略
+// @param: genUserTaskBO
+// @return IExecNodeHandler
 func GenCommApproverStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
 
 	switch genUserTaskBO.Type {

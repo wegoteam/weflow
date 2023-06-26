@@ -218,6 +218,97 @@ definitions:
         description: 处理人任务id
         type: string
     type: object
+  vo.GroupModelQueryVO:
+    properties:
+      modelName:
+        description: 组名称
+        type: string
+    type: object
+  vo.InstTaskDeleteVO:
+    properties:
+      instTaskID:
+        description: 实例任务ID
+        type: string
+      opinionDesc:
+        description: 操作意见
+        type: string
+    type: object
+  vo.InstTaskQueryVO:
+    properties:
+      createTimeEnd:
+        description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      createTimeStart:
+        description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      finishTimeEnd:
+        description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      finishTimeStart:
+        description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      instStatus:
+        description: 任务状态，零值为全部
+        example: 0
+        type: integer
+      modelID:
+        description: 模板ID
+        example: ""
+        type: string
+      pageNum:
+        description: 页码
+        example: 1
+        type: integer
+      pageSize:
+        description: 每页条数
+        example: 30
+        type: integer
+      taskName:
+        description: 任务名称
+        example: ""
+        type: string
+    type: object
+  vo.InstTaskSesumeVO:
+    properties:
+      instTaskID:
+        description: 实例任务ID
+        type: string
+      opinionDesc:
+        description: 操作意见
+        type: string
+    type: object
+  vo.InstTaskStartVO:
+    properties:
+      modelID:
+        description: 模板ID
+        type: string
+      params:
+        additionalProperties: {}
+        description: 参数
+        type: object
+    type: object
+  vo.InstTaskStopVO:
+    properties:
+      instTaskID:
+        description: 实例任务ID
+        type: string
+      opinionDesc:
+        description: 操作意见
+        type: string
+    type: object
+  vo.InstTaskSuspendVO:
+    properties:
+      instTaskID:
+        description: 实例任务ID
+        type: string
+      opinionDesc:
+        description: 操作意见
+        type: string
+    type: object
   vo.ModelGroupAddVO:
     properties:
       groupName:
@@ -243,6 +334,88 @@ definitions:
         type: string
       remark:
         description: 描述
+        type: string
+    type: object
+  vo.UserTaskAgreeVO:
+    properties:
+      opinionDesc:
+        description: 操作意见
+        type: string
+      params:
+        additionalProperties: {}
+        description: 参数
+        type: object
+      userTaskID:
+        description: 用户任务id
+        type: string
+    type: object
+  vo.UserTaskDisagreeVO:
+    properties:
+      opinionDesc:
+        description: 操作意见
+        type: string
+      params:
+        additionalProperties: {}
+        description: 参数
+        type: object
+      userTaskID:
+        description: 用户任务id
+        type: string
+    type: object
+  vo.UserTaskQueryVO:
+    properties:
+      createTimeEnd:
+        description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      createTimeStart:
+        description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      createUserID:
+        description: 创建人id
+        example: ""
+        type: string
+      finishTimeEnd:
+        description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      finishTimeStart:
+        description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
+        example: ""
+        type: string
+      instStatus:
+        description: 任务状态，零值为全部
+        example: 0
+        type: integer
+      modelID:
+        description: 模板ID
+        example: ""
+        type: string
+      pageNum:
+        description: 页码
+        example: 1
+        type: integer
+      pageSize:
+        description: 每页条数
+        example: 30
+        type: integer
+      taskName:
+        description: 任务名称
+        example: ""
+        type: string
+    type: object
+  vo.UserTaskSaveVO:
+    properties:
+      opinionDesc:
+        description: 操作意见
+        type: string
+      params:
+        additionalProperties: {}
+        description: 参数
+        type: object
+      userTaskID:
+        description: 用户任务id
         type: string
     type: object
 host: localhost:8080
@@ -283,6 +456,13 @@ paths:
       consumes:
       - application/json
       description: 删除实例任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: InstTaskDeleteVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskDeleteVO'
       produces:
       - application/json
       responses:
@@ -294,56 +474,17 @@ paths:
       tags:
       - 实例任务
   /insttask/initiated:
-    get:
+    post:
       consumes:
       - application/json
       description: 获取发起的实例任务列表（已发起）
       parameters:
-      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeEnd
-        type: string
-      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeStart
-        type: string
-      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeEnd
-        type: string
-      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeStart
-        type: string
-      - description: 任务状态
-        example: 1
-        in: query
-        name: instStatus
-        type: integer
-      - description: 模板ID
-        example: 模板ID
-        in: query
-        name: modelID
-        type: string
-      - description: 页码
-        example: 1
-        in: query
-        name: pageNum
-        type: integer
-      - description: 每页条数
-        example: 30
-        in: query
-        name: pageSize
-        type: integer
-      - description: 任务名称
-        example: 任务名称
-        in: query
-        name: taskName
-        type: string
+      - description: 已发起的请求参数
+        in: body
+        name: InstTaskQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskQueryVO'
       produces:
       - application/json
       responses:
@@ -364,6 +505,13 @@ paths:
       consumes:
       - application/json
       description: 恢复实例任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: InstTaskSesumeVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskSesumeVO'
       produces:
       - application/json
       responses:
@@ -379,6 +527,13 @@ paths:
       consumes:
       - application/json
       description: 发起实例任务
+      parameters:
+      - description: 发起实例任务的请求参数
+        in: body
+        name: InstTaskStartVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskStartVO'
       produces:
       - application/json
       responses:
@@ -394,6 +549,13 @@ paths:
       consumes:
       - application/json
       description: 终止实例任务
+      parameters:
+      - description: 终止实例任务的请求参数
+        in: body
+        name: InstTaskStopVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskStopVO'
       produces:
       - application/json
       responses:
@@ -409,6 +571,13 @@ paths:
       consumes:
       - application/json
       description: 挂起实例任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: InstTaskSuspendVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.InstTaskSuspendVO'
       produces:
       - application/json
       responses:
@@ -419,6 +588,33 @@ paths:
       summary: 挂起实例任务
       tags:
       - 实例任务
+  /model/details:
+    post:
+      consumes:
+      - application/json
+      description: 获取所有组的所有模版
+      parameters:
+      - description: 请求参数
+        in: body
+        name: GroupModelQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.GroupModelQueryVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelDetailResult'
+              type: object
+      summary: 获取所有组的所有模版
+      tags:
+      - 模板
   /model/group/add:
     post:
       consumes:
@@ -550,6 +746,13 @@ paths:
       consumes:
       - application/json
       description: 同意用户任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: UserTaskAgreeVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskAgreeVO'
       produces:
       - application/json
       responses:
@@ -565,6 +768,13 @@ paths:
       consumes:
       - application/json
       description: 不同意用户任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: UserTaskDisagreeVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskDisagreeVO'
       produces:
       - application/json
       responses:
@@ -576,61 +786,17 @@ paths:
       tags:
       - 用户任务
   /usertask/done:
-    get:
+    post:
       consumes:
       - application/json
       description: 获取已办用户任务列表（已处理）
       parameters:
-      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeEnd
-        type: string
-      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeStart
-        type: string
-      - description: 创建人id
-        example: 创建人id
-        in: query
-        name: createUserID
-        type: string
-      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeEnd
-        type: string
-      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeStart
-        type: string
-      - description: 任务状态
-        example: 1
-        in: query
-        name: instStatus
-        type: integer
-      - description: 模板ID
-        example: 模板ID
-        in: query
-        name: modelID
-        type: string
-      - description: 页码
-        example: 1
-        in: query
-        name: pageNum
-        type: integer
-      - description: 每页条数
-        example: 30
-        in: query
-        name: pageSize
-        type: integer
-      - description: 任务名称
-        example: 任务名称
-        in: query
-        name: taskName
-        type: string
+      - description: 已处理的请求参数
+        in: body
+        name: UserTaskQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskQueryVO'
       produces:
       - application/json
       responses:
@@ -647,61 +813,17 @@ paths:
       tags:
       - 用户任务
   /usertask/received:
-    get:
+    post:
       consumes:
       - application/json
       description: 获取用户任务列表（我收到的）
       parameters:
-      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeEnd
-        type: string
-      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeStart
-        type: string
-      - description: 创建人id
-        example: 创建人id
-        in: query
-        name: createUserID
-        type: string
-      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeEnd
-        type: string
-      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeStart
-        type: string
-      - description: 任务状态
-        example: 1
-        in: query
-        name: instStatus
-        type: integer
-      - description: 模板ID
-        example: 模板ID
-        in: query
-        name: modelID
-        type: string
-      - description: 页码
-        example: 1
-        in: query
-        name: pageNum
-        type: integer
-      - description: 每页条数
-        example: 30
-        in: query
-        name: pageSize
-        type: integer
-      - description: 任务名称
-        example: 任务名称
-        in: query
-        name: taskName
-        type: string
+      - description: 我收到的的请求参数
+        in: body
+        name: UserTaskQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskQueryVO'
       produces:
       - application/json
       responses:
@@ -722,6 +844,13 @@ paths:
       consumes:
       - application/json
       description: 保存用户任务
+      parameters:
+      - description: 请求参数
+        in: body
+        name: UserTaskSaveVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskSaveVO'
       produces:
       - application/json
       responses:
@@ -733,61 +862,17 @@ paths:
       tags:
       - 用户任务
   /usertask/todo:
-    get:
+    post:
       consumes:
       - application/json
       description: 获取待办用户任务列表（待处理）
       parameters:
-      - description: 提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeEnd
-        type: string
-      - description: 提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 提交审批时间
-        in: query
-        name: createTimeStart
-        type: string
-      - description: 创建人id
-        example: 创建人id
-        in: query
-        name: createUserID
-        type: string
-      - description: 完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeEnd
-        type: string
-      - description: 完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS
-        example: 完成审批时间
-        in: query
-        name: finishTimeStart
-        type: string
-      - description: 任务状态
-        example: 1
-        in: query
-        name: instStatus
-        type: integer
-      - description: 模板ID
-        example: 模板ID
-        in: query
-        name: modelID
-        type: string
-      - description: 页码
-        example: 1
-        in: query
-        name: pageNum
-        type: integer
-      - description: 每页条数
-        example: 30
-        in: query
-        name: pageSize
-        type: integer
-      - description: 任务名称
-        example: 任务名称
-        in: query
-        name: taskName
-        type: string
+      - description: 待处理的请求参数
+        in: body
+        name: UserTaskQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserTaskQueryVO'
       produces:
       - application/json
       responses:

@@ -78,6 +78,7 @@ func TestGetExecNodeTaskMap(t *testing.T) {
 
 func TestGetTodoUserTask(t *testing.T) {
 	param := &entity.UserTaskQueryBO{
+		UserID:          "547",
 		PageNum:         2,
 		PageSize:        1,
 		InstStatus:      2,
@@ -85,13 +86,13 @@ func TestGetTodoUserTask(t *testing.T) {
 		CreateTimeEnd:   "2024-8-5 13:14:15",
 	}
 	userTask := GetTodoUserTasks("547")
-	page := PageTodoUserTasks("547", param)
+	page, _ := PageTodoUserTasks(param)
 	hlog.Infof("userTask= %v", userTask)
 	hlog.Infof("page= %v", page)
 }
 
 func TestGetDoneUserTask(t *testing.T) {
-	userTask := GetDoneUserTasks("547")
+	userTask, _ := GetDoneUserTasks("547")
 	hlog.Infof("userTask= %v", userTask)
 }
 
@@ -106,6 +107,6 @@ func TestGetDraftInstTask(t *testing.T) {
 }
 
 func TestGetModelList(t *testing.T) {
-	modelList := GetModelList()
+	modelList, _ := GetModelList()
 	hlog.Infof("modelList= %v", modelList)
 }

@@ -20,3 +20,9 @@ type ModelGroupEditVO struct {
 type ModelGroupDelVO struct {
 	GroupID string `json:"groupID"` // 组id
 }
+
+// GroupModelQueryVO
+// @Description: 模型组查询VO
+type GroupModelQueryVO struct {
+	ModelName string `json:"modelName"` // 组名称
+}

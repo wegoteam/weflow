@@ -14,10 +14,10 @@ import (
 
 // Start
 // @Description: 发起实例任务
-// @param modelID 模板ID
-// @param userID 发起人ID
-// @param userName 发起人名称
-// @param params 参数
+// @param: modelID 模板ID
+// @param: userID 发起人ID
+// @param: userName 发起人名称
+// @param: params 参数
 func Start(modelID, userID, userName string, params map[string]any) (string, error) {
 	instTaskExecution := &InstTaskExecution{
 		Execution:  &Execution{},
@@ -35,10 +35,10 @@ func Start(modelID, userID, userName string, params map[string]any) (string, err
 
 // Stop
 // @Description: 停止实例任务
-// @param instTaskID 实例任务ID
-// @param opUserID 操作人ID
-// @param opUserName 操作人名称
-// @param opinionDesc 意见描述
+// @param: instTaskID 实例任务ID
+// @param: opUserID 操作人ID
+// @param: opUserName 操作人名称
+// @param: opinionDesc 意见描述
 // @return bool
 func Stop(instTaskID, opUserID, opUserName, opinionDesc string) error {
 	instTaskExecution, err := NewInstTaskExecution(instTaskID)
@@ -54,10 +54,10 @@ func Stop(instTaskID, opUserID, opUserName, opinionDesc string) error {
 
 // Suspend
 // @Description: 暂停、挂起实例任务
-// @param instTaskID 实例任务ID
-// @param opUserID 操作人ID
-// @param opUserName 操作人名称
-// @param opinionDesc 意见描述
+// @param: instTaskID 实例任务ID
+// @param: opUserID 操作人ID
+// @param: opUserName 操作人名称
+// @param: opinionDesc 意见描述
 // @return bool
 func Suspend(instTaskID, opUserID, opUserName, opinionDesc string) error {
 	instTaskExecution, err := NewInstTaskExecution(instTaskID)
@@ -73,10 +73,10 @@ func Suspend(instTaskID, opUserID, opUserName, opinionDesc string) error {
 
 // Sesume
 // @Description: 恢复实例任务
-// @param instTaskID 实例任务ID
-// @param opUserID 操作人ID
-// @param opUserName 操作人名称
-// @param opinionDesc 意见描述
+// @param: instTaskID 实例任务ID
+// @param: opUserID 操作人ID
+// @param: opUserName 操作人名称
+// @param: opinionDesc 意见描述
 // @return bool
 func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) error {
 	instTaskExecution, err := NewInstTaskExecution(instTaskID)
@@ -92,10 +92,10 @@ func Sesume(instTaskID, opUserID, opUserName, opinionDesc string) error {
 
 // Delete
 // @Description: 删除实例任务
-// @param instTaskID 实例任务ID
-// @param opUserID 操作人ID
-// @param opUserName 操作人名称
-// @param opinionDesc 意见描述
+// @param: instTaskID 实例任务ID
+// @param: opUserID 操作人ID
+// @param: opUserName 操作人名称
+// @param: opinionDesc 意见描述
 // @return error
 func Delete(instTaskID, opUserID, opUserName, opinionDesc string) error {
 	instTaskExecution, err := NewInstTaskExecution(instTaskID)
@@ -111,10 +111,10 @@ func Delete(instTaskID, opUserID, opUserName, opinionDesc string) error {
 // start
 // @Description: 发起实例任务
 // @receiver execution
-// @param modelId 模板ID
-// @param userName 发起人名称
-// @param userID 发起人ID
-// @param params 参数
+// @param: modelId 模板ID
+// @param: userName 发起人名称
+// @param: userID 发起人ID
+// @param: params 参数
 // @return string
 func (instTaskExecution *InstTaskExecution) start(modelID string, params map[string]any) (string, error) {
 	execution := instTaskExecution.Execution
@@ -176,7 +176,7 @@ func (instTaskExecution *InstTaskExecution) start(modelID string, params map[str
 // stop
 // @Description: 终止实例任务
 // @receiver instTaskExecution
-// @param instTaskID
+// @param: instTaskID
 // @return bool
 func (instTaskExecution *InstTaskExecution) stop(instTaskID string) error {
 	execution := instTaskExecution.Execution
@@ -195,7 +195,7 @@ func (instTaskExecution *InstTaskExecution) stop(instTaskID string) error {
 // suspend
 // @Description: 挂起实例任务
 // @receiver instTaskExecution
-// @param instTaskID
+// @param: instTaskID
 // @return bool
 func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) error {
 	execution := instTaskExecution.Execution
@@ -214,7 +214,7 @@ func (instTaskExecution *InstTaskExecution) suspend(instTaskID string) error {
 // resume
 // @Description: 恢复实例任务
 // @receiver instTaskExecution
-// @param instTaskID
+// @param: instTaskID
 // @return bool
 func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
 	execution := instTaskExecution.Execution
@@ -230,6 +230,11 @@ func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
 	return nil
 }
 
+// delete
+// @Description: 删除实例任务
+// @receiver: instTaskExecution
+// @param: instTaskID
+// @return error
 func (instTaskExecution *InstTaskExecution) delete(instTaskID string) error {
 	execution := instTaskExecution.Execution
 	if utils.IsNotContainsSlice(instDelStopList, int(execution.InstTaskStatus)) {

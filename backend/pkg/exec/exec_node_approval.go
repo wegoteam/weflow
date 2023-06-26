@@ -33,7 +33,7 @@ type ExecApprovalNode struct {
 
 // NewApprovalNode
 //  @Description: 实例化执行审批节点对象
-//  @param node
+//  @param: node
 //  @return *ExecApprovalNode
 //
 func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
@@ -60,7 +60,7 @@ func NewApprovalNode(node *entity.NodeModelBO) *ExecApprovalNode {
 // ExecCurrNodeModel 执行当前节点
 //  @Description: 执行当前节点
 //  @receiver execApprovalNode
-//  @param execution
+//  @param: execution
 //  @return ExecResult
 func (execApprovalNode *ExecApprovalNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execApprovalNode.NodeID]
@@ -103,9 +103,9 @@ func (execApprovalNode *ExecApprovalNode) execCurrNodeModel(execution *Execution
 // GetInstNodeTask
 //  @Description: 生成实例节点任务
 //  @receiver execApprovalNode
-//  @param instTaskID
-//  @param nodeTaskID
-//  @param now
+//  @param: instTaskID
+//  @param: nodeTaskID
+//  @param: now
 //  @return entity.InstNodeTaskBO
 func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
@@ -132,8 +132,8 @@ func (execApprovalNode *ExecApprovalNode) GetInstNodeTask(instTaskID, nodeTaskID
 // GetTaskFormPers
 //  @Description: 获取实例节点任务表单权限
 //  @receiver execApprovalNode
-//  @param formPers
-//  @param instNodeTask
+//  @param: formPers
+//  @param: instNodeTask
 //  @return []entity.TaskFormPerBO
 func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
@@ -155,7 +155,7 @@ func (execApprovalNode *ExecApprovalNode) GetTaskFormPers(formPers []entity.Form
 // ExecPreNodeModels 获取上一节点
 //  @Description:
 //  @receiver execApprovalNode
-//  @param nodeModelMap
+//  @param: nodeModelMap
 //  @return *[]entity.NodeModelBO
 func (execApprovalNode *ExecApprovalNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)

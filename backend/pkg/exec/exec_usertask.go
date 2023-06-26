@@ -13,11 +13,11 @@ import (
 
 // Agree
 // @Description: 同意
-// @param userTaskID 用户任务ID
-// @param opUserID 操作用户ID
-// @param OpUserName 操作用户名称
-// @param opinionDesc 意见描述
-// @param params 参数
+// @param: userTaskID 用户任务ID
+// @param: opUserID 操作用户ID
+// @param: OpUserName 操作用户名称
+// @param: opinionDesc 意见描述
+// @param: params 参数
 // @return bool
 func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
 	//创建用户任务执行对象
@@ -40,11 +40,11 @@ func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[stri
 
 // Save
 // @Description: 保存
-// @param userTaskID 用户任务ID
-// @param opUserID 操作用户ID
-// @param OpUserName 操作用户名称
-// @param opinionDesc 意见描述
-// @param params 参数
+// @param: userTaskID 用户任务ID
+// @param: opUserID 操作用户ID
+// @param: OpUserName 操作用户名称
+// @param: opinionDesc 意见描述
+// @param: params 参数
 // @return bool
 func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
 	//创建用户任务执行对象
@@ -66,10 +66,10 @@ func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[strin
 
 // Disagree
 // @Description: 不同意
-// @param userTaskID 用户任务ID
-// @param opUserID 操作用户ID
-// @param OpUserName 操作用户名称
-// @param opinionDesc 意见描述
+// @param: userTaskID 用户任务ID
+// @param: opUserID 操作用户ID
+// @param: OpUserName 操作用户名称
+// @param: opinionDesc 意见描述
 // @return bool
 func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
 	//创建用户任务执行对象
@@ -94,8 +94,8 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
 // @Description: 同意
 //保存实例任务参数、修改当前用户任务、修改当前节点任务、添加用户任务评论、保存数据
 // @receiver userTaskExecution
-// @param userTaskID 用户任务ID
-// @param params 参数
+// @param: userTaskID 用户任务ID
+// @param: params 参数
 // @return bool
 func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[string]any) error {
 	execution := userTaskExecution.Execution
@@ -128,8 +128,8 @@ func (userTaskExecution *UserTaskExecution) agree(userTaskID string, params map[
 // save
 // @Description: 保存
 // @receiver userTaskExecution
-// @param userTaskID 用户任务ID
-// @param params 参数
+// @param: userTaskID 用户任务ID
+// @param: params 参数
 // @return bool
 func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[string]any) error {
 	execution := userTaskExecution.Execution
@@ -184,8 +184,8 @@ func (userTaskExecution *UserTaskExecution) save(userTaskID string, params map[s
 // disagree
 // @Description: 不同意
 // @receiver userTaskExecution
-// @param userTaskID
-// @param params
+// @param: userTaskID
+// @param: params
 // @return bool
 func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) error {
 	execution := userTaskExecution.Execution
@@ -362,7 +362,7 @@ func (userTaskExecution *UserTaskExecution) verify(opUserID string) error {
 // execUserTask
 // @Description: 执行用户任务，串行任务，并行任务，会签、或签
 //审批方式【依次审批：1；会签（需要完成人数的审批人同意或拒绝才可完成节点）：2；或签（其中一名审批人同意或拒绝即可）：3】默认会签2
-// @param userTaskExecution
+// @param: userTaskExecution
 func execNodeTask(userTaskExecution *UserTaskExecution) error {
 	//判断当前的节点任务是否完成
 	finishFlag := isFinish(userTaskExecution)

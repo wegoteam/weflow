@@ -13,7 +13,7 @@ import (
 
 // GetInstTask
 // @Description: 获取实例任务
-// @param instTaskID 实例任务ID
+// @param: instTaskID 实例任务ID
 // @return *entity.InstTaskResult
 func GetInstTask(instTaskID string) *entity.InstTaskResult {
 	if utils.IsStrBlank(instTaskID) {
@@ -47,7 +47,7 @@ func GetInstTask(instTaskID string) *entity.InstTaskResult {
 
 // GetInitiatingInstTasks
 // @Description: 已发列表；获取发起人的实例任务
-// @param userID 发起人用户ID
+// @param: userID 发起人用户ID
 // @return *entity.InstTaskResult
 func GetInitiatingInstTasks(userID string) []entity.InstTaskResult {
 	var instTaskList = make([]entity.InstTaskResult, 0)
@@ -207,10 +207,10 @@ func BuildInstTaskQuery(param *entity.InstTaskQueryBO) func(db *gorm.DB) *gorm.D
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if param.InstStatus != 0 {
-			tx = db.Where("inst_node_task.status = ?", param.InstStatus)
+			tx = db.Where("inst_task_detail.status = ?", param.InstStatus)
 		}
 		if utils.IsStrNotBlank(param.TaskName) {
-			tx = db.Where("inst_task_detail.task_name = ?", param.TaskName)
+			tx = db.Where("inst_task_detail.task_name = ?", "%"+param.TaskName+"%")
 		}
 		if utils.IsStrNotBlank(param.CreateTimeStart) && utils.IsStrNotBlank(param.CreateTimeEnd) {
 			carbon.Parse(param.CreateTimeStart).ToStdTime()
@@ -228,7 +228,6 @@ func BuildInstTaskQuery(param *entity.InstTaskQueryBO) func(db *gorm.DB) *gorm.D
 // @param userID
 // @return []entity.InstTaskResult
 func GetDraftInstTask(userID string) []entity.InstTaskResult {
-
 	var instTaskList = make([]entity.InstTaskResult, 0)
 	if utils.IsStrBlank(userID) {
 		return instTaskList

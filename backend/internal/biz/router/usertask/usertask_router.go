@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	usertaskService "github.com/wegoteam/weflow/internal/biz/handler/usertask"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -16,9 +17,9 @@ import (
 // @param: h
 func Register(h *server.Hertz) {
 	usertaskGroup := h.Group("/usertask")
-	usertaskGroup.GET("/todo", GetTodoUserTaskList)
-	usertaskGroup.GET("/done", GetDoneUserTaskList)
-	usertaskGroup.GET("/received", GetReceivedUserTaskList)
+	usertaskGroup.POST("/todo", GetTodoUserTaskList)
+	usertaskGroup.POST("/done", GetDoneUserTaskList)
+	usertaskGroup.POST("/received", GetReceivedUserTaskList)
 	usertaskGroup.POST("/agree", AgreeUserTask)
 	usertaskGroup.POST("/disagree", DisagreeUserTask)
 	usertaskGroup.POST("/save", SaveUserTask)
@@ -27,12 +28,12 @@ func Register(h *server.Hertz) {
 // GetTodoUserTaskList 获取待办用户任务列表
 // @Summary 获取待办用户任务列表（待处理）
 // @Tags 用户任务
-// @Param UserTaskQueryVO query vo.UserTaskQueryVO true "待处理的请求参数"
+// @Param UserTaskQueryVO body vo.UserTaskQueryVO true "待处理的请求参数"
 // @Description 获取待办用户任务列表（待处理）
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.UserTaskTodoResult} "返回结果"
-// @Router /usertask/todo [get]
+// @Router /usertask/todo [post]
 func GetTodoUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
@@ -58,11 +59,11 @@ func GetTodoUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Summary 获取已办用户任务列表（已处理）
 // @Tags 用户任务
 // @Description 获取已办用户任务列表（已处理）
-// @Param UserTaskQueryVO query vo.UserTaskQueryVO true "已处理的请求参数"
+// @Param UserTaskQueryVO body vo.UserTaskQueryVO true "已处理的请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.UserTaskResult} "返回结果"
-// @Router /usertask/done [get]
+// @Router /usertask/done [post]
 func GetDoneUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
@@ -88,11 +89,11 @@ func GetDoneUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Summary 获取用户任务列表（我收到的）
 // @Tags 用户任务
 // @Description 获取用户任务列表（我收到的）
-// @Param UserTaskQueryVO query vo.UserTaskQueryVO true "我收到的的请求参数"
+// @Param UserTaskQueryVO body vo.UserTaskQueryVO true "我收到的的请求参数"
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.UserTaskResult} "返回结果"
-// @Router /usertask/received [get]
+// @Router /usertask/received [post]
 func GetReceivedUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
@@ -119,11 +120,23 @@ func GetReceivedUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Tags 用户任务
 // @Description 同意用户任务
 // @Accept application/json
+// @Param UserTaskAgreeVO body vo.UserTaskAgreeVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /usertask/agree [post]
 func AgreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	// 获取请求参数
+	var req vo.UserTaskAgreeVO
+	reqCtx.Bind(&req)
+	param := &bo.UserTaskAgreeBO{
+		UserTaskID:  req.UserTaskID,
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		OpinionDesc: req.OpinionDesc,
+		Params:      req.Params,
+	}
+	res := usertaskService.AgreeUserTask(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // DisagreeUserTask 不同意用户任务
@@ -131,11 +144,22 @@ func AgreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Tags 用户任务
 // @Description 不同意用户任务
 // @Accept application/json
+// @Param UserTaskDisagreeVO body vo.UserTaskDisagreeVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /usertask/disagree [post]
 func DisagreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	// 获取请求参数
+	var req vo.UserTaskDisagreeVO
+	reqCtx.Bind(&req)
+	param := &bo.UserTaskDisagreeBO{
+		UserTaskID:  req.UserTaskID,
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		OpinionDesc: req.OpinionDesc,
+	}
+	res := usertaskService.DisagreeUserTask(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // SaveUserTask 保存用户任务
@@ -143,9 +167,21 @@ func DisagreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Tags 用户任务
 // @Description 保存用户任务
 // @Accept application/json
+// @Param UserTaskSaveVO body vo.UserTaskSaveVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{} "返回结果"
 // @Router /usertask/save [post]
 func SaveUserTask(ctx context.Context, reqCtx *app.RequestContext) {
-
+	// 获取请求参数
+	var req vo.UserTaskSaveVO
+	reqCtx.Bind(&req)
+	param := &bo.UserTaskSaveBO{
+		UserTaskID:  req.UserTaskID,
+		OpUserID:    consts.UserID,
+		OpUserName:  consts.UserName,
+		OpinionDesc: req.OpinionDesc,
+		Params:      req.Params,
+	}
+	res := usertaskService.SaveUserTask(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }

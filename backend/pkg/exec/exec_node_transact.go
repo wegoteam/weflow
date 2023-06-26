@@ -32,10 +32,9 @@ type ExecTransactNode struct {
 
 // NewTransactNode
 // @Description: 实例化执行节点对象
-// @param node
+// @param: node
 // @return *ExecTransactNode
 func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
-
 	return &ExecTransactNode{
 		NodeModel:   node.NodeModel,
 		NodeName:    node.NodeName,
@@ -61,7 +60,7 @@ func NewTransactNode(node *entity.NodeModelBO) *ExecTransactNode {
 //执行任务
 //下节点
 // @receiver execTransactNode
-// @param execution
+// @param: execution
 // @return ExecResult
 func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execTransactNode.NodeID]
@@ -104,9 +103,9 @@ func (execTransactNode *ExecTransactNode) execCurrNodeModel(execution *Execution
 // GetInstNodeTask
 // @Description: 获取实例节点任务
 // @receiver execTransactNode
-// @param instTaskID
-// @param nodeTaskID
-// @param now
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: now
 // @return entity.InstNodeTaskBO
 func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
@@ -132,8 +131,8 @@ func (execTransactNode *ExecTransactNode) GetInstNodeTask(instTaskID, nodeTaskID
 // GetTaskFormPers
 // @Description: 获取实例节点任务表单权限
 // @receiver execTransactNode
-// @param formPers
-// @param instNodeTask
+// @param: formPers
+// @param: instNodeTask
 // @return []entity.TaskFormPerBO
 func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.FormPer, instNodeTask entity.InstNodeTaskBO) []entity.TaskFormPerBO {
 	var taskFormPers = make([]entity.TaskFormPerBO, len(formPers))
@@ -155,7 +154,7 @@ func (execTransactNode *ExecTransactNode) GetTaskFormPers(formPers []entity.Form
 // execPreNodeModels
 // @Description: 获取上节点
 // @receiver execTransactNode
-// @param nodeModelMap
+// @param: nodeModelMap
 // @return *[]entity.NodeModelBO
 func (execTransactNode *ExecTransactNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
@@ -176,7 +175,7 @@ func (execTransactNode *ExecTransactNode) execPreNodeModels(nodeModelMap map[str
 // execNextNodeModels
 // @Description: 获取下节点
 // @receiver execTransactNode
-// @param nodeModelMap
+// @param: nodeModelMap
 // @return *[]entity.NodeModelBO
 func (execTransactNode *ExecTransactNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)

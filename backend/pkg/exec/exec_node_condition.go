@@ -30,7 +30,7 @@ type ExecConditionNode struct {
 
 // NewConditionNode
 //  @Description: 实例化执行条件节点对象
-//  @param node
+//  @param: node
 //  @return *ExecConditionNode
 func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 	return &ExecConditionNode{
@@ -52,7 +52,7 @@ func NewConditionNode(node *entity.NodeModelBO) *ExecConditionNode {
 // ExecCurrNodeModel
 //  @Description: 执行当前节点
 //  @receiver execConditionNode
-//  @param execution
+//  @param: execution
 //  @return ExecResult
 func (execConditionNode *ExecConditionNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execConditionNode.NodeID]
@@ -76,8 +76,8 @@ func (execConditionNode *ExecConditionNode) execCurrNodeModel(execution *Executi
 
 // buildPassResult
 //  @Description: 获取通过的返回结果
-//  @param execution
-//  @param execConditionNode
+//  @param: execution
+//  @param: execConditionNode
 //  @return ExecResult
 func buildPassResult(execution *Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Infof("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
@@ -106,8 +106,8 @@ func buildPassResult(execution *Execution, execConditionNode *ExecConditionNode)
 
 // buildNoPassResult
 //  @Description: 获取不通过的返回结果
-//  @param execution
-//  @param execConditionNode
+//  @param: execution
+//  @param: execConditionNode
 //  @return ExecResult
 func buildNoPassResult(execution *Execution, execConditionNode *ExecConditionNode) ExecResult {
 	hlog.Warnf("实例任务[%v]的流程定义[%v]执行条件节点[%v]节点名称[%v]的条件不成立", execution.InstTaskID, execution.ProcessDefId, execConditionNode.NodeID, execConditionNode.NodeName)
@@ -172,9 +172,9 @@ func buildNoPassResult(execution *Execution, execConditionNode *ExecConditionNod
 // GetInstNodeTask
 //  @Description: 获取实例节点任务
 //  @receiver execConditionNode
-//  @param instTaskID
-//  @param nodeTaskID
-//  @param now
+//  @param: instTaskID
+//  @param: nodeTaskID
+//  @param: now
 //  @return entity.InstNodeTaskBO
 func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
@@ -199,7 +199,7 @@ func (execConditionNode *ExecConditionNode) GetInstNodeTask(instTaskID, nodeTask
 // ExecPreNodeModels
 //  @Description: 获取上节点
 //  @receiver execConditionNode
-//  @param nodeModelMap
+//  @param: nodeModelMap
 //  @return *[]entity.NodeModelBO
 func (execConditionNode *ExecConditionNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
@@ -220,7 +220,7 @@ func (execConditionNode *ExecConditionNode) execPreNodeModels(nodeModelMap map[s
 // ExecNextNodeModels
 //  @Description: 获取下节点
 //  @receiver execConditionNode
-//  @param nodeModelMap
+//  @param: nodeModelMap
 //  @return *[]entity.NodeModelBO
 func (execConditionNode *ExecConditionNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)

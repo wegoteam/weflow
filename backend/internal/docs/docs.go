@@ -72,6 +72,17 @@ const docTemplate = `{
                     "实例任务"
                 ],
                 "summary": "删除实例任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "InstTaskDeleteVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskDeleteVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -83,7 +94,7 @@ const docTemplate = `{
             }
         },
         "/insttask/initiated": {
-            "get": {
+            "post": {
                 "description": "获取发起的实例任务列表（已发起）",
                 "consumes": [
                     "application/json"
@@ -97,67 +108,13 @@ const docTemplate = `{
                 "summary": "获取发起的实例任务列表（已发起）",
                 "parameters": [
                     {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "任务状态",
-                        "name": "instStatus",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "模板ID",
-                        "description": "模板ID",
-                        "name": "modelID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码",
-                        "name": "pageNum",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 30,
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "任务名称",
-                        "description": "任务名称",
-                        "name": "taskName",
-                        "in": "query"
+                        "description": "已发起的请求参数",
+                        "name": "InstTaskQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskQueryVO"
+                        }
                     }
                 ],
                 "responses": {
@@ -195,6 +152,17 @@ const docTemplate = `{
                     "实例任务"
                 ],
                 "summary": "恢复实例任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "InstTaskSesumeVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskSesumeVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -218,6 +186,17 @@ const docTemplate = `{
                     "实例任务"
                 ],
                 "summary": "发起实例任务",
+                "parameters": [
+                    {
+                        "description": "发起实例任务的请求参数",
+                        "name": "InstTaskStartVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskStartVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -241,6 +220,17 @@ const docTemplate = `{
                     "实例任务"
                 ],
                 "summary": "终止实例任务",
+                "parameters": [
+                    {
+                        "description": "终止实例任务的请求参数",
+                        "name": "InstTaskStopVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskStopVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -264,11 +254,68 @@ const docTemplate = `{
                     "实例任务"
                 ],
                 "summary": "挂起实例任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "InstTaskSuspendVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.InstTaskSuspendVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
                         "schema": {
                             "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/details": {
+            "post": {
+                "description": "获取所有组的所有模版",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "获取所有组的所有模版",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "GroupModelQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.GroupModelQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -494,6 +541,17 @@ const docTemplate = `{
                     "用户任务"
                 ],
                 "summary": "同意用户任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "UserTaskAgreeVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskAgreeVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -517,6 +575,17 @@ const docTemplate = `{
                     "用户任务"
                 ],
                 "summary": "不同意用户任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "UserTaskDisagreeVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskDisagreeVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -528,7 +597,7 @@ const docTemplate = `{
             }
         },
         "/usertask/done": {
-            "get": {
+            "post": {
                 "description": "获取已办用户任务列表（已处理）",
                 "consumes": [
                     "application/json"
@@ -542,74 +611,13 @@ const docTemplate = `{
                 "summary": "获取已办用户任务列表（已处理）",
                 "parameters": [
                     {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "创建人id",
-                        "description": "创建人id",
-                        "name": "createUserID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "任务状态",
-                        "name": "instStatus",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "模板ID",
-                        "description": "模板ID",
-                        "name": "modelID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码",
-                        "name": "pageNum",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 30,
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "任务名称",
-                        "description": "任务名称",
-                        "name": "taskName",
-                        "in": "query"
+                        "description": "已处理的请求参数",
+                        "name": "UserTaskQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskQueryVO"
+                        }
                     }
                 ],
                 "responses": {
@@ -635,7 +643,7 @@ const docTemplate = `{
             }
         },
         "/usertask/received": {
-            "get": {
+            "post": {
                 "description": "获取用户任务列表（我收到的）",
                 "consumes": [
                     "application/json"
@@ -649,74 +657,13 @@ const docTemplate = `{
                 "summary": "获取用户任务列表（我收到的）",
                 "parameters": [
                     {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "创建人id",
-                        "description": "创建人id",
-                        "name": "createUserID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "任务状态",
-                        "name": "instStatus",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "模板ID",
-                        "description": "模板ID",
-                        "name": "modelID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码",
-                        "name": "pageNum",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 30,
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "任务名称",
-                        "description": "任务名称",
-                        "name": "taskName",
-                        "in": "query"
+                        "description": "我收到的的请求参数",
+                        "name": "UserTaskQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskQueryVO"
+                        }
                     }
                 ],
                 "responses": {
@@ -754,6 +701,17 @@ const docTemplate = `{
                     "用户任务"
                 ],
                 "summary": "保存用户任务",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "UserTaskSaveVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskSaveVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -765,7 +723,7 @@ const docTemplate = `{
             }
         },
         "/usertask/todo": {
-            "get": {
+            "post": {
                 "description": "获取待办用户任务列表（待处理）",
                 "consumes": [
                     "application/json"
@@ -779,74 +737,13 @@ const docTemplate = `{
                 "summary": "获取待办用户任务列表（待处理）",
                 "parameters": [
                     {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "提交审批时间",
-                        "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "createTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "创建人id",
-                        "description": "创建人id",
-                        "name": "createUserID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "完成审批时间",
-                        "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
-                        "name": "finishTimeStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "任务状态",
-                        "name": "instStatus",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "模板ID",
-                        "description": "模板ID",
-                        "name": "modelID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码",
-                        "name": "pageNum",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 30,
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "任务名称",
-                        "description": "任务名称",
-                        "name": "taskName",
-                        "in": "query"
+                        "description": "待处理的请求参数",
+                        "name": "UserTaskQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserTaskQueryVO"
+                        }
                     }
                 ],
                 "responses": {
@@ -1170,6 +1067,131 @@ const docTemplate = `{
                 }
             }
         },
+        "vo.GroupModelQueryVO": {
+            "type": "object",
+            "properties": {
+                "modelName": {
+                    "description": "组名称",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.InstTaskDeleteVO": {
+            "type": "object",
+            "properties": {
+                "instTaskID": {
+                    "description": "实例任务ID",
+                    "type": "string"
+                },
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.InstTaskQueryVO": {
+            "type": "object",
+            "properties": {
+                "createTimeEnd": {
+                    "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "createTimeStart": {
+                    "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "finishTimeEnd": {
+                    "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "finishTimeStart": {
+                    "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "instStatus": {
+                    "description": "任务状态，零值为全部",
+                    "type": "integer",
+                    "example": 0
+                },
+                "modelID": {
+                    "description": "模板ID",
+                    "type": "string",
+                    "example": ""
+                },
+                "pageNum": {
+                    "description": "页码",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "每页条数",
+                    "type": "integer",
+                    "example": 30
+                },
+                "taskName": {
+                    "description": "任务名称",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "vo.InstTaskSesumeVO": {
+            "type": "object",
+            "properties": {
+                "instTaskID": {
+                    "description": "实例任务ID",
+                    "type": "string"
+                },
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.InstTaskStartVO": {
+            "type": "object",
+            "properties": {
+                "modelID": {
+                    "description": "模板ID",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "参数",
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            }
+        },
+        "vo.InstTaskStopVO": {
+            "type": "object",
+            "properties": {
+                "instTaskID": {
+                    "description": "实例任务ID",
+                    "type": "string"
+                },
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.InstTaskSuspendVO": {
+            "type": "object",
+            "properties": {
+                "instTaskID": {
+                    "description": "实例任务ID",
+                    "type": "string"
+                },
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                }
+            }
+        },
         "vo.ModelGroupAddVO": {
             "type": "object",
             "properties": {
@@ -1205,6 +1227,115 @@ const docTemplate = `{
                 },
                 "remark": {
                     "description": "描述",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.UserTaskAgreeVO": {
+            "type": "object",
+            "properties": {
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "参数",
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "userTaskID": {
+                    "description": "用户任务id",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.UserTaskDisagreeVO": {
+            "type": "object",
+            "properties": {
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "参数",
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "userTaskID": {
+                    "description": "用户任务id",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.UserTaskQueryVO": {
+            "type": "object",
+            "properties": {
+                "createTimeEnd": {
+                    "description": "提交审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "createTimeStart": {
+                    "description": "提交审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "createUserID": {
+                    "description": "创建人id",
+                    "type": "string",
+                    "example": ""
+                },
+                "finishTimeEnd": {
+                    "description": "完成审批时间-结束 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "finishTimeStart": {
+                    "description": "完成审批时间-开始 yyyy-MM-dd HH:mm:ss:SSS",
+                    "type": "string",
+                    "example": ""
+                },
+                "instStatus": {
+                    "description": "任务状态，零值为全部",
+                    "type": "integer",
+                    "example": 0
+                },
+                "modelID": {
+                    "description": "模板ID",
+                    "type": "string",
+                    "example": ""
+                },
+                "pageNum": {
+                    "description": "页码",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "每页条数",
+                    "type": "integer",
+                    "example": 30
+                },
+                "taskName": {
+                    "description": "任务名称",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "vo.UserTaskSaveVO": {
+            "type": "object",
+            "properties": {
+                "opinionDesc": {
+                    "description": "操作意见",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "参数",
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "userTaskID": {
+                    "description": "用户任务id",
                     "type": "string"
                 }
             }

@@ -36,3 +36,32 @@ type UserTaskTodoResult struct {
 	NodeName       string    `json:"nodeName"`       // 节点名称
 	UserTaskID     string    `json:"userTaskID"`     // 处理人任务id
 }
+
+// UserTaskAgreeBO
+// @Description: 同意用户任务
+type UserTaskAgreeBO struct {
+	UserTaskID  string         // 用户任务id
+	OpUserID    string         // 操作人id
+	OpUserName  string         // 操作人名称
+	OpinionDesc string         // 操作意见
+	Params      map[string]any // 参数
+}
+
+// UserTaskDisagreeBO
+// @Description: 不同意用户任务
+type UserTaskDisagreeBO struct {
+	UserTaskID  string // 用户任务id
+	OpUserID    string // 操作人id
+	OpUserName  string // 操作人名称
+	OpinionDesc string // 操作意见
+}
+
+// UserTaskSaveBO
+// @Description: 保存用户任务
+type UserTaskSaveBO struct {
+	UserTaskID  string         // 用户任务id
+	OpUserID    string         // 操作人id
+	OpUserName  string         // 操作人名称
+	OpinionDesc string         // 操作意见
+	Params      map[string]any // 参数
+}

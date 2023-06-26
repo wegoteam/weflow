@@ -22,11 +22,11 @@ type ExecEndNode struct {
 	BranchIndex int      `json:"branchIndex,omitempty"` // 分支下标
 }
 
-/**
-实例化执行节点对象
-*/
+// NewEndNode
+// @Description: 实例化执行节点对象
+// @param: node
+// @return *ExecEndNode
 func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
-
 	return &ExecEndNode{
 		NodeModel:   node.NodeModel,
 		NodeName:    node.NodeName,
@@ -40,12 +40,14 @@ func NewEndNode(node *entity.NodeModelBO) *ExecEndNode {
 	}
 }
 
-/**
-执行结束节点
-生成实例节点任务
-执行任务
-下节点
-*/
+// execCurrNodeModel
+// @Description:执行结束节点
+//生成实例节点任务
+//执行任务
+//下节点
+// @receiver: execEndNode
+// @param: execution
+// @return ExecResult
 func (execEndNode *ExecEndNode) execCurrNodeModel(execution *Execution) ExecResult {
 	_, ok := execution.ExecNodeTaskMap[execEndNode.NodeID]
 	if ok {
@@ -76,9 +78,13 @@ func (execEndNode *ExecEndNode) execCurrNodeModel(execution *Execution) ExecResu
 	}
 }
 
-/**
-获取实例节点任务
-*/
+// GetInstNodeTask
+// @Description: 获取实例节点任务
+// @receiver: execEndNode
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: now
+// @return entity.InstNodeTaskBO
 func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
 	var instNodeTask = entity.InstNodeTaskBO{
@@ -97,6 +103,11 @@ func (execEndNode *ExecEndNode) GetInstNodeTask(instTaskID, nodeTaskID string, n
 	return instNodeTask
 }
 
+// execPreNodeModels
+// @Description: 获取上节点
+// @receiver: execEndNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execEndNode *ExecEndNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
 	if execEndNode.PreNodes == nil {
@@ -113,6 +124,11 @@ func (execEndNode *ExecEndNode) execPreNodeModels(nodeModelMap map[string]entity
 	return &preNodes
 }
 
+// execNextNodeModels
+// @Description: 获取下节点
+// @receiver: execEndNode
+// @param: nodeModelMap
+// @return *[]entity.NodeModelBO
 func (execEndNode *ExecEndNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)
 	if execEndNode.NextNodes == nil {

@@ -13,6 +13,10 @@ type IOtherStrategy interface {
 	genUserTasks() []entity.UserTaskBO
 }
 
+// GenOtherStrategy
+// @Description: 生成其他策略
+// @param: genUserTaskBO
+// @return IExecNodeHandler
 func GenOtherStrategy(genUserTaskBO *GenUserTaskBO) IExecNodeHandler {
 
 	switch genUserTaskBO.Type {

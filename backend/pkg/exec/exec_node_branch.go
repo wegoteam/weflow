@@ -29,7 +29,7 @@ type ExecBranchNode struct {
 
 // NewBranchNode
 // @Description: 实例化执行节点对象
-// @param node
+// @param: node
 // @return *ExecBranchNode
 func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 	return &ExecBranchNode{
@@ -55,7 +55,7 @@ func NewBranchNode(node *entity.NodeModelBO) *ExecBranchNode {
 //执行任务
 //下节点
 // @receiver execBranchNode
-// @param execution
+// @param: execution
 // @return ExecResult
 func (execBranchNode *ExecBranchNode) execCurrNodeModel(execution *Execution) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]执行分支节点[%s]节点名称[%s]", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
@@ -87,8 +87,8 @@ func (execBranchNode *ExecBranchNode) execCurrNodeModel(execution *Execution) Ex
 
 // buildBranchFinishedHasOutResult
 // @Description: 分支节点完成且存在出口
-// @param execution
-// @param execBranchNode
+// @param: execution
+// @param: execBranchNode
 // @return ExecResult
 func buildBranchFinishedHasOutResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	processDefModel := execution.ProcessDefModel
@@ -115,8 +115,8 @@ func buildBranchFinishedHasOutResult(execution *Execution, execBranchNode *ExecB
 
 // buildBranchFinishedNotOutResult
 // @Description: 分支节点完成无分支出口
-// @param execution
-// @param execBranchNode
+// @param: execution
+// @param: execBranchNode
 // @return ExecResult
 func buildBranchFinishedNotOutResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	processDefModel := execution.ProcessDefModel
@@ -178,8 +178,8 @@ func buildBranchFinishedNotOutResult(execution *Execution, execBranchNode *ExecB
 // getCurrBranchFinishFlag
 // @Description: 验证当前的分支节点是否完成
 //分支节点三个状态：1：分支节点未完成；2：分支节点完成且存在出口；3：分支节点完成无分支出口
-// @param execution
-// @param execBranchNode
+// @param: execution
+// @param: execBranchNode
 // @return int8
 func getCurrBranchFinishFlag(execution *Execution, execBranchNode *ExecBranchNode) int8 {
 	execNodeTaskMap := execution.ExecNodeTaskMap
@@ -264,8 +264,8 @@ func getCurrBranchFinishFlag(execution *Execution, execBranchNode *ExecBranchNod
 
 // bulidBrachNotStartResult
 // @Description: 未开始，流转分支节点的子分支的头节点
-// @param execution
-// @param execBranchNode
+// @param: execution
+// @param: execBranchNode
 // @return ExecResult
 func bulidBrachNotStartResult(execution *Execution, execBranchNode *ExecBranchNode) ExecResult {
 	hlog.Infof("实例任务[%s]的流程定义[%s]的分支节点[%s]节点名称[%s]未执行，生成新的实例节点任务", execution.InstTaskID, execution.ProcessDefId, execBranchNode.NodeID, execBranchNode.NodeName)
@@ -303,9 +303,9 @@ func bulidBrachNotStartResult(execution *Execution, execBranchNode *ExecBranchNo
 // GetInstNodeTask
 // @Description: 获取实例节点任务
 // @receiver execBranchNode
-// @param instTaskID
-// @param nodeTaskID
-// @param now
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: now
 // @return entity.InstNodeTaskBO
 func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID string, now time.Time) entity.InstNodeTaskBO {
 	//生成实例节点任务
@@ -329,7 +329,7 @@ func (execBranchNode *ExecBranchNode) GetInstNodeTask(instTaskID, nodeTaskID str
 // execPreNodeModels
 // @Description: 获取上一节点
 // @receiver execBranchNode
-// @param nodeModelMap
+// @param: nodeModelMap
 // @return *[]entity.NodeModelBO
 func (execBranchNode *ExecBranchNode) execPreNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var preNodes = make([]entity.NodeModelBO, 0)
@@ -350,7 +350,7 @@ func (execBranchNode *ExecBranchNode) execPreNodeModels(nodeModelMap map[string]
 // execNextNodeModels
 // @Description: 获取下一节点
 // @receiver execBranchNode
-// @param nodeModelMap
+// @param: nodeModelMap
 // @return *[]entity.NodeModelBO
 func (execBranchNode *ExecBranchNode) execNextNodeModels(nodeModelMap map[string]entity.NodeModelBO) *[]entity.NodeModelBO {
 	var nextNodes = make([]entity.NodeModelBO, 0)

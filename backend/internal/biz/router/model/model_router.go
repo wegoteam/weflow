@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	modelService "github.com/wegoteam/weflow/internal/biz/handler/model"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -23,6 +24,26 @@ func Register(h *server.Hertz) {
 	modelGroup.POST("/group/add", AddModelGroup)
 	modelGroup.POST("/group/edit", EditModelGroup)
 	modelGroup.POST("/group/del", DelModelGroup)
+	modelGroup.POST("/details", GetGroupModelDetails)
+}
+
+// GetGroupModelDetails 获取所有组的所有模版
+// @Summary 获取所有组的所有模版
+// @Tags 模板
+// @Description 获取所有组的所有模版
+// @Accept application/json
+// @Param GroupModelQueryVO body vo.GroupModelQueryVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
+// @Router /model/details [post]
+func GetGroupModelDetails(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.GroupModelQueryVO
+	reqCtx.Bind(&req)
+	param := &bo.GroupModelQueryBO{
+		ModelName: req.ModelName,
+	}
+	res := modelService.GetGroupModelDetails(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
 // GetModelList 获取模板列表

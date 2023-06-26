@@ -78,3 +78,23 @@ type ModelGroupEditBO struct {
 type ModelGroupDelBO struct {
 	GroupID string `json:"groupID"` // 组id
 }
+
+// GroupModelQueryBO
+// @Description: 模型组查询BO
+type GroupModelQueryBO struct {
+	ModelName string `json:"modelName"` // 组名称
+}
+
+// GroupModelDetailsResult
+// @Description: 模型组详情
+type GroupModelDetailsResult struct {
+	ID         int64               // 唯一id
+	GroupID    string              // 组id
+	GroupName  string              // 组名称
+	Remark     string              // 描述
+	CreateUser string              // 创建人
+	UpdateUser string              // 更新人
+	CreateTime time.Time           // 创建时间
+	UpdateTime time.Time           // 更新时间
+	Models     []ModelDetailResult // 模型列表
+}

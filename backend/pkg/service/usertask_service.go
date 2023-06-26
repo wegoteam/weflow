@@ -12,7 +12,7 @@ import (
 
 // GetInstNodeUserTask
 // @Description: 获取实例任务、节点任务、用户任务信息
-// @param userTaskID 实例用户任务ID
+// @param: userTaskID 实例用户任务ID
 // @return *entity.InstNodeAndUserTaskResult
 func GetInstNodeUserTask(userTaskID string) *entity.InstNodeAndUserTaskResult {
 	if utils.IsStrBlank(userTaskID) {
@@ -32,7 +32,7 @@ func GetInstNodeUserTask(userTaskID string) *entity.InstNodeAndUserTaskResult {
 
 // GetTodoUserTasks
 // @Description: 获取待办用户任务
-// @param userID
+// @param: userID
 // @return *[]entity.InstNodeAndUserTaskResult
 func GetTodoUserTasks(userID string) *[]entity.InstNodeAndUserTaskResult {
 	//var userTasks []entity.InstNodeAndUserTaskResult
@@ -136,7 +136,7 @@ func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.D
 			tx = db.Where("inst_node_task.status = ?", param.InstStatus)
 		}
 		if utils.IsStrNotBlank(param.TaskName) {
-			tx = db.Where("inst_task_detail.task_name = ?", param.TaskName)
+			tx = db.Where("inst_task_detail.task_name = ?", "%"+param.TaskName+"%")
 		}
 		if utils.IsStrNotBlank(param.CreateUserID) {
 			tx = db.Where("inst_task_detail.create_user_id = ?", param.CreateUserID)
@@ -154,7 +154,7 @@ func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.D
 
 // GetDoneUserTasks
 // @Description: 获取已办用户任务
-// @param userID 用户ID
+// @param: userID 用户ID
 // @return *[]entity.InstNodeAndUserTaskResult
 func GetDoneUserTasks(userID string) (*[]entity.InstNodeAndUserTaskResult, error) {
 	var userTasks []entity.InstNodeAndUserTaskResult
@@ -332,7 +332,7 @@ func PageReceivedUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.I
 
 // GetExecNodeTaskMap
 // @Description: 获取实例任务的执行节点任务信息
-// @param instTaskID
+// @param: instTaskID
 func GetExecNodeTaskMap(instTaskID string) map[string]entity.ExecNodeTaskBO {
 	execNodeTaskMap := make(map[string]entity.ExecNodeTaskBO)
 	if utils.IsStrBlank(instTaskID) {
@@ -356,8 +356,8 @@ func GetExecNodeTaskMap(instTaskID string) map[string]entity.ExecNodeTaskBO {
 
 // GetOpUserTasks
 // @Description: 获取实例任务的执行节点任务信息
-// @param instTaskID
-// @param nodeTaskID
+// @param: instTaskID
+// @param: nodeTaskID
 func GetOpUserTasks(instTaskID, nodeTaskID string) []entity.InstUserTaskResult {
 	var userTaskResults = make([]entity.InstUserTaskResult, 0)
 	userTasks := []model.InstUserTask{}
@@ -394,9 +394,9 @@ func GetOpUserTasks(instTaskID, nodeTaskID string) []entity.InstUserTaskResult {
 
 // GetOpSortUserTasks
 // @Description: 获取实例任务的执行节点任务信息
-// @param instTaskID
-// @param nodeTaskID
-// @param opSort
+// @param: instTaskID
+// @param: nodeTaskID
+// @param: opSort
 // @return []entity.InstUserTaskResult
 func GetOpSortUserTasks(instTaskID, nodeTaskID string, opSort int) []entity.InstUserTaskResult {
 	var userTaskResults = make([]entity.InstUserTaskResult, 0)
@@ -434,7 +434,7 @@ func GetOpSortUserTasks(instTaskID, nodeTaskID string, opSort int) []entity.Inst
 
 // GetUserTaskMaxOpSort
 // @Description: 当前节点任务依次审批的用户任务最大处理顺序
-// @param currNodeModelBO
+// @param: currNodeModelBO
 // @return int
 func GetUserTaskMaxOpSort(currNodeModelBO *entity.NodeModelBO) int {
 	if currNodeModelBO == nil {
