@@ -17,7 +17,7 @@ import (
 func GetModelList() ([]entity.ModelDetailResult, error) {
 	var models = make([]entity.ModelDetailResult, 0)
 	var modelDetails []model.ModelDetail
-	err := MysqlDB.Where("").Find(&modelDetails).Error
+	err := MysqlDB.Model(&model.ModelDetail{}).Find(&modelDetails).Error
 	if err != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", err)
 		return models, errors.New("查询模板列表失败")
