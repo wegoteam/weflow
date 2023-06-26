@@ -136,7 +136,7 @@ func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.D
 			tx = db.Where("inst_node_task.status = ?", param.InstStatus)
 		}
 		if utils.IsStrNotBlank(param.TaskName) {
-			tx = db.Where("inst_task_detail.task_name = ?", "%"+param.TaskName+"%")
+			tx = db.Where("inst_task_detail.task_name like ?", "%"+param.TaskName+"%")
 		}
 		if utils.IsStrNotBlank(param.CreateUserID) {
 			tx = db.Where("inst_task_detail.create_user_id = ?", param.CreateUserID)

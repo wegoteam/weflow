@@ -210,7 +210,7 @@ func BuildInstTaskQuery(param *entity.InstTaskQueryBO) func(db *gorm.DB) *gorm.D
 			tx = db.Where("inst_task_detail.status = ?", param.InstStatus)
 		}
 		if utils.IsStrNotBlank(param.TaskName) {
-			tx = db.Where("inst_task_detail.task_name = ?", "%"+param.TaskName+"%")
+			tx = db.Where("inst_task_detail.task_name like ?", "%"+param.TaskName+"%")
 		}
 		if utils.IsStrNotBlank(param.CreateTimeStart) && utils.IsStrNotBlank(param.CreateTimeEnd) {
 			carbon.Parse(param.CreateTimeStart).ToStdTime()
