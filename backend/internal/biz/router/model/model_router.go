@@ -5,7 +5,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
-	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	modelService "github.com/wegoteam/weflow/internal/biz/handler/model"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -18,8 +17,8 @@ import (
 // @param: h
 func Register(h *server.Hertz) {
 	modelGroup := h.Group("/model")
-	modelGroup.GET("/list", GetModelList)
-	modelGroup.GET("/page", PageModels)
+	modelGroup.POST("/list", GetModelList)
+	modelGroup.POST("/page", PageModelList)
 	modelGroup.GET("/group/list", GetModelGroups)
 	modelGroup.POST("/group/add", AddModelGroup)
 	modelGroup.POST("/group/edit", EditModelGroup)
@@ -39,7 +38,7 @@ func Register(h *server.Hertz) {
 func GetGroupModelDetails(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.GroupModelQueryVO
 	reqCtx.Bind(&req)
-	param := &bo.GroupModelQueryBO{
+	param := &entity.GroupModelQueryBO{
 		ModelName: req.ModelName,
 	}
 	res := modelService.GetGroupModelDetails(param)
@@ -51,24 +50,40 @@ func GetGroupModelDetails(ctx context.Context, reqCtx *app.RequestContext) {
 // @Tags 模板
 // @Description 获取模板列表
 // @Accept application/json
+// @Param ModelQueryVO body vo.ModelQueryVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
-// @Router /model/list [get]
+// @Router /model/list [post]
 func GetModelList(ctx context.Context, reqCtx *app.RequestContext) {
-	res := modelService.GetModelList()
+	var req vo.ModelQueryVO
+	reqCtx.Bind(&req)
+	param := &entity.ModelQueryBO{
+		ModelName: req.ModelName,
+		Status:    req.Status,
+	}
+	res := modelService.GetModelList(param)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 
-// PageModels 分页获取模板列表
+// PageModelList 分页获取模板列表
 // @Summary 分页获取模板列表
 // @Tags 模板
 // @Description 分页获取模板列表
 // @Accept application/json
+// @Param ModelPageVO body vo.ModelPageVO true "请求参数"
 // @Produce application/json
 // @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
-// @Router /model/page [get]
-func PageModels(ctx context.Context, reqCtx *app.RequestContext) {
-	res := modelService.GetModelList()
+// @Router /model/page [post]
+func PageModelList(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelPageVO
+	reqCtx.Bind(&req)
+	param := &entity.ModelPageBO{
+		ModelName: req.ModelName,
+		Status:    req.Status,
+		PageNum:   req.PageNum,
+		PageSize:  req.PageSize,
+	}
+	res := modelService.PageModelList(param)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 

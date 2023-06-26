@@ -12,8 +12,8 @@ import (
 
 // GetModelList
 // @Description: 获取模板列表
-func GetModelList() *base.Response {
-	modelDetails, err := weflowApi.GetModelList()
+func GetModelList(param *entity.ModelQueryBO) *base.Response {
+	modelDetails, err := weflowApi.GetModelList(param)
 	var models = make([]bo.ModelDetailResult, 0)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
@@ -40,6 +40,46 @@ func GetModelList() *base.Response {
 		models = append(models, modelBO)
 	}
 	return base.OK(models)
+}
+
+// PageModelList
+// @Description: 分页获取模板列表
+// @param: param
+// @return *base.Response
+func PageModelList(param *entity.ModelPageBO) *base.Response {
+	pageResult, err := weflowApi.PageModelList(param)
+	var models = make([]bo.ModelDetailResult, 0)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	if utils.IsEmptySlice(pageResult.Records) {
+		return base.OK(models)
+	}
+	for _, modelDetail := range pageResult.Records {
+		modelBO := bo.ModelDetailResult{
+			ID:           modelDetail.ID,
+			ModelID:      modelDetail.ModelID,
+			ModelTitle:   modelDetail.ModelTitle,
+			ProcessDefID: modelDetail.ProcessDefID,
+			FormDefID:    modelDetail.FormDefID,
+			ModelGroupID: modelDetail.ModelGroupID,
+			IconURL:      modelDetail.IconURL,
+			Status:       modelDetail.Status,
+			Remark:       modelDetail.Remark,
+			CreateTime:   modelDetail.CreateTime,
+			CreateUser:   modelDetail.CreateUser,
+			UpdateTime:   modelDetail.UpdateTime,
+			UpdateUser:   modelDetail.UpdateUser,
+		}
+		models = append(models, modelBO)
+	}
+	page := &base.Page[bo.ModelDetailResult]{
+		Total:    pageResult.Total,
+		Records:  models,
+		PageNum:  param.PageNum,
+		PageSize: param.PageSize,
+	}
+	return base.OK(page)
 }
 
 // GetModelGroupList
@@ -113,11 +153,8 @@ func DelModelGroup(param *entity.ModelGroupDelBO) *base.Response {
 // @Description: 获取所有组的所有模版
 // @param: param
 // @return *base.Response
-func GetGroupModelDetails(param *bo.GroupModelQueryBO) *base.Response {
-	bo := &entity.GroupModelQueryBO{
-		ModelName: param.ModelName,
-	}
-	modelDetails, err := weflowApi.GetGroupModelDetails(bo)
+func GetGroupModelDetails(param *entity.GroupModelQueryBO) *base.Response {
+	modelDetails, err := weflowApi.GetGroupModelDetails(param)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
 	}

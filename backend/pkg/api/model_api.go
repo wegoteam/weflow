@@ -7,10 +7,20 @@ import (
 
 // GetModelList
 // @Description: 查询模板列表
+// @param: param
 // @return []entity.ModelDetailResult
 // @return error
-func GetModelList() ([]entity.ModelDetailResult, error) {
-	return service.GetModelList()
+func GetModelList(param *entity.ModelQueryBO) ([]entity.ModelDetailResult, error) {
+	return service.GetModelList(param)
+}
+
+// PageModelList
+// @Description: 分页查询模板列表
+// @param: param
+// @return []entity.ModelDetailResult
+// @return error
+func PageModelList(param *entity.ModelPageBO) (*entity.Page[entity.ModelDetailResult], error) {
+	return service.PageModelList(param)
 }
 
 // GetModelGroupList

@@ -221,7 +221,7 @@ definitions:
   vo.GroupModelQueryVO:
     properties:
       modelName:
-        description: 组名称
+        description: 模型名称
         type: string
     type: object
   vo.InstTaskDeleteVO:
@@ -335,6 +335,36 @@ definitions:
       remark:
         description: 描述
         type: string
+    type: object
+  vo.ModelPageVO:
+    properties:
+      modelName:
+        description: 模型名称
+        example: ""
+        type: string
+      pageNum:
+        description: 页码
+        example: 1
+        type: integer
+      pageSize:
+        description: 每页条数
+        example: 30
+        type: integer
+      status:
+        description: 模板状态【1：草稿；2：发布；3：停用】默认草稿
+        example: 0
+        type: integer
+    type: object
+  vo.ModelQueryVO:
+    properties:
+      modelName:
+        description: 模型名称
+        example: ""
+        type: string
+      status:
+        description: 模板状态【1：草稿；2：发布；3：停用】默认草稿
+        example: 0
+        type: integer
     type: object
   vo.UserTaskAgreeVO:
     properties:
@@ -702,10 +732,17 @@ paths:
       tags:
       - 模板
   /model/list:
-    get:
+    post:
       consumes:
       - application/json
       description: 获取模板列表
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelQueryVO'
       produces:
       - application/json
       responses:
@@ -722,10 +759,17 @@ paths:
       tags:
       - 模板
   /model/page:
-    get:
+    post:
       consumes:
       - application/json
       description: 分页获取模板列表
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelPageVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelPageVO'
       produces:
       - application/json
       responses:

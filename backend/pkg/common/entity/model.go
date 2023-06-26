@@ -98,3 +98,19 @@ type GroupModelDetailsResult struct {
 	UpdateTime time.Time           // 更新时间
 	Models     []ModelDetailResult // 模型列表
 }
+
+// ModelQueryBO
+// @Description: 模型查询BO
+type ModelQueryBO struct {
+	ModelName string `json:"modelName"` // 模型名称
+	Status    int    `json:"status"`    // 模板状态【1：草稿；2：发布；3：停用】默认草稿
+}
+
+// ModelPageBO
+// @Description: 模型分页BO
+type ModelPageBO struct {
+	ModelName string `json:"modelName" ` // 模型名称
+	Status    int    `json:"status"`     // 模板状态【1：草稿；2：发布；3：停用】默认草稿
+	PageSize  int    `json:"pageSize"`   // 每页条数
+	PageNum   int    `json:"pageNum"`    // 页码
+}

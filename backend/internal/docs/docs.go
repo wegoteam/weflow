@@ -459,7 +459,7 @@ const docTemplate = `{
             }
         },
         "/model/list": {
-            "get": {
+            "post": {
                 "description": "获取模板列表",
                 "consumes": [
                     "application/json"
@@ -471,6 +471,17 @@ const docTemplate = `{
                     "模板"
                 ],
                 "summary": "获取模板列表",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelQueryVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -494,7 +505,7 @@ const docTemplate = `{
             }
         },
         "/model/page": {
-            "get": {
+            "post": {
                 "description": "分页获取模板列表",
                 "consumes": [
                     "application/json"
@@ -506,6 +517,17 @@ const docTemplate = `{
                     "模板"
                 ],
                 "summary": "分页获取模板列表",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelPageVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelPageVO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回结果",
@@ -1071,7 +1093,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "modelName": {
-                    "description": "组名称",
+                    "description": "模型名称",
                     "type": "string"
                 }
             }
@@ -1228,6 +1250,46 @@ const docTemplate = `{
                 "remark": {
                     "description": "描述",
                     "type": "string"
+                }
+            }
+        },
+        "vo.ModelPageVO": {
+            "type": "object",
+            "properties": {
+                "modelName": {
+                    "description": "模型名称",
+                    "type": "string",
+                    "example": ""
+                },
+                "pageNum": {
+                    "description": "页码",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "每页条数",
+                    "type": "integer",
+                    "example": 30
+                },
+                "status": {
+                    "description": "模板状态【1：草稿；2：发布；3：停用】默认草稿",
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "vo.ModelQueryVO": {
+            "type": "object",
+            "properties": {
+                "modelName": {
+                    "description": "模型名称",
+                    "type": "string",
+                    "example": ""
+                },
+                "status": {
+                    "description": "模板状态【1：草稿；2：发布；3：停用】默认草稿",
+                    "type": "integer",
+                    "example": 0
                 }
             }
         },

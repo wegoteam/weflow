@@ -24,5 +24,21 @@ type ModelGroupDelVO struct {
 // GroupModelQueryVO
 // @Description: 模型组查询VO
 type GroupModelQueryVO struct {
-	ModelName string `json:"modelName"` // 组名称
+	ModelName string `json:"modelName"` // 模型名称
+}
+
+// ModelQueryVO
+// @Description: 模型查询VO
+type ModelQueryVO struct {
+	ModelName string `json:"modelName" swaggertype:"string" example:""` // 模型名称
+	Status    int    `json:"status" swaggertype:"integer" example:"0"`  // 模板状态【1：草稿；2：发布；3：停用】默认草稿
+}
+
+// ModelPageVO
+// @Description: 模型分页VO
+type ModelPageVO struct {
+	ModelName string `json:"modelName" swaggertype:"string" example:""`  // 模型名称
+	Status    int    `json:"status" swaggertype:"integer" example:"0"`   // 模板状态【1：草稿；2：发布；3：停用】默认草稿
+	PageSize  int    `json:"pageSize"swaggertype:"integer" example:"30"` // 每页条数
+	PageNum   int    `json:"pageNum"  swaggertype:"integer" example:"1"` // 页码
 }

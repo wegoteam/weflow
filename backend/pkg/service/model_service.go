@@ -14,10 +14,10 @@ import (
 // @Description: 查询模板列表
 // @return []entity.ModelDetailResult
 // @return error
-func GetModelList() ([]entity.ModelDetailResult, error) {
+func GetModelList(param *entity.ModelQueryBO) ([]entity.ModelDetailResult, error) {
 	var models = make([]entity.ModelDetailResult, 0)
 	var modelDetails []model.ModelDetail
-	err := MysqlDB.Model(&model.ModelDetail{}).Find(&modelDetails).Error
+	err := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelQuery(param)).Find(&modelDetails).Error
 	if err != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", err)
 		return models, errors.New("查询模板列表失败")
@@ -43,8 +43,69 @@ func GetModelList() ([]entity.ModelDetailResult, error) {
 		}
 		models = append(models, modelBO)
 	}
-
 	return models, nil
+}
+
+// PageModelList
+// @Description: 分页查询模板列表
+// @param: param
+// @return *entity.Page[entity.ModelDetailResult]
+// @return error
+func PageModelList(param *entity.ModelPageBO) (*entity.Page[entity.ModelDetailResult], error) {
+	var models = make([]entity.ModelDetailResult, 0)
+	var modelDetails []model.ModelDetail
+	var total int64
+	countErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelPage(param)).Count(&total).Error
+	if countErr != nil {
+		hlog.Errorf("查询模板列表失败 error: %v", countErr)
+		return nil, errors.New("查询模板列表失败")
+	}
+	if total == 0 {
+		return &entity.Page[entity.ModelDetailResult]{
+			Total:    total,
+			Records:  models,
+			PageNum:  param.PageNum,
+			PageSize: param.PageSize,
+		}, nil
+	}
+	// 查询模型列表
+	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelPage(param)).Find(&modelDetails).Error
+	if modelErr != nil {
+		hlog.Errorf("查询模板列表失败 error: %v", modelErr)
+		return nil, errors.New("查询模板列表失败")
+	}
+	if utils.IsEmptySlice(modelDetails) {
+		return &entity.Page[entity.ModelDetailResult]{
+			Total:    total,
+			Records:  models,
+			PageNum:  param.PageNum,
+			PageSize: param.PageSize,
+		}, nil
+	}
+	for _, modelDetail := range modelDetails {
+		modelBO := entity.ModelDetailResult{
+			ID:           modelDetail.ID,
+			ModelID:      modelDetail.ModelID,
+			ModelTitle:   modelDetail.ModelTitle,
+			ProcessDefID: modelDetail.ProcessDefID,
+			FormDefID:    modelDetail.FormDefID,
+			ModelGroupID: modelDetail.ModelGroupID,
+			IconURL:      modelDetail.IconURL,
+			Status:       modelDetail.Status,
+			Remark:       modelDetail.Remark,
+			CreateTime:   modelDetail.CreateTime,
+			CreateUser:   modelDetail.CreateUser,
+			UpdateTime:   modelDetail.UpdateTime,
+			UpdateUser:   modelDetail.UpdateUser,
+		}
+		models = append(models, modelBO)
+	}
+	return &entity.Page[entity.ModelDetailResult]{
+		Total:    total,
+		Records:  models,
+		PageNum:  param.PageNum,
+		PageSize: param.PageSize,
+	}, nil
 }
 
 // GetModelVersionList
@@ -53,12 +114,9 @@ func GetModelList() ([]entity.ModelDetailResult, error) {
 // @param: versionID
 // @return []entity.ModelVersionResult
 func GetModelVersionList(modelID, versionID string) []entity.ModelVersionResult {
-
 	var modelVersions = make([]entity.ModelVersionResult, 0)
-
 	var versionList []model.ModelVersion
 	MysqlDB.Where("model_id = ? and version_id = ?", modelID, versionID).Find(&versionList)
-
 	if versionList == nil {
 		return modelVersions
 	}
@@ -90,14 +148,11 @@ func GetModelVersionList(modelID, versionID string) []entity.ModelVersionResult 
 // @param: versionID
 // @return []entity.ModelVersionResult
 func GetModelVersion(modelID, versionID string) *entity.ModelVersionResult {
-
 	var version = &model.ModelVersion{}
 	MysqlDB.Where("model_id = ? and version_id = ?", modelID, versionID).Find(version)
-
 	if version == nil {
 		return nil
 	}
-
 	var modelVersionBO = &entity.ModelVersionResult{
 		ID:           version.ID,
 		ModelID:      version.ModelID,
@@ -282,7 +337,7 @@ func getAllModelDetailsMap(param *entity.GroupModelQueryBO) (map[string][]entity
 	//key:组ID val:模板详情
 	modelDetailsMap := make(map[string][]entity.ModelDetailResult)
 	var modelDetails []model.ModelDetail
-	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
+	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildGroupModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
 	if modelErr != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", modelErr)
 		return modelDetailsMap, errors.New("查询模板列表失败")
@@ -317,15 +372,49 @@ func getAllModelDetailsMap(param *entity.GroupModelQueryBO) (map[string][]entity
 	return modelDetailsMap, nil
 }
 
-// BuildModelQuery
+// BuildGroupModelQuery
 // @Description: 构建模型查询条件
 // @param: param
 // @return func(db *gorm.DB) *gorm.DB
-func BuildModelQuery(param *entity.GroupModelQueryBO) func(db *gorm.DB) *gorm.DB {
+func BuildGroupModelQuery(param *entity.GroupModelQueryBO) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if utils.IsStrNotBlank(param.ModelName) {
 			tx = db.Where("model_detail.model_title like ?", "%"+param.ModelName+"%")
+		}
+		return tx
+	}
+}
+
+// BuildModelQuery
+// @Description: 构建模型查询条件
+// @param: param
+// @return func(db *gorm.DB) *gorm.DB
+func BuildModelQuery(param *entity.ModelQueryBO) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		tx := db
+		if utils.IsStrNotBlank(param.ModelName) {
+			tx = db.Where("model_detail.model_title like ?", "%"+param.ModelName+"%")
+		}
+		if param.Status != 0 {
+			tx = db.Where("model_detail.status = ?", param.Status)
+		}
+		return tx
+	}
+}
+
+// BuildModelPage
+// @Description: 构建模型分页查询条件
+// @param: param
+// @return func(db *gorm.DB) *gorm.DB
+func BuildModelPage(param *entity.ModelPageBO) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		tx := db
+		if utils.IsStrNotBlank(param.ModelName) {
+			tx = db.Where("model_detail.model_title like ?", "%"+param.ModelName+"%")
+		}
+		if param.Status != 0 {
+			tx = db.Where("model_detail.status = ?", param.Status)
 		}
 		return tx
 	}

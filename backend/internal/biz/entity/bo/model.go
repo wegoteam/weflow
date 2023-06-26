@@ -55,9 +55,3 @@ type ModelGroupEditBO struct {
 type ModelGroupDelBO struct {
 	GroupID string `json:"groupID"` // 组id
 }
-
-// GroupModelQueryBO
-// @Description: 模型组查询BO
-type GroupModelQueryBO struct {
-	ModelName string `json:"modelName"` // 组名称
-}
