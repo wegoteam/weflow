@@ -475,7 +475,7 @@ definitions:
   vo.ReleaseModelVersionVO:
     properties:
       versionID:
-        description: 模型id
+        description: 版本id
         example: ""
         type: string
     type: object
@@ -731,6 +731,37 @@ paths:
       summary: 挂起实例任务
       tags:
       - 实例任务
+  /model/detail/get:
+    get:
+      consumes:
+      - application/json
+      description: 获取模版详情(模板信息，版本，流程定义，流程定义详情)
+      parameters:
+      - description: 模型id
+        example: ""
+        in: query
+        name: modelID
+        type: string
+      - description: 版本id
+        example: ""
+        in: query
+        name: versionID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelDetailResult'
+              type: object
+      summary: 获取模版详情(模板信息，版本，流程定义，流程定义详情)
+      tags:
+      - 模板
   /model/details:
     post:
       consumes:

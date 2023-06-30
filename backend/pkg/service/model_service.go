@@ -19,7 +19,7 @@ import (
 func GetModelList(param *entity.ModelQueryBO) ([]entity.ModelDetailResult, error) {
 	var models = make([]entity.ModelDetailResult, 0)
 	var modelDetails []model.ModelDetail
-	err := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
+	err := MysqlDB.Model(&model.ModelDetail{}).Scopes(buildModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
 	if err != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", err)
 		return models, errors.New("查询模板列表失败")
@@ -57,7 +57,7 @@ func PageModelList(param *entity.ModelPageBO) (*entity.Page[entity.ModelDetailRe
 	var models = make([]entity.ModelDetailResult, 0)
 	var modelDetails []model.ModelDetail
 	var total int64
-	countErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelPage(param)).Count(&total).Error
+	countErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(buildModelPage(param)).Count(&total).Error
 	if countErr != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", countErr)
 		return nil, errors.New("查询模板列表失败")
@@ -71,7 +71,7 @@ func PageModelList(param *entity.ModelPageBO) (*entity.Page[entity.ModelDetailRe
 		}, nil
 	}
 	// 查询模型列表
-	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildModelPage(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
+	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(buildModelPage(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
 	if modelErr != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", modelErr)
 		return nil, errors.New("查询模板列表失败")
@@ -988,7 +988,7 @@ func getAllModelDetailsMap(param *entity.GroupModelQueryBO) (map[string][]entity
 	//key:组ID val:模板详情
 	modelDetailsMap := make(map[string][]entity.ModelDetailResult)
 	var modelDetails []model.ModelDetail
-	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(BuildGroupModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
+	modelErr := MysqlDB.Model(&model.ModelDetail{}).Scopes(buildGroupModelQuery(param)).Order("model_detail.create_time desc").Find(&modelDetails).Error
 	if modelErr != nil {
 		hlog.Errorf("查询模板列表失败 error: %v", modelErr)
 		return modelDetailsMap, errors.New("查询模板列表失败")
@@ -1023,11 +1023,127 @@ func getAllModelDetailsMap(param *entity.GroupModelQueryBO) (map[string][]entity
 	return modelDetailsMap, nil
 }
 
-// BuildGroupModelQuery
+// GetModelAndVersionInfo
+// @Description: 获取模型和版本信息
+// @param: modelID 模型ID
+// @param: versionID 版本ID
+// @return *entity.ModelDetailResult
+// @return error
+func GetModelAndVersionInfo(modelID, versionID string) (*entity.ModelAndVersionInfoResult, error) {
+	if versionID == "" {
+		return getModelInfo(modelID)
+	}
+	return getVersionInfo(modelID, versionID)
+}
+
+// getModelInfo
+// @Description: 获取模型信息
+// @param: modelID 模型ID
+// @return *entity.ModelDetailResult
+// @return error
+func getModelInfo(modelID string) (*entity.ModelAndVersionInfoResult, error) {
+	if modelID == "" {
+		return nil, errors.New("模型ID不能为空")
+	}
+	var modelDetail model.ModelDetail
+	err := MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", modelID).First(&modelDetail).Error
+	if err != nil && err == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询模型信息失败 error: %v", err)
+		return nil, errors.New("模板不存在")
+	}
+	//查询流程定义
+	var processDef model.ProcessDefInfo
+	processErr := MysqlDB.Model(&model.ProcessDefInfo{}).Where("process_def_id = ?", modelDetail.ProcessDefID).First(&processDef).Error
+	if processErr != nil && processErr == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询流程定义失败 error: %v", processErr)
+	}
+
+	//查询表单定义
+	var formDef model.FormDefInfo
+	formErr := MysqlDB.Model(&model.FormDefInfo{}).Where("form_def_id = ?", modelDetail.FormDefID).First(&formDef).Error
+	if formErr != nil && formErr == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询表单定义失败 error: %v", formErr)
+	}
+
+	modelResult := &entity.ModelAndVersionInfoResult{
+		ModelID:      modelDetail.ModelID,
+		ModelTitle:   modelDetail.ModelTitle,
+		ProcessDefID: modelDetail.ProcessDefID,
+		FormDefID:    modelDetail.FormDefID,
+		ModelGroupID: modelDetail.ModelGroupID,
+		IconURL:      modelDetail.IconURL,
+		Status:       modelDetail.Status,
+		Remark:       modelDetail.Remark,
+		CreateTime:   modelDetail.CreateTime,
+		CreateUser:   modelDetail.CreateUser,
+		UpdateTime:   modelDetail.UpdateTime,
+		UpdateUser:   modelDetail.UpdateUser,
+		FlowContent:  processDef.StructData,
+		FormContent:  formDef.HTMLContent,
+	}
+
+	return modelResult, nil
+}
+
+// getVersionInfo
+// @Description: 获取版本信息
+// @param: modelID 模型ID
+// @param: versionID 版本ID
+// @return *entity.ModelDetailResult
+// @return error
+func getVersionInfo(modelID, versionID string) (*entity.ModelAndVersionInfoResult, error) {
+	//查询版本信息
+	var modelVersion model.ModelVersion
+	err := MysqlDB.Model(&model.ModelVersion{}).Where("model_id = ? and version_id = ?", modelID, versionID).First(&modelVersion).Error
+	if err != nil && err == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询版本信息失败 error: %v", err)
+		return nil, errors.New("模板版本不存在")
+	}
+	var modelDetail model.ModelDetail
+	modelErr := MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", modelID).First(&modelDetail).Error
+	if modelErr != nil && modelErr == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询模型信息失败 error: %v", modelErr)
+		return nil, errors.New("模板不存在")
+	}
+	//查询流程定义
+	var processDef model.ProcessDefInfo
+	processErr := MysqlDB.Model(&model.ProcessDefInfo{}).Where("process_def_id = ?", modelVersion.ProcessDefID).First(&processDef).Error
+	if processErr != nil && processErr == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询流程定义失败 error: %v", processErr)
+	}
+
+	//查询表单定义
+	var formDef model.FormDefInfo
+	formErr := MysqlDB.Model(&model.FormDefInfo{}).Where("form_def_id = ?", modelVersion.FormDefID).First(&formDef).Error
+	if formErr != nil && formErr == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询表单定义失败 error: %v", formErr)
+	}
+
+	modelResult := &entity.ModelAndVersionInfoResult{
+		ModelID:      modelVersion.ModelID,
+		ModelTitle:   modelVersion.ModelTitle,
+		ProcessDefID: modelVersion.ProcessDefID,
+		FormDefID:    modelVersion.FormDefID,
+		ModelGroupID: modelDetail.ModelGroupID,
+		IconURL:      modelDetail.IconURL,
+		Status:       modelDetail.Status,
+		Remark:       modelVersion.Remark,
+		CreateTime:   modelVersion.CreateTime,
+		CreateUser:   modelVersion.CreateUser,
+		UpdateTime:   modelVersion.UpdateTime,
+		UpdateUser:   modelVersion.UpdateUser,
+		FlowContent:  processDef.StructData,
+		FormContent:  formDef.HTMLContent,
+	}
+
+	return modelResult, nil
+}
+
+// buildGroupModelQuery
 // @Description: 构建模型查询条件
 // @param: param
 // @return func(db *gorm.DB) *gorm.DB
-func BuildGroupModelQuery(param *entity.GroupModelQueryBO) func(db *gorm.DB) *gorm.DB {
+func buildGroupModelQuery(param *entity.GroupModelQueryBO) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if utils.IsStrNotBlank(param.ModelName) {
@@ -1037,11 +1153,11 @@ func BuildGroupModelQuery(param *entity.GroupModelQueryBO) func(db *gorm.DB) *go
 	}
 }
 
-// BuildModelQuery
+// buildModelQuery
 // @Description: 构建模型查询条件
 // @param: param
 // @return func(db *gorm.DB) *gorm.DB
-func BuildModelQuery(param *entity.ModelQueryBO) func(db *gorm.DB) *gorm.DB {
+func buildModelQuery(param *entity.ModelQueryBO) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if utils.IsStrNotBlank(param.ModelName) {
@@ -1054,11 +1170,11 @@ func BuildModelQuery(param *entity.ModelQueryBO) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-// BuildModelPage
+// buildModelPage
 // @Description: 构建模型分页查询条件
 // @param: param
 // @return func(db *gorm.DB) *gorm.DB
-func BuildModelPage(param *entity.ModelPageBO) func(db *gorm.DB) *gorm.DB {
+func buildModelPage(param *entity.ModelPageBO) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if utils.IsStrNotBlank(param.ModelName) {

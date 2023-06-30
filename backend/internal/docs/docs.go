@@ -275,6 +275,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/model/detail/get": {
+            "get": {
+                "description": "获取模版详情(模板信息，版本，流程定义，流程定义详情)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "获取模版详情(模板信息，版本，流程定义，流程定义详情)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "模型id",
+                        "name": "modelID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "版本id",
+                        "name": "versionID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/model/details": {
             "post": {
                 "description": "获取所有组的所有模版",
@@ -1624,7 +1675,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "versionID": {
-                    "description": "模型id",
+                    "description": "版本id",
                     "type": "string",
                     "example": ""
                 }

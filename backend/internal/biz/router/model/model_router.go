@@ -17,18 +17,22 @@ import (
 // @param: h
 func Register(h *server.Hertz) {
 	modelGroup := h.Group("/model")
+	//模板
 	modelGroup.POST("/list", GetModelList)
 	modelGroup.POST("/page", PageModelList)
 	modelGroup.POST("/save", SaveModel)
 	modelGroup.POST("/publish", PublishModel)
 	modelGroup.POST("/invalid", InvalidModel)
+	modelGroup.POST("/details", GetGroupModelDetails)
+	modelGroup.GET("/detail/get", GetModelAndVersionInfo)
+	//模板版本
 	modelGroup.POST("/version/release", ReleaseModelVersion)
 	modelGroup.GET("/version/get", GetModelVersionList)
+	//模板组
 	modelGroup.GET("/group/list", GetModelGroups)
 	modelGroup.POST("/group/add", AddModelGroup)
 	modelGroup.POST("/group/edit", EditModelGroup)
 	modelGroup.POST("/group/del", DelModelGroup)
-	modelGroup.POST("/details", GetGroupModelDetails)
 }
 
 // GetGroupModelDetails 获取所有组的所有模版
@@ -47,6 +51,22 @@ func GetGroupModelDetails(ctx context.Context, reqCtx *app.RequestContext) {
 		ModelName: req.ModelName,
 	}
 	res := modelService.GetGroupModelDetails(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// GetModelAndVersionInfo 获取模版详情(模板信息，版本，流程定义，流程定义详情)
+// @Summary 获取模版详情(模板信息，版本，流程定义，流程定义详情)
+// @Tags 模板
+// @Description 获取模版详情(模板信息，版本，流程定义，流程定义详情)
+// @Accept application/json
+// @Param ModelAndVersionQueryVO query vo.ModelAndVersionQueryVO true "模板ID"
+// @Produce application/json
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
+// @Router /model/detail/get [get]
+func GetModelAndVersionInfo(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelAndVersionQueryVO
+	reqCtx.Bind(&req)
+	res := modelService.GetModelAndVersionInfo(req.ModelID, req.VersionID)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 

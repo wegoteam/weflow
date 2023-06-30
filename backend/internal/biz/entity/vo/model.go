@@ -85,5 +85,12 @@ type ModelVersionQueryVO struct {
 // ReleaseModelVersionVO
 // @Description: 发布模型版本VO
 type ReleaseModelVersionVO struct {
-	VersionID string `json:"versionID" swaggertype:"string" example:""` // 模型id
+	VersionID string `json:"versionID" swaggertype:"string" example:""` // 版本id
+}
+
+// ModelAndVersionQueryVO
+// @Description: 模型详情查询VO
+type ModelAndVersionQueryVO struct {
+	ModelID   string `json:"modelID" query:"modelID" swaggertype:"string" example:""`     // 模型id
+	VersionID string `json:"versionID" query:"versionID" swaggertype:"string" example:""` // 版本id
 }

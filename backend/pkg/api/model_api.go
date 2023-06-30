@@ -102,3 +102,13 @@ func DelModelGroup(param *entity.ModelGroupDelBO) error {
 func GetGroupModelDetails(param *entity.GroupModelQueryBO) ([]entity.GroupModelDetailsResult, error) {
 	return service.GetGroupModelDetails(param)
 }
+
+// GetModelAndVersionInfo
+// @Description: 获取模板和版本信息
+// @param: modelID 模板ID
+// @param: versionID 版本ID
+// @return *entity.ModelDetailResult
+// @return error
+func GetModelAndVersionInfo(modelID, versionID string) (*entity.ModelAndVersionInfoResult, error) {
+	return service.GetModelAndVersionInfo(modelID, versionID)
+}

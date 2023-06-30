@@ -246,3 +246,32 @@ func GetGroupModelDetails(param *entity.GroupModelQueryBO) *base.Response {
 	}
 	return base.OK(modelDetails)
 }
+
+// GetModelAndVersionInfo
+// @Description: 获取模板和版本信息
+// @param: modelID 模板ID
+// @param: versionID 版本ID
+// @return *base.Response
+func GetModelAndVersionInfo(modelID, versionID string) *base.Response {
+	modelDetail, err := weflowApi.GetModelAndVersionInfo(modelID, versionID)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	modelResult := &bo.ModelAndVersionInfoResult{
+		ModelID:      modelDetail.ModelID,
+		ModelTitle:   modelDetail.ModelTitle,
+		ProcessDefID: modelDetail.ProcessDefID,
+		FormDefID:    modelDetail.FormDefID,
+		ModelGroupID: modelDetail.ModelGroupID,
+		IconURL:      modelDetail.IconURL,
+		Status:       modelDetail.Status,
+		Remark:       modelDetail.Remark,
+		CreateTime:   modelDetail.CreateTime,
+		CreateUser:   modelDetail.CreateUser,
+		UpdateTime:   modelDetail.UpdateTime,
+		UpdateUser:   modelDetail.UpdateUser,
+		FlowContent:  modelDetail.FlowContent,
+		FormContent:  modelDetail.FormContent,
+	}
+	return base.OK(modelResult)
+}
