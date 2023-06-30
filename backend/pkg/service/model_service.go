@@ -653,7 +653,7 @@ func publishExistDeployedModel(param *entity.ModelSaveBO, existModel *model.Mode
 	addProcessDefErr := tx.Model(&model.ProcessDefInfo{}).Save(addProcessDef).Error
 	if addProcessDefErr != nil {
 		tx.Rollback()
-		hlog.Errorf("修改流程定义失败 error: %v", addProcessDefErr)
+		hlog.Errorf("保存流程定义失败 error: %v", addProcessDefErr)
 		return errors.New("保存模板失败")
 	}
 	//添加表单定义
@@ -669,10 +669,10 @@ func publishExistDeployedModel(param *entity.ModelSaveBO, existModel *model.Mode
 		UpdateTime:  now,
 		UpdateUser:  param.UserName,
 	}
-	addFormDefErr := tx.Model(&model.FormDefInfo{}).Where("form_def_id = ?", formDefID).Updates(addFormDef).Error
+	addFormDefErr := tx.Model(&model.FormDefInfo{}).Save(addFormDef).Error
 	if addFormDefErr != nil {
 		tx.Rollback()
-		hlog.Errorf("修改表单定义失败 error: %v", addFormDefErr)
+		hlog.Errorf("保存表单定义失败 error: %v", addFormDefErr)
 		return errors.New("保存模板失败")
 	}
 	tx.Commit()
