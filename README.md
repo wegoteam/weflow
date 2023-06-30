@@ -567,3 +567,24 @@ http://localhost:8081/weflow/swagger/index.html
 https://github.com/swaggo/swag/blob/master/README.md#declarative-comments-format
 
 https://github.com/swaggo/swag/blob/master/README_zh-CN.md
+
+Swagger注解
+
+描述
+@Summary	摘要
+@Produce	API 可以产生的 MIME 类型的列表，MIME 类型你可以简单的理解为响应类型，例如：json、xml、html 等等
+@Param	参数格式，从左到右分别为：参数名、入参类型、数据类型、是否必填、注释
+@Success	响应成功，从左到右分别为：状态码、参数类型、数据类型、注释
+@Failure	响应失败，从左到右分别为：状态码、参数类型、数据类型、注释
+@Router	路由，从左到右分别为：路由地址，HTTP 方法
+```go
+// @Summary 获取列表
+// @Produce  json
+// @Param name query string false "名称" maxlength(100)
+// @Param page query int false "页码"
+// @Param page_size query int false "每页数量"
+// @Success 200 {object} model.Article"成功"
+// @Failure 400 {object} dict.Error "请求错误"
+// @Failure 500 {object} dict.Error "内部错误"
+// @Router /api/articles [get]
+```

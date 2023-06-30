@@ -134,6 +134,51 @@ definitions:
         description: 更新人
         type: string
     type: object
+  bo.ModelVersionResult:
+    properties:
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      formDefID:
+        description: 表单定义id
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      modelID:
+        description: 模板id
+        type: string
+      modelTitle:
+        description: 模板版本标题
+        type: string
+      noticeURL:
+        description: 回调通知推送url
+        type: string
+      processDefID:
+        description: 流程定义id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      titleProps:
+        description: 标题配置
+        type: string
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+      useStatus:
+        description: 使用状态【1：使用；2：未使用】
+        type: integer
+      versionID:
+        description: 版本id
+        type: string
+    type: object
   bo.UserTaskResult:
     properties:
       createUserID:
@@ -309,6 +354,37 @@ definitions:
         description: 操作意见
         type: string
     type: object
+  vo.ModelAdvancedSetup:
+    properties:
+      titleContent:
+        description: 标题内容
+        example: ""
+        type: string
+      titleType:
+        description: 标题类型【1：默认；2：自定义】默认为1
+        example: 0
+        type: integer
+    type: object
+  vo.ModelBaseSetup:
+    properties:
+      groupID:
+        description: Status    int    `json:"status" swaggertype:"integer" example:"0"`  //
+          模板状态【1：草稿；2：发布；3：停用】默认草稿
+        example: ""
+        type: string
+      iconURL:
+        description: 图标地址
+        example: ""
+        type: string
+      modelName:
+        description: 模型名称
+        example: ""
+        type: string
+      remark:
+        description: 描述
+        example: ""
+        type: string
+    type: object
   vo.ModelGroupAddVO:
     properties:
       groupName:
@@ -334,6 +410,13 @@ definitions:
         type: string
       remark:
         description: 描述
+        type: string
+    type: object
+  vo.ModelInvalidVO:
+    properties:
+      modelID:
+        description: 模型id
+        example: ""
         type: string
     type: object
   vo.ModelPageVO:
@@ -365,6 +448,36 @@ definitions:
         description: 模板状态【1：草稿；2：发布；3：停用】默认草稿
         example: 0
         type: integer
+    type: object
+  vo.ModelSaveVO:
+    properties:
+      advanced:
+        allOf:
+        - $ref: '#/definitions/vo.ModelAdvancedSetup'
+        description: 高级设置
+      base:
+        allOf:
+        - $ref: '#/definitions/vo.ModelBaseSetup'
+        description: 基础设置
+      flowContent:
+        description: 流程内容
+        example: ""
+        type: string
+      formContent:
+        description: 表单内容
+        example: ""
+        type: string
+      modelID:
+        description: 模型id
+        example: ""
+        type: string
+    type: object
+  vo.ReleaseModelVersionVO:
+    properties:
+      versionID:
+        description: 模型id
+        example: ""
+        type: string
     type: object
   vo.UserTaskAgreeVO:
     properties:
@@ -731,6 +844,28 @@ paths:
       summary: 查询获取模板组列表
       tags:
       - 模板
+  /model/invalid:
+    post:
+      consumes:
+      - application/json
+      description: 停用模板
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelInvalidVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelInvalidVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 停用模板
+      tags:
+      - 模板
   /model/list:
     post:
       consumes:
@@ -783,6 +918,98 @@ paths:
                   $ref: '#/definitions/bo.ModelDetailResult'
               type: object
       summary: 分页获取模板列表
+      tags:
+      - 模板
+  /model/publish:
+    post:
+      consumes:
+      - application/json
+      description: 发布模板
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelSaveVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelSaveVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 发布模板
+      tags:
+      - 模板
+  /model/save:
+    post:
+      consumes:
+      - application/json
+      description: 保存模板
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ModelSaveVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ModelSaveVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 保存模板
+      tags:
+      - 模板
+  /model/version/get:
+    get:
+      consumes:
+      - application/json
+      description: 根据模板查询获取模板版本列表
+      parameters:
+      - description: 模型id
+        example: ""
+        in: query
+        name: modelID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.ModelVersionResult'
+              type: object
+      summary: 根据模板查询获取模板版本列表
+      tags:
+      - 模板
+  /model/version/release:
+    post:
+      consumes:
+      - application/json
+      description: 上线模板版本(模板版本列表启用版本)
+      parameters:
+      - description: 请求参数
+        in: body
+        name: ReleaseModelVersionVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ReleaseModelVersionVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: 上线模板版本
       tags:
       - 模板
   /usertask/agree:

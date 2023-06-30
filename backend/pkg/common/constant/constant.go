@@ -179,3 +179,20 @@ const (
 	InstTaskOpLogTask  = 2
 	InstTaskOpLogOther = 3
 )
+
+/**
+模板状态【1：草稿；2：发布；3：停用】默认草稿
+*/
+const (
+	ModelStatusDraft    = 1 //草稿
+	ModelStatusDeployed = 2 //已发布
+	ModelStatusInvalid  = 3 //已停用
+)
+
+/**
+使用状态【1：使用；2：未使用】
+*/
+const (
+	ModelVersionUseStatusUse   = 1 //使用
+	ModelVersionUseStatusUnUse = 2 //未使用
+)

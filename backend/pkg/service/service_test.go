@@ -3,6 +3,8 @@ package service
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/model"
+	"gorm.io/gorm"
 	"reflect"
 	"testing"
 )
@@ -59,7 +61,7 @@ func TestGetModelVersion(t *testing.T) {
 	modelVersion := GetModelVersion("420915317174341", "1681335332954505235")
 	hlog.Infof("GetModelVersion= %v", modelVersion)
 
-	modelVersionList := GetModelVersionList("420915317174341", "1681335332954505235")
+	modelVersionList, _ := GetModelVersionList("433984855478341")
 	hlog.Infof("GetModelVersionList= %v", modelVersionList)
 
 	modelVersion2 := GetEnableModelVersion("420915317174341")
@@ -107,6 +109,13 @@ func TestGetDraftInstTask(t *testing.T) {
 }
 
 func TestGetModelList(t *testing.T) {
-	modelList, _ := GetModelList()
-	hlog.Infof("modelList= %v", modelList)
+	var existModel = model.ModelDetail{}
+	err := MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").First(&existModel).Error
+	if err != nil && err == gorm.ErrRecordNotFound {
+		hlog.Errorf("查询模板失败,模版ID输入有误，重新生成新的模板 error: %v", err)
+	}
+
+	var existModel2 = []model.ModelDetail{}
+	MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").Find(&existModel2)
+	hlog.Infof("existModel2= %v", existModel2)
 }

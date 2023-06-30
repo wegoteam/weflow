@@ -458,6 +458,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/model/invalid": {
+            "post": {
+                "description": "停用模板",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "停用模板",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelInvalidVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelInvalidVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/model/list": {
             "post": {
                 "description": "获取模板列表",
@@ -545,6 +579,152 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/model/publish": {
+            "post": {
+                "description": "发布模板",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "发布模板",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelSaveVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelSaveVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/save": {
+            "post": {
+                "description": "保存模板",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "保存模板",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ModelSaveVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ModelSaveVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/model/version/get": {
+            "get": {
+                "description": "根据模板查询获取模板版本列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "根据模板查询获取模板版本列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "模型id",
+                        "name": "modelID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelVersionResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/model/version/release": {
+            "post": {
+                "description": "上线模板版本(模板版本列表启用版本)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "模板"
+                ],
+                "summary": "上线模板版本",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "ReleaseModelVersionVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.ReleaseModelVersionVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/base.Response"
                         }
                     }
                 }
@@ -975,6 +1155,67 @@ const docTemplate = `{
                 }
             }
         },
+        "bo.ModelVersionResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "formDefID": {
+                    "description": "表单定义id",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "modelID": {
+                    "description": "模板id",
+                    "type": "string"
+                },
+                "modelTitle": {
+                    "description": "模板版本标题",
+                    "type": "string"
+                },
+                "noticeURL": {
+                    "description": "回调通知推送url",
+                    "type": "string"
+                },
+                "processDefID": {
+                    "description": "流程定义id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "titleProps": {
+                    "description": "标题配置",
+                    "type": "string"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                },
+                "useStatus": {
+                    "description": "使用状态【1：使用；2：未使用】",
+                    "type": "integer"
+                },
+                "versionID": {
+                    "description": "版本id",
+                    "type": "string"
+                }
+            }
+        },
         "bo.UserTaskResult": {
             "type": "object",
             "properties": {
@@ -1214,6 +1455,46 @@ const docTemplate = `{
                 }
             }
         },
+        "vo.ModelAdvancedSetup": {
+            "type": "object",
+            "properties": {
+                "titleContent": {
+                    "description": "标题内容",
+                    "type": "string",
+                    "example": ""
+                },
+                "titleType": {
+                    "description": "标题类型【1：默认；2：自定义】默认为1",
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "vo.ModelBaseSetup": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "description": "Status    int    ` + "`" + `json:\"status\" swaggertype:\"integer\" example:\"0\"` + "`" + `  // 模板状态【1：草稿；2：发布；3：停用】默认草稿",
+                    "type": "string",
+                    "example": ""
+                },
+                "iconURL": {
+                    "description": "图标地址",
+                    "type": "string",
+                    "example": ""
+                },
+                "modelName": {
+                    "description": "模型名称",
+                    "type": "string",
+                    "example": ""
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
         "vo.ModelGroupAddVO": {
             "type": "object",
             "properties": {
@@ -1250,6 +1531,16 @@ const docTemplate = `{
                 "remark": {
                     "description": "描述",
                     "type": "string"
+                }
+            }
+        },
+        "vo.ModelInvalidVO": {
+            "type": "object",
+            "properties": {
+                "modelID": {
+                    "description": "模型id",
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1290,6 +1581,52 @@ const docTemplate = `{
                     "description": "模板状态【1：草稿；2：发布；3：停用】默认草稿",
                     "type": "integer",
                     "example": 0
+                }
+            }
+        },
+        "vo.ModelSaveVO": {
+            "type": "object",
+            "properties": {
+                "advanced": {
+                    "description": "高级设置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vo.ModelAdvancedSetup"
+                        }
+                    ]
+                },
+                "base": {
+                    "description": "基础设置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vo.ModelBaseSetup"
+                        }
+                    ]
+                },
+                "flowContent": {
+                    "description": "流程内容",
+                    "type": "string",
+                    "example": ""
+                },
+                "formContent": {
+                    "description": "表单内容",
+                    "type": "string",
+                    "example": ""
+                },
+                "modelID": {
+                    "description": "模型id",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "vo.ReleaseModelVersionVO": {
+            "type": "object",
+            "properties": {
+                "versionID": {
+                    "description": "模型id",
+                    "type": "string",
+                    "example": ""
                 }
             }
         },

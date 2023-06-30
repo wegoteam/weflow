@@ -82,6 +82,92 @@ func PageModelList(param *entity.ModelPageBO) *base.Response {
 	return base.OK(page)
 }
 
+// SaveModel
+// @Description: 保存模板
+// @param: param
+// @return *base.Response
+func SaveModel(param *entity.ModelSaveBO) *base.Response {
+	modelID, err := weflowApi.SaveModel(param)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	res := bo.ModelSaveResult{
+		ModelID: modelID,
+	}
+	return base.OK(res)
+}
+
+// PublishModel
+// @Description: 发布模板
+// @param: param
+// @return *base.Response
+func PublishModel(param *entity.ModelSaveBO) *base.Response {
+	err := weflowApi.PublishModel(param)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	return base.OK(true)
+}
+
+// InvalidModel
+// @Description: 停用模板
+// @param: modelID 模板ID
+// @return *base.Response
+func InvalidModel(modelID string) *base.Response {
+	err := weflowApi.InvalidModel(modelID)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	return base.OK(true)
+}
+
+// ReleaseModelVersion
+// @Description: 上线模板版本
+// @param: versionID 版本ID
+// @return *base.Response
+func ReleaseModelVersion(versionID string) *base.Response {
+	err := weflowApi.ReleaseModelVersion(versionID)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	return base.OK(true)
+}
+
+// GetModelVersionList
+// @Description: 获取模板版本列表
+// @param: modelID
+// @return *base.Response
+func GetModelVersionList(modelID string) *base.Response {
+	versionList, err := weflowApi.GetModelVersionList(modelID)
+	if err != nil {
+		return base.Fail(consts.ERROR, err.Error())
+	}
+	modelVersions := make([]bo.ModelVersionResult, 0)
+	if utils.IsEmptySlice(versionList) {
+		return base.OK(modelVersions)
+	}
+	for _, version := range versionList {
+		var modelVersionBO = &bo.ModelVersionResult{
+			ID:           version.ID,
+			ModelID:      version.ModelID,
+			ModelTitle:   version.ModelTitle,
+			VersionID:    version.VersionID,
+			ProcessDefID: version.ProcessDefID,
+			FormDefID:    version.FormDefID,
+			UseStatus:    version.UseStatus,
+			Remark:       version.Remark,
+			CreateTime:   version.CreateTime,
+			CreateUser:   version.CreateUser,
+			UpdateTime:   version.UpdateTime,
+			UpdateUser:   version.UpdateUser,
+			NoticeURL:    version.NoticeURL,
+			TitleProps:   version.TitleProps,
+		}
+		modelVersions = append(modelVersions, *modelVersionBO)
+	}
+	return base.OK(modelVersions)
+}
+
 // GetModelGroupList
 // @Description: 获取模板组列表
 // @return []bo.ModelGroupResult
@@ -89,7 +175,7 @@ func GetModelGroupList() *base.Response {
 	var modelGroups = make([]bo.ModelGroupResult, 0)
 	groups, err := weflowApi.GetModelGroupList()
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	if utils.IsEmptySlice(groups) {
 		return base.OK(modelGroups)

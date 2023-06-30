@@ -86,7 +86,7 @@ func GetDoneUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 func GetReceivedUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 	pageResult, err := weflowApi.PageReceivedUserTasks(param)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	usertask := make([]bo.UserTaskResult, len(pageResult.Records))
 	for i, val := range pageResult.Records {
@@ -122,7 +122,7 @@ func GetReceivedUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 func AgreeUserTask(param *bo.UserTaskAgreeBO) *base.Response {
 	err := weflowApi.Agree(param.UserTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc, param.Params)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }
@@ -134,7 +134,7 @@ func AgreeUserTask(param *bo.UserTaskAgreeBO) *base.Response {
 func DisagreeUserTask(param *bo.UserTaskDisagreeBO) *base.Response {
 	err := weflowApi.Disagree(param.UserTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }
@@ -146,7 +146,7 @@ func DisagreeUserTask(param *bo.UserTaskDisagreeBO) *base.Response {
 func SaveUserTask(param *bo.UserTaskSaveBO) *base.Response {
 	err := weflowApi.Save(param.UserTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc, param.Params)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }

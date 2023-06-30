@@ -19,6 +19,11 @@ func Register(h *server.Hertz) {
 	modelGroup := h.Group("/model")
 	modelGroup.POST("/list", GetModelList)
 	modelGroup.POST("/page", PageModelList)
+	modelGroup.POST("/save", SaveModel)
+	modelGroup.POST("/publish", PublishModel)
+	modelGroup.POST("/invalid", InvalidModel)
+	modelGroup.POST("/version/release", ReleaseModelVersion)
+	modelGroup.GET("/version/get", GetModelVersionList)
 	modelGroup.GET("/group/list", GetModelGroups)
 	modelGroup.POST("/group/add", AddModelGroup)
 	modelGroup.POST("/group/edit", EditModelGroup)
@@ -84,6 +89,116 @@ func PageModelList(ctx context.Context, reqCtx *app.RequestContext) {
 		PageSize:  req.PageSize,
 	}
 	res := modelService.PageModelList(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// SaveModel 保存模板
+// @Summary 保存模板
+// @Tags 模板
+// @Description 保存模板
+// @Accept application/json
+// @Param ModelSaveVO body vo.ModelSaveVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /model/save [post]
+func SaveModel(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelSaveVO
+	reqCtx.Bind(&req)
+	var param = &entity.ModelSaveBO{
+		ModelID: req.ModelID,
+		Base: entity.ModelBaseSetup{
+			ModelName: req.Base.ModelName,
+			Remark:    req.Base.Remark,
+			GroupID:   req.Base.GroupID,
+			IconURL:   req.Base.IconURL,
+		},
+		FlowContent: req.FlowContent,
+		FormContent: req.FormContent,
+		Advanced: entity.ModelAdvancedSetup{
+			TitleType:    req.Advanced.TitleType,
+			TitleContent: req.Advanced.TitleContent,
+		},
+	}
+	res := modelService.SaveModel(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// PublishModel 发布模板
+// @Summary 发布模板
+// @Tags 模板
+// @Description 发布模板
+// @Accept application/json
+// @Param ModelSaveVO body vo.ModelSaveVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /model/publish [post]
+func PublishModel(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelSaveVO
+	reqCtx.Bind(&req)
+	var param = &entity.ModelSaveBO{
+		ModelID: req.ModelID,
+		Base: entity.ModelBaseSetup{
+			ModelName: req.Base.ModelName,
+			Remark:    req.Base.Remark,
+			GroupID:   req.Base.GroupID,
+			IconURL:   req.Base.IconURL,
+		},
+		FlowContent: req.FlowContent,
+		FormContent: req.FormContent,
+		Advanced: entity.ModelAdvancedSetup{
+			TitleType:    req.Advanced.TitleType,
+			TitleContent: req.Advanced.TitleContent,
+		},
+	}
+	res := modelService.PublishModel(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// InvalidModel 停用模板
+// @Summary 停用模板
+// @Tags 模板
+// @Description 停用模板
+// @Accept application/json
+// @Param ModelInvalidVO body vo.ModelInvalidVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /model/invalid [post]
+func InvalidModel(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelInvalidVO
+	reqCtx.Bind(&req)
+	res := modelService.InvalidModel(req.ModelID)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// ReleaseModelVersion 上线模板版本
+// @Summary 上线模板版本
+// @Tags 模板
+// @Description 上线模板版本(模板版本列表启用版本)
+// @Accept application/json
+// @Param ReleaseModelVersionVO body vo.ReleaseModelVersionVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{} "返回结果"
+// @Router /model/version/release [post]
+func ReleaseModelVersion(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ReleaseModelVersionVO
+	reqCtx.Bind(&req)
+	res := modelService.ReleaseModelVersion(req.VersionID)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// GetModelVersionList 根据模板查询获取模板版本列表
+// @Summary 根据模板查询获取模板版本列表
+// @Tags 模板
+// @Description 根据模板查询获取模板版本列表
+// @Param ModelVersionQueryVO query vo.ModelVersionQueryVO true "请求参数"
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} base.Response{data=bo.ModelVersionResult} "返回结果"
+// @Router /model/version/get [get]
+func GetModelVersionList(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.ModelVersionQueryVO
+	reqCtx.Bind(&req)
+	res := modelService.GetModelVersionList(req.ModelID)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
 

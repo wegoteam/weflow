@@ -3,12 +3,15 @@
 package router
 
 import (
+	"context"
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	commRouter "github.com/wegoteam/weflow/internal/biz/router/comm"
 	flowRouter "github.com/wegoteam/weflow/internal/biz/router/flow"
 	insttaskRouter "github.com/wegoteam/weflow/internal/biz/router/insttask"
 	modelRouter "github.com/wegoteam/weflow/internal/biz/router/model"
 	usertaskRouter "github.com/wegoteam/weflow/internal/biz/router/usertask"
+	"reflect"
 )
 
 // GeneratedRegister
@@ -25,4 +28,40 @@ func GeneratedRegister(hertz *server.Hertz) {
 	usertaskRouter.Register(hertz)
 	//注册实例任务路由
 	insttaskRouter.Register(hertz)
+}
+
+type bizFunc[Req, Resp any] func(ctx context.Context, t Req) (resp Resp, err error)
+
+func HandlerFuncWrapper[Req, Resp any](bizFunc bizFunc[Req, Resp]) app.HandlerFunc {
+	return func(ctx context.Context, c *app.RequestContext) {
+		var req Req
+		// 空指针初始化
+		if reflect.TypeOf(req).Kind() == reflect.Ptr {
+			v := reflect.ValueOf(&req).Elem()
+			v.Set(reflect.New(v.Type().Elem()))
+		}
+		if err := c.BindAndValidate(&req); err != nil {
+			c.JSON(400, map[string]any{
+				"code":    400,
+				"message": err.Error(),
+			})
+			return
+		}
+		resp, err := bizFunc(ctx, req)
+		if err != nil {
+			// 错误处理，需要根据业务自己定制错误返回
+			// 这里简单的讲错误返回，并返回状态码500
+			c.JSON(500, map[string]any{
+				"code":    500,
+				"message": err.Error(),
+			})
+			return
+		}
+		// 业务执行成功，写成功响应
+		c.JSON(200, map[string]any{
+			"code":    0,
+			"message": "ok",
+			"data":    resp,
+		})
+	}
 }

@@ -30,6 +30,46 @@ func GetModelGroupList() ([]entity.ModelGroupResult, error) {
 	return service.GetModelGroupList()
 }
 
+// SaveModel
+// @Description: 保存模板
+// @param: param
+// @return *base.Response
+func SaveModel(param *entity.ModelSaveBO) (string, error) {
+	return service.SaveModel(param)
+}
+
+// PublishModel
+// @Description: 发布模板
+// @param: param
+// @return error
+func PublishModel(param *entity.ModelSaveBO) error {
+	return service.PublishModel(param)
+}
+
+// InvalidModel
+// @Description: 停用模板
+// @param: modelID
+// @return error
+func InvalidModel(modelID string) error {
+	return service.InvalidModel(modelID)
+}
+
+// ReleaseModelVersion
+// @Description: 上线模板版本
+// @param: versionID 版本ID
+// @return error
+func ReleaseModelVersion(versionID string) error {
+	return service.ReleaseModelVersion(versionID)
+}
+
+// GetModelVersionList
+// @Description: 获取模型版本列表
+// @param: modelID
+// @return []entity.ModelVersionResult
+func GetModelVersionList(modelID string) ([]entity.ModelVersionResult, error) {
+	return service.GetModelVersionList(modelID)
+}
+
 // AddModelGroup
 // @Description: 添加模型分组
 // @param: param

@@ -58,7 +58,7 @@ func GetInitiateInstTaskList(param *entity.InstTaskQueryBO) *base.Response {
 func Start(param *bo.InstTaskStartBO) *base.Response {
 	instTaskID, err := weflowApi.Start(param.ModelID, param.UserID, param.UserName, param.Params)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(instTaskID)
 }
@@ -73,7 +73,7 @@ func Start(param *bo.InstTaskStartBO) *base.Response {
 func Stop(param *bo.InstTaskStopBO) *base.Response {
 	err := weflowApi.Stop(param.InstTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }
@@ -88,7 +88,7 @@ func Stop(param *bo.InstTaskStopBO) *base.Response {
 func Suspend(param *bo.InstTaskSuspendBO) *base.Response {
 	err := weflowApi.Suspend(param.InstTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }
@@ -103,7 +103,7 @@ func Suspend(param *bo.InstTaskSuspendBO) *base.Response {
 func Sesume(param *bo.InstTaskSesumeBO) *base.Response {
 	err := weflowApi.Sesume(param.InstTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }
@@ -118,7 +118,7 @@ func Sesume(param *bo.InstTaskSesumeBO) *base.Response {
 func Delete(param *bo.InstTaskDeleteBO) *base.Response {
 	err := weflowApi.Delete(param.InstTaskID, param.OpUserID, param.OpUserName, param.OpinionDesc)
 	if err != nil {
-		base.Fail(consts.ERROR, err.Error())
+		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
 }

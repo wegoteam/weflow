@@ -114,3 +114,31 @@ type ModelPageBO struct {
 	PageSize  int    `json:"pageSize"`   // 每页条数
 	PageNum   int    `json:"pageNum"`    // 页码
 }
+
+// ModelSaveBO
+// @Description: 模型保存BO
+type ModelSaveBO struct {
+	ModelID     string             `json:"modelID" `     // 模型id
+	Base        ModelBaseSetup     `json:"base" `        // 基础设置
+	FlowContent string             `json:"flowContent" ` // 流程内容
+	FormContent string             `json:"formContent" ` // 表单内容
+	Advanced    ModelAdvancedSetup `json:"advanced" `    // 高级设置
+	UserID      string             `json:"userID" `      // 用户id
+	UserName    string             `json:"userName" `    // 用户名称
+}
+
+// ModelBaseSetup
+// @Description: 模型基础设置
+type ModelBaseSetup struct {
+	ModelName string `json:"modelName" ` // 模型名称
+	IconURL   string `json:"iconURL" `   // 图标地址
+	GroupID   string `json:"groupID" `   // 组id
+	Remark    string `json:"remark" `    // 描述
+}
+
+// ModelAdvancedSetup
+// @Description: 模型高级设置
+type ModelAdvancedSetup struct {
+	TitleType    int    `json:"titleType" `    // 标题类型【1：默认；2：自定义】默认为1
+	TitleContent string `json:"titleContent" ` // 标题内容
+}
