@@ -92,5 +92,5 @@ func GetOrgList(param *entity.OrgQueryBO) *base.Response {
 		}
 		orgResults = append(orgResults, param)
 	}
-	return base.OK(result)
+	return base.OK(orgResults)
 }
