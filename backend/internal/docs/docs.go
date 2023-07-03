@@ -362,7 +362,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                            "$ref": "#/definitions/bo.GroupModelDetailsResult"
                                         }
                                     }
                                 }
@@ -388,7 +388,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "请求参数",
-                        "name": "ModelGroupAddVO",
+                        "name": "object",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -781,6 +781,144 @@ const docTemplate = `{
                 }
             }
         },
+        "/org/list": {
+            "post": {
+                "description": "查询组织列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询组织列表",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "OrgQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.OrgQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.OrgInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/list": {
+            "post": {
+                "description": "查询角色列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询角色列表",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "RoleQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.RoleQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.RoleInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/list": {
+            "post": {
+                "description": "查询用户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询用户列表",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "UserQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.UserInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/usertask/agree": {
             "post": {
                 "description": "同意用户任务",
@@ -1039,6 +1177,50 @@ const docTemplate = `{
                 }
             }
         },
+        "bo.GroupModelDetailsResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "groupID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "groupName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "模型列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.ModelDetailResult"
+                    }
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
         "bo.InstTaskResult": {
             "type": "object",
             "properties": {
@@ -1267,6 +1449,153 @@ const docTemplate = `{
                 }
             }
         },
+        "bo.OrgInfoResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "orgID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "orgName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "parentID": {
+                    "description": "组父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.RoleInfoResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "parentID": {
+                    "description": "角色父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "roleID": {
+                    "description": "角色id",
+                    "type": "string"
+                },
+                "roleName": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.UserInfoResult": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "orgID": {
+                    "description": "组织id",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                },
+                "userID": {
+                    "description": "用户id",
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "用户名称",
+                    "type": "string"
+                }
+            }
+        },
         "bo.UserTaskResult": {
             "type": "object",
             "properties": {
@@ -1386,7 +1715,8 @@ const docTemplate = `{
             "properties": {
                 "modelName": {
                     "description": "模型名称",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1395,11 +1725,13 @@ const docTemplate = `{
             "properties": {
                 "instTaskID": {
                     "description": "实例任务ID",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1458,11 +1790,13 @@ const docTemplate = `{
             "properties": {
                 "instTaskID": {
                     "description": "实例任务ID",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1471,7 +1805,8 @@ const docTemplate = `{
             "properties": {
                 "modelID": {
                     "description": "模板ID",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "params": {
                     "description": "参数",
@@ -1485,11 +1820,13 @@ const docTemplate = `{
             "properties": {
                 "instTaskID": {
                     "description": "实例任务ID",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1498,11 +1835,13 @@ const docTemplate = `{
             "properties": {
                 "instTaskID": {
                     "description": "实例任务ID",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1525,7 +1864,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "groupID": {
-                    "description": "Status    int    ` + "`" + `json:\"status\" swaggertype:\"integer\" example:\"0\"` + "`" + `  // 模板状态【1：草稿；2：发布；3：停用】默认草稿",
+                    "description": "组id",
                     "type": "string",
                     "example": ""
                 },
@@ -1551,11 +1890,13 @@ const docTemplate = `{
             "properties": {
                 "groupName": {
                     "description": "组名称",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "remark": {
                     "description": "描述",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1564,7 +1905,8 @@ const docTemplate = `{
             "properties": {
                 "groupID": {
                     "description": "组id",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1573,15 +1915,18 @@ const docTemplate = `{
             "properties": {
                 "groupID": {
                     "description": "组id",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "groupName": {
                     "description": "组名称",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "remark": {
                     "description": "描述",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1671,6 +2016,16 @@ const docTemplate = `{
                 }
             }
         },
+        "vo.OrgQueryVO": {
+            "type": "object",
+            "properties": {
+                "orgName": {
+                    "description": "组织名称",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
         "vo.ReleaseModelVersionVO": {
             "type": "object",
             "properties": {
@@ -1681,12 +2036,33 @@ const docTemplate = `{
                 }
             }
         },
+        "vo.RoleQueryVO": {
+            "type": "object",
+            "properties": {
+                "roleName": {
+                    "description": "角色名称",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "vo.UserQueryVO": {
+            "type": "object",
+            "properties": {
+                "userName": {
+                    "description": "用户名称",
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
         "vo.UserTaskAgreeVO": {
             "type": "object",
             "properties": {
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "params": {
                     "description": "参数",
@@ -1695,7 +2071,8 @@ const docTemplate = `{
                 },
                 "userTaskID": {
                     "description": "用户任务id",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1704,16 +2081,13 @@ const docTemplate = `{
             "properties": {
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
-                },
-                "params": {
-                    "description": "参数",
-                    "type": "object",
-                    "additionalProperties": {}
+                    "type": "string",
+                    "example": ""
                 },
                 "userTaskID": {
                     "description": "用户任务id",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         },
@@ -1777,7 +2151,8 @@ const docTemplate = `{
             "properties": {
                 "opinionDesc": {
                     "description": "操作意见",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "params": {
                     "description": "参数",
@@ -1786,7 +2161,8 @@ const docTemplate = `{
                 },
                 "userTaskID": {
                     "description": "用户任务id",
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 }
             }
         }

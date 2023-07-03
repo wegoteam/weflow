@@ -6,6 +6,7 @@ import (
 	"github.com/wegoteam/weflow/internal/consts"
 	weflowApi "github.com/wegoteam/weflow/pkg/api"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/common/utils"
 )
 
 // GetInitiateInstTaskList
@@ -30,14 +31,14 @@ func GetInitiateInstTaskList(param *entity.InstTaskQueryBO) *base.Response {
 			TaskName:       instTask.TaskName,
 			Status:         instTask.Status,
 			Remark:         instTask.Remark,
-			CreateTime:     instTask.CreateTime,
+			CreateTime:     utils.TimeToString(instTask.CreateTime),
 			CreateUserID:   instTask.CreateUserID,
 			CreateUserName: instTask.CreateUserName,
-			UpdateTime:     instTask.UpdateTime,
+			UpdateTime:     utils.TimeToString(instTask.UpdateTime),
 			UpdateUserID:   instTask.UpdateUserID,
 			UpdateUserName: instTask.UpdateUserName,
-			StartTime:      instTask.StartTime,
-			EndTime:        instTask.EndTime,
+			StartTime:      utils.TimeToString(instTask.StartTime),
+			EndTime:        utils.TimeToString(instTask.EndTime),
 		}
 	}
 	page := &base.Page[bo.InstTaskResult]{

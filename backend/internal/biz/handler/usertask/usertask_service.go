@@ -6,6 +6,7 @@ import (
 	"github.com/wegoteam/weflow/internal/consts"
 	weflowApi "github.com/wegoteam/weflow/pkg/api"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/common/utils"
 )
 
 // GetTodoUserTaskList
@@ -22,8 +23,8 @@ func GetTodoUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 			InstTaskID:     val.InstTaskID,
 			TaskName:       val.TaskName,
 			InstStatus:     val.TStatus,
-			StartTime:      val.StartTime,
-			EndTime:        val.EndTime,
+			StartTime:      utils.TimeToString(val.StartTime),
+			EndTime:        utils.TimeToString(val.EndTime),
 			CreateUserID:   val.CreateUserID,
 			CreateUserName: val.CreateUserName,
 			NodeTaskID:     val.NodeTaskID,
@@ -58,8 +59,8 @@ func GetDoneUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 			InstTaskID:     val.InstTaskID,
 			TaskName:       val.TaskName,
 			InstStatus:     val.TStatus,
-			StartTime:      val.StartTime,
-			EndTime:        val.EndTime,
+			StartTime:      utils.TimeToString(val.StartTime),
+			EndTime:        utils.TimeToString(val.EndTime),
 			CreateUserID:   val.CreateUserID,
 			CreateUserName: val.CreateUserName,
 			NodeTaskID:     val.NodeTaskID,
@@ -94,8 +95,8 @@ func GetReceivedUserTaskList(param *entity.UserTaskQueryBO) *base.Response {
 			InstTaskID:     val.InstTaskID,
 			TaskName:       val.TaskName,
 			InstStatus:     val.TStatus,
-			StartTime:      val.StartTime,
-			EndTime:        val.EndTime,
+			StartTime:      utils.TimeToString(val.StartTime),
+			EndTime:        utils.TimeToString(val.EndTime),
 			CreateUserID:   val.CreateUserID,
 			CreateUserName: val.CreateUserName,
 			NodeTaskID:     val.NodeTaskID,

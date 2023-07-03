@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/base"
 	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	usertaskService "github.com/wegoteam/weflow/internal/biz/handler/usertask"
@@ -38,6 +39,12 @@ func GetTodoUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	reqCtx.Bind(&req)
+	if req.PageNum == 0 {
+		req.PageNum = consts.DefaultPageNum
+	}
+	if req.PageSize == 0 {
+		req.PageSize = consts.DefaultPageSize
+	}
 	param := &entity.UserTaskQueryBO{
 		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
@@ -68,6 +75,12 @@ func GetDoneUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	reqCtx.Bind(&req)
+	if req.PageNum == 0 {
+		req.PageNum = consts.DefaultPageNum
+	}
+	if req.PageSize == 0 {
+		req.PageSize = consts.DefaultPageSize
+	}
 	param := &entity.UserTaskQueryBO{
 		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
@@ -98,6 +111,12 @@ func GetReceivedUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskQueryVO
 	reqCtx.Bind(&req)
+	if req.PageNum == 0 {
+		req.PageNum = consts.DefaultPageNum
+	}
+	if req.PageSize == 0 {
+		req.PageSize = consts.DefaultPageSize
+	}
 	param := &entity.UserTaskQueryBO{
 		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
@@ -127,7 +146,12 @@ func GetReceivedUserTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 func AgreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskAgreeVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.UserTaskAgreeBO{
 		UserTaskID:  req.UserTaskID,
 		OpUserID:    consts.UserID,
@@ -151,7 +175,12 @@ func AgreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 func DisagreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskDisagreeVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.UserTaskDisagreeBO{
 		UserTaskID:  req.UserTaskID,
 		OpUserID:    consts.UserID,
@@ -174,7 +203,12 @@ func DisagreeUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 func SaveUserTask(ctx context.Context, reqCtx *app.RequestContext) {
 	// 获取请求参数
 	var req vo.UserTaskSaveVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.UserTaskSaveBO{
 		UserTaskID:  req.UserTaskID,
 		OpUserID:    consts.UserID,

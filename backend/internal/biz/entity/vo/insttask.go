@@ -17,34 +17,34 @@ type InstTaskQueryVO struct {
 // InstTaskStartVO
 // @Description: 实例任务发起参数
 type InstTaskStartVO struct {
-	ModelID string         // 模板ID
+	ModelID string         `json:"modelID" swaggertype:"string" example:"" vd:"len($)>1; msg:'模板id不能为空'"` // 模板ID
 	Params  map[string]any // 参数
 }
 
 // InstTaskStopVO
 // @Description: 实例任务停止参数
 type InstTaskStopVO struct {
-	InstTaskID  string // 实例任务ID
-	OpinionDesc string // 操作意见
+	InstTaskID  string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'实例任务id不能为空'"` // 实例任务ID
+	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }
 
 // InstTaskSuspendVO
 // @Description: 实例任务挂起参数
 type InstTaskSuspendVO struct {
-	InstTaskID  string // 实例任务ID
-	OpinionDesc string // 操作意见
+	InstTaskID  string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'实例任务id不能为空'"` // 实例任务ID
+	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }
 
 // InstTaskSesumeVO
 // @Description: 实例任务恢复参数
 type InstTaskSesumeVO struct {
-	InstTaskID  string // 实例任务ID
-	OpinionDesc string // 操作意见
+	InstTaskID  string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'实例任务id不能为空'"` // 实例任务ID
+	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }
 
 // InstTaskDeleteVO
 // @Description: 实例任务删除参数
 type InstTaskDeleteVO struct {
-	InstTaskID  string // 实例任务ID
-	OpinionDesc string // 操作意见
+	InstTaskID  string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'实例任务id不能为空'"` // 实例任务ID
+	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }

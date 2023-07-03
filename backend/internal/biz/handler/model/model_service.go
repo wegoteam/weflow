@@ -32,9 +32,9 @@ func GetModelList(param *entity.ModelQueryBO) *base.Response {
 			IconURL:      modelDetail.IconURL,
 			Status:       modelDetail.Status,
 			Remark:       modelDetail.Remark,
-			CreateTime:   modelDetail.CreateTime,
+			CreateTime:   utils.TimeToString(modelDetail.CreateTime),
 			CreateUser:   modelDetail.CreateUser,
-			UpdateTime:   modelDetail.UpdateTime,
+			UpdateTime:   utils.TimeToString(modelDetail.UpdateTime),
 			UpdateUser:   modelDetail.UpdateUser,
 		}
 		models = append(models, modelBO)
@@ -66,9 +66,9 @@ func PageModelList(param *entity.ModelPageBO) *base.Response {
 			IconURL:      modelDetail.IconURL,
 			Status:       modelDetail.Status,
 			Remark:       modelDetail.Remark,
-			CreateTime:   modelDetail.CreateTime,
+			CreateTime:   utils.TimeToString(modelDetail.CreateTime),
 			CreateUser:   modelDetail.CreateUser,
-			UpdateTime:   modelDetail.UpdateTime,
+			UpdateTime:   utils.TimeToString(modelDetail.UpdateTime),
 			UpdateUser:   modelDetail.UpdateUser,
 		}
 		models = append(models, modelBO)
@@ -156,9 +156,9 @@ func GetModelVersionList(modelID string) *base.Response {
 			FormDefID:    version.FormDefID,
 			UseStatus:    version.UseStatus,
 			Remark:       version.Remark,
-			CreateTime:   version.CreateTime,
+			CreateTime:   utils.TimeToString(version.CreateTime),
 			CreateUser:   version.CreateUser,
-			UpdateTime:   version.UpdateTime,
+			UpdateTime:   utils.TimeToString(version.UpdateTime),
 			UpdateUser:   version.UpdateUser,
 			NoticeURL:    version.NoticeURL,
 			TitleProps:   version.TitleProps,
@@ -186,9 +186,9 @@ func GetModelGroupList() *base.Response {
 			GroupID:    group.GroupID,
 			GroupName:  group.GroupName,
 			Remark:     group.Remark,
-			CreateTime: group.CreateTime,
+			CreateTime: utils.TimeToString(group.CreateTime),
 			CreateUser: group.CreateUser,
-			UpdateTime: group.UpdateTime,
+			UpdateTime: utils.TimeToString(group.UpdateTime),
 			UpdateUser: group.UpdateUser,
 		}
 		modelGroups = append(modelGroups, *modelGroupBO)
@@ -240,11 +240,50 @@ func DelModelGroup(param *entity.ModelGroupDelBO) *base.Response {
 // @param: param
 // @return *base.Response
 func GetGroupModelDetails(param *entity.GroupModelQueryBO) *base.Response {
-	modelDetails, err := weflowApi.GetGroupModelDetails(param)
+	modelGroupsResult, err := weflowApi.GetGroupModelDetails(param)
 	if err != nil {
 		return base.Fail(consts.ERROR, err.Error())
 	}
-	return base.OK(modelDetails)
+	var groupModelDetails = make([]bo.GroupModelDetailsResult, 0)
+	if modelGroupsResult == nil {
+		return base.OK(groupModelDetails)
+	}
+	for _, group := range modelGroupsResult {
+		models := make([]bo.ModelDetailResult, 0)
+		if utils.IsNotEmptySlice(group.Models) {
+			for _, model := range group.Models {
+				var modelDetailBO = &bo.ModelDetailResult{
+					ID:           model.ID,
+					ModelID:      model.ModelID,
+					ModelTitle:   model.ModelTitle,
+					ProcessDefID: model.ProcessDefID,
+					FormDefID:    model.FormDefID,
+					ModelGroupID: model.ModelGroupID,
+					IconURL:      model.IconURL,
+					Status:       model.Status,
+					Remark:       model.Remark,
+					CreateTime:   utils.TimeToString(model.CreateTime),
+					CreateUser:   model.CreateUser,
+					UpdateTime:   utils.TimeToString(model.UpdateTime),
+					UpdateUser:   model.UpdateUser,
+				}
+				models = append(models, *modelDetailBO)
+			}
+		}
+		var modelGroupBO = &bo.GroupModelDetailsResult{
+			ID:         group.ID,
+			GroupID:    group.GroupID,
+			GroupName:  group.GroupName,
+			Remark:     group.Remark,
+			CreateTime: utils.TimeToString(group.CreateTime),
+			CreateUser: group.CreateUser,
+			UpdateTime: utils.TimeToString(group.UpdateTime),
+			UpdateUser: group.UpdateUser,
+			Models:     models,
+		}
+		groupModelDetails = append(groupModelDetails, *modelGroupBO)
+	}
+	return base.OK(groupModelDetails)
 }
 
 // GetModelAndVersionInfo

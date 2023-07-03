@@ -588,3 +588,19 @@ Swagger注解
 // @Failure 500 {object} dict.Error "内部错误"
 // @Router /api/articles [get]
 ```
+
+### 常见问题
+#### 使用carbon问题
+window 系统下部署二进制文件时区报错
+
+window 系统如果没有安装 golang 环境，部署时会报 GOROOT/lib/time/zoneinfo.zip: no such file or directory 异常，原因是由于 window 系统没有内置时区文件，只需要手动下载并指定 zoneinfo.zip 路径即可，如 go/lib/time/zoneinfo.zip
+
+os.Setenv("ZONEINFO", "./go/lib/time/zoneinfo.zip")
+
+docker 容器部署二进制文件时区报错
+
+docker 容器如果没有安装 golang 环境，部署时会报 open /usr/local/go/lib/time/zoneinfo.zip: no such file or directory 异常，只需要把 zoneinfo.zip 复制到容器中即可，即在 Dockerfile 中加入
+
+```shell
+COPY ./zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
+```

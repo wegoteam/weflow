@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/base"
 	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	insttaskService "github.com/wegoteam/weflow/internal/biz/handler/insttask"
@@ -37,6 +38,12 @@ func Register(h *server.Hertz) {
 func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskQueryVO
 	reqCtx.Bind(&req)
+	if req.PageNum == 0 {
+		req.PageNum = consts.DefaultPageNum
+	}
+	if req.PageSize == 0 {
+		req.PageSize = consts.DefaultPageSize
+	}
 	param := &entity.InstTaskQueryBO{
 		UserID:          consts.UserID,
 		PageSize:        req.PageSize,
@@ -64,7 +71,12 @@ func GetInitiateInstTaskList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /insttask/start [post]
 func StartInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskStartVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.InstTaskStartBO{
 		UserID:   consts.UserID,
 		UserName: consts.UserName,
@@ -86,7 +98,12 @@ func StartInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /insttask/stop [post]
 func StopInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskStopVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.InstTaskStopBO{
 		OpUserID:    consts.UserID,
 		OpUserName:  consts.UserName,
@@ -108,7 +125,12 @@ func StopInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /insttask/suspend [post]
 func SuspendInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskSuspendVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.InstTaskSuspendBO{
 		OpUserID:    consts.UserID,
 		OpUserName:  consts.UserName,
@@ -130,7 +152,12 @@ func SuspendInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /insttask/resume [post]
 func ResumeInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskSesumeVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.InstTaskSesumeBO{
 		OpUserID:    consts.UserID,
 		OpUserName:  consts.UserName,
@@ -152,7 +179,12 @@ func ResumeInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /insttask/del [post]
 func DeleteInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.InstTaskDeleteVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &bo.InstTaskDeleteBO{
 		OpUserID:    consts.UserID,
 		OpUserName:  consts.UserName,

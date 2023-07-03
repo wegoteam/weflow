@@ -10,6 +10,7 @@ import (
 	flowRouter "github.com/wegoteam/weflow/internal/biz/router/flow"
 	insttaskRouter "github.com/wegoteam/weflow/internal/biz/router/insttask"
 	modelRouter "github.com/wegoteam/weflow/internal/biz/router/model"
+	userRouter "github.com/wegoteam/weflow/internal/biz/router/user"
 	usertaskRouter "github.com/wegoteam/weflow/internal/biz/router/usertask"
 	"reflect"
 )
@@ -28,6 +29,8 @@ func GeneratedRegister(hertz *server.Hertz) {
 	usertaskRouter.Register(hertz)
 	//注册实例任务路由
 	insttaskRouter.Register(hertz)
+	//注册用户中心路由
+	userRouter.Register(hertz)
 }
 
 type bizFunc[Req, Resp any] func(ctx context.Context, t Req) (resp Resp, err error)

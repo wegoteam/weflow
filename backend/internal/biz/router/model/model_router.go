@@ -5,6 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/wegoteam/weflow/internal/base"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	modelService "github.com/wegoteam/weflow/internal/biz/handler/model"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -42,7 +43,7 @@ func Register(h *server.Hertz) {
 // @Accept application/json
 // @Param GroupModelQueryVO body vo.GroupModelQueryVO true "请求参数"
 // @Produce application/json
-// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
+// @Success 200 {object} base.Response{data=bo.GroupModelDetailsResult} "返回结果"
 // @Router /model/details [post]
 func GetGroupModelDetails(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.GroupModelQueryVO
@@ -102,6 +103,12 @@ func GetModelList(ctx context.Context, reqCtx *app.RequestContext) {
 func PageModelList(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelPageVO
 	reqCtx.Bind(&req)
+	if req.PageNum == 0 {
+		req.PageNum = consts.DefaultPageNum
+	}
+	if req.PageSize == 0 {
+		req.PageSize = consts.DefaultPageSize
+	}
 	param := &entity.ModelPageBO{
 		ModelName: req.ModelName,
 		Status:    req.Status,
@@ -123,7 +130,12 @@ func PageModelList(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/save [post]
 func SaveModel(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelSaveVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	var param = &entity.ModelSaveBO{
 		ModelID: req.ModelID,
 		Base: entity.ModelBaseSetup{
@@ -154,7 +166,12 @@ func SaveModel(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/publish [post]
 func PublishModel(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelSaveVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	var param = &entity.ModelSaveBO{
 		ModelID: req.ModelID,
 		Base: entity.ModelBaseSetup{
@@ -185,7 +202,12 @@ func PublishModel(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/invalid [post]
 func InvalidModel(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelInvalidVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	res := modelService.InvalidModel(req.ModelID)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
@@ -201,7 +223,12 @@ func InvalidModel(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/version/release [post]
 func ReleaseModelVersion(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ReleaseModelVersionVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	res := modelService.ReleaseModelVersion(req.VersionID)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }
@@ -238,7 +265,7 @@ func GetModelGroups(ctx context.Context, reqCtx *app.RequestContext) {
 // AddModelGroup 添加模板组
 // @Summary 添加模板组
 // @Tags 模板
-// @Param ModelGroupAddVO body vo.ModelGroupAddVO true "请求参数"
+// @Param object body vo.ModelGroupAddVO true "请求参数"
 // @Description 添加模板组
 // @Accept application/json
 // @Produce application/json
@@ -246,7 +273,12 @@ func GetModelGroups(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/group/add [post]
 func AddModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupAddVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	now := time.Now()
 	param := &entity.ModelGroupAddBO{
 		GroupName:  req.GroupName,
@@ -271,7 +303,12 @@ func AddModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/group/edit [post]
 func EditModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupEditVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	now := time.Now()
 	param := &entity.ModelGroupEditBO{
 		GroupID:    req.GroupID,
@@ -295,7 +332,12 @@ func EditModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 // @Router /model/group/del [post]
 func DelModelGroup(ctx context.Context, reqCtx *app.RequestContext) {
 	var req vo.ModelGroupDelVO
-	reqCtx.Bind(&req)
+	bindErr := reqCtx.BindAndValidate(&req)
+	if bindErr != nil {
+		res := base.Fail(consts.ERROR, bindErr.Error())
+		reqCtx.JSON(hertzconsts.StatusOK, res)
+		return
+	}
 	param := &entity.ModelGroupDelBO{
 		GroupID: req.GroupID,
 	}

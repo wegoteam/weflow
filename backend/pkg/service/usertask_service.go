@@ -68,7 +68,7 @@ func QueryTodoUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAndUse
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime," +
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	tx.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err != nil {
@@ -87,7 +87,7 @@ func PageTodoUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstN
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	tx.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Count(&total).Error
 	if err != nil {
@@ -109,7 +109,7 @@ func PageTodoUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstN
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime,"+
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), buildUserTaskQuery(param))
 	tx2.Where("(inst_user_task.status = 1 and inst_node_task.status = 2 and inst_task_detail.status = 2) or (inst_user_task.status = 1  and inst_node_task.node_model = 4)")
 	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err2 != nil {
@@ -125,11 +125,11 @@ func PageTodoUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstN
 	}, nil
 }
 
-// BuildUserTaskQuery
+// buildUserTaskQuery
 // @Description: 用户任务查询条件
 // @param: param
 // @return func(db *gorm.DB) *gorm.DB
-func BuildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.DB {
+func buildUserTaskQuery(param *entity.UserTaskQueryBO) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		tx := db
 		if param.InstStatus != 0 {
@@ -185,7 +185,7 @@ func QueryDoneUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAndUse
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime," +
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	tx.Where("inst_user_task.status in (2,3,4,5)")
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err != nil {
@@ -205,7 +205,7 @@ func PageDoneUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstN
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	tx.Where("inst_user_task.status in (2,3,4,5)")
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Count(&total).Error
 	if err != nil {
@@ -226,7 +226,7 @@ func PageDoneUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.InstN
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime,"+
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), buildUserTaskQuery(param))
 	tx2.Where("inst_user_task.status in (2,3,4,5)")
 	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err2 != nil {
@@ -275,7 +275,7 @@ func QueryReceivedUserTasks(param *entity.UserTaskQueryBO) (*[]entity.InstNodeAn
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime," +
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err != nil {
 		hlog.Errorf("查询我收到的用户任务失败 error=%v", err.Error())
@@ -294,7 +294,7 @@ func PageReceivedUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.I
 	var total int64
 	tx := MysqlDB.Model(&model.InstUserTask{}).
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(buildUserTaskQuery(param))
 	err := tx.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Count(&total).Error
 	if err != nil {
 		hlog.Errorf("查询我收到的用户任务失败 error=%v", err.Error())
@@ -314,7 +314,7 @@ func PageReceivedUserTasks(param *entity.UserTaskQueryBO) (*entity.Page[entity.I
 			" inst_node_task.id NID, inst_node_task.node_task_id NodeTaskID, inst_node_task.node_id NodeID, inst_node_task.parent_id ParentID, inst_node_task.node_model NodeModel, inst_node_task.node_name NodeName, inst_node_task.approve_type ApproveType, inst_node_task.none_handler NoneHandler, inst_node_task.appoint_handler AppointHandler, inst_node_task.handle_mode HandleMode, inst_node_task.finish_mode FinishMode, inst_node_task.branch_mode BranchMode, inst_node_task.default_branch DefaultBranch, inst_node_task.branch_level BranchLevel, inst_node_task.condition_group ConditionGroup, inst_node_task.condition_expr ConditionExpr, inst_node_task.remark NRemark, inst_node_task.status NStatus, inst_node_task.create_time NCreateTime, inst_node_task.update_time NUpdateTime,"+
 			" inst_task_detail.id TID, inst_task_detail.inst_task_id InstTaskID, inst_task_detail.model_id ModelID, inst_task_detail.process_def_id ProcessDefID, inst_task_detail.form_def_id FormDefID, inst_task_detail.version_id VersionID, inst_task_detail.task_name TaskName, inst_task_detail.status TStatus, inst_task_detail.remark TRemark, inst_task_detail.create_time TCreateTime, inst_task_detail.create_user_id CreateUserID, inst_task_detail.create_user_name CreateUserName, inst_task_detail.update_time TUpdateTime, inst_task_detail.update_user_id UpdateUserID, inst_task_detail.update_user_name UpdateUserName, inst_task_detail.start_time StartTime, inst_task_detail.end_time EndTime").
 		Joins("left join inst_node_task  on inst_user_task.node_task_id = inst_node_task.node_task_id").
-		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), BuildUserTaskQuery(param))
+		Joins("left join inst_task_detail on inst_node_task.inst_task_id = inst_task_detail.inst_task_id").Scopes(entity.Paginate(param.PageNum, param.PageSize), buildUserTaskQuery(param))
 	err2 := tx2.Where("inst_user_task.op_user_id = ?", param.UserID).Order("inst_user_task.create_time desc").Find(&userTasks).Error
 	if err2 != nil {
 		hlog.Errorf("查询我收到的用户任务失败 error=%v", err2.Error())
