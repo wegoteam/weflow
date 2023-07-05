@@ -14,13 +14,13 @@ build_mac:
 	GOARCH=amd64 GOOS=darwin go build -o ./${BINARY_FILE_PATH}/${BINARY_NAME}-darwin main.go
 
 run:
-	./${BINARY_NAME}-linux
+	./${BINARY_FILE_PATH}/${BINARY_NAME}-linux
 
 run_windows:
-	./${BINARY_NAME}-windows
+	./${BINARY_FILE_PATH}/${BINARY_NAME}-windows
 
 run_mac:
-	./${BINARY_NAME}-mac
+	./${BINARY_FILE_PATH}/${BINARY_NAME}-mac
 
 build_and_run:clean build run
 
