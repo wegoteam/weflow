@@ -11,6 +11,6 @@ build_and_run:clean build run
 
 clean:
 	go clean
-	rm ./${BINARY_NAME}-darwin
-	rm ./${BINARY_NAME}-linux
-	rm ./${BINARY_NAME}-windows.exe
+	rm ${BINARY_NAME}-darwin
+	rm ${BINARY_NAME}-linux
+	rm ${BINARY_NAME}-windows.exe
