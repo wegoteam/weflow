@@ -244,6 +244,87 @@ definitions:
         description: 更新人
         type: string
     type: object
+  bo.OrgInfoTreeResult:
+    properties:
+      children:
+        description: 子组织
+        items:
+          $ref: '#/definitions/bo.OrgInfoTreeResult'
+        type: array
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      orgID:
+        description: 组id
+        type: string
+      orgName:
+        description: 组名称
+        type: string
+      parentID:
+        description: 组父id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      status:
+        description: 状态【1：未启用；2：已启用；3：锁定；】
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+    type: object
+  bo.OrgUserTreeResult:
+    properties:
+      children:
+        description: 子组织
+        items:
+          $ref: '#/definitions/bo.OrgUserTreeResult'
+        type: array
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      orgID:
+        description: 组id
+        type: string
+      orgName:
+        description: 组名称
+        type: string
+      parentID:
+        description: 组父id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      status:
+        description: 状态【1：未启用；2：已启用；3：锁定；】
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+      users:
+        description: 角色用户
+        items:
+          $ref: '#/definitions/bo.UserInfoResult'
+        type: array
+    type: object
   bo.RoleInfoResult:
     properties:
       createTime:
@@ -276,6 +357,87 @@ definitions:
       updateUser:
         description: 更新人
         type: string
+    type: object
+  bo.RoleInfoTreeResult:
+    properties:
+      children:
+        description: 子角色
+        items:
+          $ref: '#/definitions/bo.RoleInfoTreeResult'
+        type: array
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      parentID:
+        description: 角色父id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      roleID:
+        description: 角色id
+        type: string
+      roleName:
+        description: 角色名称
+        type: string
+      status:
+        description: 状态【1：未启用；2：已启用；3：锁定；】
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+    type: object
+  bo.RoleUserTreeResult:
+    properties:
+      children:
+        description: 子角色
+        items:
+          $ref: '#/definitions/bo.RoleUserTreeResult'
+        type: array
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建人
+        type: string
+      id:
+        description: 唯一id
+        type: integer
+      parentID:
+        description: 角色父id
+        type: string
+      remark:
+        description: 描述
+        type: string
+      roleID:
+        description: 角色id
+        type: string
+      roleName:
+        description: 角色名称
+        type: string
+      status:
+        description: 状态【1：未启用；2：已启用；3：锁定；】
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新人
+        type: string
+      users:
+        description: 角色用户
+        items:
+          $ref: '#/definitions/bo.UserInfoResult'
+        type: array
     type: object
   bo.UserInfoResult:
     properties:
@@ -739,7 +901,7 @@ definitions:
         example: ""
         type: string
     type: object
-host: localhost:8080
+host: localhost:18080
 info:
   contact:
     name: hertz-contrib
@@ -1248,6 +1410,73 @@ paths:
       summary: 查询组织列表
       tags:
       - 用户中心
+  /org/tree:
+    post:
+      consumes:
+      - application/json
+      description: 查询组织树
+      parameters:
+      - description: 请求参数
+        in: body
+        name: OrgQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.OrgQueryVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.OrgInfoTreeResult'
+              type: object
+      summary: 查询组织树
+      tags:
+      - 用户中心
+  /org/user/list:
+    post:
+      consumes:
+      - application/json
+      description: 查询组织用户列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.OrgUserTreeResult'
+              type: object
+      summary: 查询组织用户列表
+      tags:
+      - 用户中心
+  /org/user/tree:
+    post:
+      consumes:
+      - application/json
+      description: 查询组织用户树
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.OrgUserTreeResult'
+              type: object
+      summary: 查询组织用户树
+      tags:
+      - 用户中心
   /role/list:
     post:
       consumes:
@@ -1273,6 +1502,73 @@ paths:
                   $ref: '#/definitions/bo.RoleInfoResult'
               type: object
       summary: 查询角色列表
+      tags:
+      - 用户中心
+  /role/tree:
+    post:
+      consumes:
+      - application/json
+      description: 查询角色树
+      parameters:
+      - description: 请求参数
+        in: body
+        name: RoleQueryVO
+        required: true
+        schema:
+          $ref: '#/definitions/vo.RoleQueryVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.RoleInfoTreeResult'
+              type: object
+      summary: 查询角色树
+      tags:
+      - 用户中心
+  /role/user/list:
+    post:
+      consumes:
+      - application/json
+      description: 查询角色用户列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.RoleUserTreeResult'
+              type: object
+      summary: 查询角色用户列表
+      tags:
+      - 用户中心
+  /role/user/tree:
+    post:
+      consumes:
+      - application/json
+      description: 查询角色用户树
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/bo.RoleUserTreeResult'
+              type: object
+      summary: 查询角色用户树
       tags:
       - 用户中心
   /user/list:

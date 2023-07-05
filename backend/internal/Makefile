@@ -7,7 +7,7 @@ build:
 run:
 	./${BINARY_NAME}-darwin
 
-build_and_run:build run
+build_and_run:clean build run
 
 clean:
 	go clean

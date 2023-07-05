@@ -29,7 +29,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8080
+// @host localhost:18080
 // @BasePath /weflow
 // @schemes http
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	h := server.New(server.WithHostPorts(address), server.WithBasePath("/weflow"))
 	// do what you wanted
 	// add some render data: <no value>
-	swaggerURL := swagger.URL("http://localhost:8080/weflow/swagger/doc.json") // The url pointing to API definition
+	swaggerURL := swagger.URL("http://localhost:18080/weflow/swagger/doc.json") // The url pointing to API definition
 	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swaggerURL, swagger.DefaultModelsExpandDepth(-1)))
 
 	router.GeneratedRegister(h)

@@ -1,5 +1,5 @@
 hertz:
-  address: ":8080"
+  address: ":18080"
   enable_pprof: true
   enable_gzip: true
   enable_access_log: true

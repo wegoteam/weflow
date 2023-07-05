@@ -827,6 +827,122 @@ const docTemplate = `{
                 }
             }
         },
+        "/org/tree": {
+            "post": {
+                "description": "查询组织树",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询组织树",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "OrgQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.OrgQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.OrgInfoTreeResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/org/user/list": {
+            "post": {
+                "description": "查询组织用户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询组织用户列表",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.OrgUserTreeResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/org/user/tree": {
+            "post": {
+                "description": "查询组织用户树",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询组织用户树",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.OrgUserTreeResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/role/list": {
             "post": {
                 "description": "查询角色列表",
@@ -864,6 +980,122 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/bo.RoleInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/tree": {
+            "post": {
+                "description": "查询角色树",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询角色树",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "RoleQueryVO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.RoleQueryVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.RoleInfoTreeResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/user/list": {
+            "post": {
+                "description": "查询角色用户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询角色用户列表",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.RoleUserTreeResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/user/tree": {
+            "post": {
+                "description": "查询角色用户树",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户中心"
+                ],
+                "summary": "查询角色用户树",
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.RoleUserTreeResult"
                                         }
                                     }
                                 }
@@ -1494,6 +1726,117 @@ const docTemplate = `{
                 }
             }
         },
+        "bo.OrgInfoTreeResult": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子组织",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.OrgInfoTreeResult"
+                    }
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "orgID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "orgName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "parentID": {
+                    "description": "组父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.OrgUserTreeResult": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子组织",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.OrgUserTreeResult"
+                    }
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "orgID": {
+                    "description": "组id",
+                    "type": "string"
+                },
+                "orgName": {
+                    "description": "组名称",
+                    "type": "string"
+                },
+                "parentID": {
+                    "description": "组父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                },
+                "users": {
+                    "description": "角色用户",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.UserInfoResult"
+                    }
+                }
+            }
+        },
         "bo.RoleInfoResult": {
             "type": "object",
             "properties": {
@@ -1536,6 +1879,117 @@ const docTemplate = `{
                 "updateUser": {
                     "description": "更新人",
                     "type": "string"
+                }
+            }
+        },
+        "bo.RoleInfoTreeResult": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子角色",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.RoleInfoTreeResult"
+                    }
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "parentID": {
+                    "description": "角色父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "roleID": {
+                    "description": "角色id",
+                    "type": "string"
+                },
+                "roleName": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                }
+            }
+        },
+        "bo.RoleUserTreeResult": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子角色",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.RoleUserTreeResult"
+                    }
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一id",
+                    "type": "integer"
+                },
+                "parentID": {
+                    "description": "角色父id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "roleID": {
+                    "description": "角色id",
+                    "type": "string"
+                },
+                "roleName": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态【1：未启用；2：已启用；3：锁定；】",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新人",
+                    "type": "string"
+                },
+                "users": {
+                    "description": "角色用户",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bo.UserInfoResult"
+                    }
                 }
             }
         },
@@ -2172,7 +2626,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:18080",
 	BasePath:         "/weflow",
 	Schemes:          []string{"http"},
 	Title:            "weflow",

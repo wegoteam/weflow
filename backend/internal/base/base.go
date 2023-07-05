@@ -9,8 +9,8 @@ const (
 // @Description: 响应体
 type Response struct {
 	Code int         `json:"code"` // 0:成功，其他：失败
-	Data interface{} `json:"data"` // 数据
 	Msg  string      `json:"msg"`  // 错误信息
+	Data interface{} `json:"data"` // 数据
 }
 
 // NewResponse
@@ -77,7 +77,7 @@ func FailData(code int, data interface{}, err string) *Response {
 func (response *Response) Success() *Response {
 	response.Code = SUCCESS
 	response.Data = ""
-	response.Msg = ""
+	response.Msg = "success"
 	return response
 }
 
@@ -87,7 +87,7 @@ func (response *Response) Success() *Response {
 func Success() *Response {
 	return &Response{
 		Code: SUCCESS,
-		Msg:  "",
+		Msg:  "success",
 		Data: "",
 	}
 }
@@ -99,7 +99,7 @@ func Success() *Response {
 func (response *Response) OK(data interface{}) *Response {
 	response.Code = SUCCESS
 	response.Data = data
-	response.Msg = ""
+	response.Msg = "success"
 	return response
 }
 
@@ -110,7 +110,7 @@ func (response *Response) OK(data interface{}) *Response {
 func OK(data interface{}) *Response {
 	return &Response{
 		Code: SUCCESS,
-		Msg:  "",
+		Msg:  "success",
 		Data: data,
 	}
 }

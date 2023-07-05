@@ -2,6 +2,8 @@ package entity
 
 import "time"
 
+// UserInfoResult
+// @Description: 用户信息结果
 type UserInfoResult struct {
 	ID         int64     `json:"id"`         // 唯一id
 	UserID     string    `json:"userID"`     // 用户id
@@ -33,6 +35,39 @@ type RoleInfoResult struct {
 	UpdateTime time.Time // 更新时间
 }
 
+// RoleInfoTreeResult
+// @Description: 角色信息结果
+type RoleInfoTreeResult struct {
+	ID         int64                 // 唯一id
+	RoleID     string                // 角色id
+	ParentID   string                // 角色父id
+	RoleName   string                // 角色名称
+	Status     int32                 // 状态【1：未启用；2：已启用；3：锁定；】
+	Remark     string                // 描述
+	CreateUser string                // 创建人
+	UpdateUser string                // 更新人
+	CreateTime time.Time             // 创建时间
+	UpdateTime time.Time             // 更新时间
+	Children   []*RoleInfoTreeResult // 子角色
+}
+
+// RoleUserTreeResult
+// @Description: 角色用户
+type RoleUserTreeResult struct {
+	ID         int64                 // 唯一id
+	RoleID     string                // 角色id
+	ParentID   string                // 角色父id
+	RoleName   string                // 角色名称
+	Status     int32                 // 状态【1：未启用；2：已启用；3：锁定；】
+	Remark     string                // 描述
+	CreateUser string                // 创建人
+	UpdateUser string                // 更新人
+	CreateTime time.Time             // 创建时间
+	UpdateTime time.Time             // 更新时间
+	Users      []UserInfoResult      // 角色用户
+	Children   []*RoleUserTreeResult // 子角色
+}
+
 // OrgInfoResult
 // @Description: 组织信息结果
 type OrgInfoResult struct {
@@ -46,6 +81,39 @@ type OrgInfoResult struct {
 	UpdateUser string    // 更新人
 	CreateTime time.Time // 创建时间
 	UpdateTime time.Time // 更新时间
+}
+
+// OrgInfoTreeResult
+// @Description: 组织信息结果
+type OrgInfoTreeResult struct {
+	ID         int64                // 唯一id
+	OrgID      string               // 组id
+	ParentID   string               // 组父id
+	OrgName    string               // 组名称
+	Status     int32                // 状态【1：未启用；2：已启用；3：锁定；】
+	Remark     string               // 描述
+	CreateUser string               // 创建人
+	UpdateUser string               // 更新人
+	CreateTime time.Time            // 创建时间
+	UpdateTime time.Time            // 更新时间
+	Children   []*OrgInfoTreeResult // 子组织
+}
+
+// OrgUserTreeResult
+// @Description: 组织用户
+type OrgUserTreeResult struct {
+	ID         int64                // 唯一id
+	OrgID      string               // 组id
+	ParentID   string               // 组父id
+	OrgName    string               // 组名称
+	Status     int32                // 状态【1：未启用；2：已启用；3：锁定；】
+	Remark     string               // 描述
+	CreateUser string               // 创建人
+	UpdateUser string               // 更新人
+	CreateTime time.Time            // 创建时间
+	UpdateTime time.Time            // 更新时间
+	Users      []UserInfoResult     // 角色用户
+	Children   []*OrgUserTreeResult // 子组织
 }
 
 // UserQueryBO

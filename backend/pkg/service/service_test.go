@@ -119,3 +119,20 @@ func TestGetModelList(t *testing.T) {
 	MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").Find(&existModel2)
 	hlog.Infof("existModel2= %v", existModel2)
 }
+
+func TestGetRoleTree(t *testing.T) {
+	param := &entity.RoleQueryBO{}
+	roleTree, err := GetRoleTree(param)
+	if err != nil {
+		hlog.Errorf("查询角色树失败 error: %v", err)
+	}
+	hlog.Infof("roleTree= %s", roleTree)
+}
+
+func TestGetAllRoleUserList(t *testing.T) {
+	roleUserList, err := GetAllRoleUserTree()
+	if err != nil {
+		hlog.Errorf("查询角色用户列表失败 error: %v", err)
+	}
+	hlog.Infof("roleUserList= %s", roleUserList)
+}
