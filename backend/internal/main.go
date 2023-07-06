@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -13,9 +14,9 @@ import (
 	"github.com/hertz-contrib/pprof"
 	"github.com/hertz-contrib/swagger"
 	swaggerFiles "github.com/swaggo/files"
+	"github.com/wegoteam/weflow/internal/biz/conf"
 	"github.com/wegoteam/weflow/internal/biz/router"
-	"github.com/wegoteam/weflow/internal/conf"
-	_ "github.com/wegoteam/weflow/internal/docs"
+	"github.com/wegoteam/weflow/internal/docs"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -33,18 +34,26 @@ import (
 // @BasePath /weflow
 // @schemes http
 func main() {
-	// init dal
-	// dal.Init()
-	address := conf.GetConf().Hertz.Address
-	h := server.New(server.WithHostPorts(address), server.WithBasePath("/weflow"))
-	// do what you wanted
-	// add some render data: <no value>
-	swaggerURL := swagger.URL("http://localhost:18080/weflow/swagger/doc.json") // The url pointing to API definition
-	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swaggerURL, swagger.DefaultModelsExpandDepth(-1)))
-
+	//hertz
+	hertz := conf.GetConf().Hertz
+	address := hertz.Address
+	basePath := hertz.BasePath
+	h := server.New(server.WithHostPorts(address), server.WithBasePath(basePath))
+	//swagger 文档
+	swag := conf.GetConf().Swagger
+	if swag.Enable {
+		docs.SwaggerInfo.Title = swag.Title
+		docs.SwaggerInfo.Description = swag.Description
+		docs.SwaggerInfo.Version = swag.Version
+		docs.SwaggerInfo.Host = swag.Host
+		docs.SwaggerInfo.BasePath = swag.BasePath
+		docs.SwaggerInfo.Schemes = swag.Schemes
+		swagURL := fmt.Sprintf("http://%s/%s/swagger/doc.json", swag.Host, swag.BasePath)
+		swaggerURL := swagger.URL(swagURL)
+		h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swaggerURL, swagger.DefaultModelsExpandDepth(-1)))
+	}
 	router.GeneratedRegister(h)
 	registerMiddleware(h)
-
 	h.Spin()
 }
 

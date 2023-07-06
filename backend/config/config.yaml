@@ -1,0 +1,43 @@
+server:
+  profiles: dev
+
+hertz:
+  address: "localhost:18080"
+  basePath: "/weflow"
+  enablePprof: true
+  enableGzip: true
+  enableAccessLog: true
+  logLevel: debug
+  logFileName: "log/hertz.log"
+  logMaxSize: 10
+  logMaxAge: 3
+  logMaxBackups: 50
+
+swagger:
+  enable: true
+  host: "localhost:18080"
+  basePath: "/weflow"
+  title: "weflow API"
+  description: "weflow swagger api documention."
+  version: "1.0"
+  schemes:
+    - "http"
+    - "https"
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  db: "weflow"
+  username: "root"
+  password: "root"
+  charset: "utf8"
+
+redis:
+  address: "127.0.0.1:6379"
+  password: ""
+  db: 0
+
+mongo:
+  address: "127.0.0.1:27017"
+  username: ""
+  password: ""

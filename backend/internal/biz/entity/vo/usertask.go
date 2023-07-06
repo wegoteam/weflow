@@ -18,7 +18,7 @@ type UserTaskQueryVO struct {
 // UserTaskAgreeVO
 // @Description: 用户任务同意VO
 type UserTaskAgreeVO struct {
-	UserTaskID  string         `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'用户任务id不能为空'"` // 用户任务id
+	UserTaskID  string         `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'用户任务id不能为空'"` // 用户任务id
 	OpinionDesc string         `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 	Params      map[string]any `json:"params" `                                                                    // 参数
 }
@@ -26,14 +26,14 @@ type UserTaskAgreeVO struct {
 // UserTaskDisagreeVO
 // @Description: 用户任务不同意VO
 type UserTaskDisagreeVO struct {
-	UserTaskID  string `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'用户任务id不能为空'"` // 用户任务id
+	UserTaskID  string `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'用户任务id不能为空'"` // 用户任务id
 	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }
 
 // UserTaskSaveVO
 // @Description: 用户任务保存VO
 type UserTaskSaveVO struct {
-	UserTaskID  string         `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>1; msg:'用户任务id不能为空'"` // 用户任务id
+	UserTaskID  string         `json:"userTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'用户任务id不能为空'"` // 用户任务id
 	OpinionDesc string         `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 	Params      map[string]any // 参数
 }

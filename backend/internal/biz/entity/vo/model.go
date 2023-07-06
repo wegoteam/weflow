@@ -3,22 +3,22 @@ package vo
 // ModelGroupAddVO
 // @Description: 模型组添加VO
 type ModelGroupAddVO struct {
-	GroupName string `json:"groupName" swaggertype:"string" example:"" vd:"len($)>1; msg:'组名称不能为空'"` // 组名称
+	GroupName string `json:"groupName" swaggertype:"string" example:"" vd:"len($)>0; msg:'组名称不能为空'"` // 组名称
 	Remark    string `json:"remark" swaggertype:"string" example:""`                                 // 描述
 }
 
 // ModelGroupEditVO
 // @Description: 模型组编辑VO
 type ModelGroupEditVO struct {
-	GroupID   string `json:"groupID" swaggertype:"string" example:"" vd:"len($)>1; msg:'组id不能为空'"`   // 组id
-	GroupName string `json:"groupName" swaggertype:"string" example:"" vd:"len($)>1; msg:'组名称不能为空'"` // 组名称
+	GroupID   string `json:"groupID" swaggertype:"string" example:"" vd:"len($)>0; msg:'组id不能为空'"`   // 组id
+	GroupName string `json:"groupName" swaggertype:"string" example:"" vd:"len($)>0; msg:'组名称不能为空'"` // 组名称
 	Remark    string `json:"remark" swaggertype:"string" example:""`                                 // 描述
 }
 
 // ModelGroupDelVO
 // @Description: 模型组删除VO
 type ModelGroupDelVO struct {
-	GroupID string `json:"groupID" swaggertype:"string" example:"" example:"" vd:"len($)>1; msg:'组id不能为空'"` // 组id
+	GroupID string `json:"groupID" swaggertype:"string" example:"" example:"" vd:"len($)>0; msg:'组id不能为空'"` // 组id
 }
 
 // GroupModelQueryVO
@@ -56,9 +56,9 @@ type ModelSaveVO struct {
 // ModelBaseSetup
 // @Description: 模型基础设置
 type ModelBaseSetup struct {
-	ModelName string `json:"modelName" swaggertype:"string" example:"" vd:"len($)>1; msg:'模板名称不能为空'"` // 模型名称
+	ModelName string `json:"modelName" swaggertype:"string" example:"" vd:"len($)>0; msg:'模板名称不能为空'"` // 模型名称
 	IconURL   string `json:"iconURL" swaggertype:"string" example:""`                                 // 图标地址
-	GroupID   string `json:"groupID" swaggertype:"string" example:"" vd:"len($)>1; msg:'组id不能为空'"`    // 组id
+	GroupID   string `json:"groupID" swaggertype:"string" example:"" vd:"len($)>0; msg:'组id不能为空'"`    // 组id
 	Remark    string `json:"remark" swaggertype:"string" example:""`                                  // 描述
 }
 
@@ -72,7 +72,7 @@ type ModelAdvancedSetup struct {
 // ModelInvalidVO
 // @Description: 模型失效VO
 type ModelInvalidVO struct {
-	ModelID string `json:"modelID" swaggertype:"string" example:"" vd:"len($)>1; msg:'模板id不能为空'"` // 模型id
+	ModelID string `json:"modelID" swaggertype:"string" example:"" vd:"len($)>0; msg:'模板id不能为空'"` // 模型id
 }
 
 // ModelVersionQueryVO
@@ -84,7 +84,7 @@ type ModelVersionQueryVO struct {
 // ReleaseModelVersionVO
 // @Description: 发布模型版本VO
 type ReleaseModelVersionVO struct {
-	VersionID string `json:"versionID" swaggertype:"string" example:"" vd:"len($)>1; msg:'版本id不能为空'"` // 版本id
+	VersionID string `json:"versionID" swaggertype:"string" example:"" vd:"len($)>0; msg:'版本id不能为空'"` // 版本id
 }
 
 // ModelAndVersionQueryVO
