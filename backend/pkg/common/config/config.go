@@ -40,7 +40,7 @@ func InitConfig() {
 		config = wepgkConfig.GetConfig()
 		initMysqlConfig()
 		initRedisConfig()
-		initMongoDBConfig()
+		//initMongoDBConfig()
 		hlog.Info("MySQL、Redis、MongoDB 初始化成功")
 	})
 }
