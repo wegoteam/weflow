@@ -7,6 +7,7 @@ import (
 	hertzconsts "github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/wegoteam/weflow/internal/biz/entity/vo"
 	userService "github.com/wegoteam/weflow/internal/biz/handler/user"
+	"github.com/wegoteam/weflow/internal/biz/middleware"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 )
 
@@ -14,7 +15,11 @@ import (
 // @Description: 注册用户中心路由
 // @param: h
 func Register(h *server.Hertz) {
+	h.POST("/login", middleware.JwtMiddleware.LoginHandler)
+	h.POST("/logout", middleware.JwtMiddleware.LogoutHandler)
+	h.GET("/refresh/token", middleware.JwtMiddleware.RefreshHandler)
 	//用户
+	//userGroup := h.Group("/user", middleware.JwtMiddleware.MiddlewareFunc())
 	userGroup := h.Group("/user")
 	userGroup.POST("/list", GetUserList)
 	//角色

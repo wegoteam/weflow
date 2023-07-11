@@ -38,9 +38,11 @@ func init() {
 func InitConfig() {
 	once.Do(func() {
 		config = wepgkConfig.GetConfig()
+		//test config
+		//config = wepgkConfig.SetConfig("config", "", "", []string{"/Users/xuchang/DevelopCode/wego/weflow/backend/internal/config/"})
 		initMysqlConfig()
 		initRedisConfig()
-		//initMongoDBConfig()
+		initMongoDBConfig()
 		hlog.Info("MySQL、Redis、MongoDB 初始化成功")
 	})
 }
@@ -73,9 +75,9 @@ func initRedisConfig() {
 		Password: redisConfig.Password, // no password set
 		DB:       redisConfig.DB,       // use default DB
 	})
-	_, rediserr := RedisCliet.Ping(context.Background()).Result()
-	if rediserr != nil {
-		panic(rediserr)
+	_, redisErr := RedisCliet.Ping(context.Background()).Result()
+	if redisErr != nil {
+		panic(redisErr)
 	}
 }
 

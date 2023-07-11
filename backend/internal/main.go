@@ -15,6 +15,7 @@ import (
 	"github.com/hertz-contrib/swagger"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/wegoteam/weflow/internal/biz/conf"
+	"github.com/wegoteam/weflow/internal/biz/middleware"
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/docs"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -61,6 +62,7 @@ func main() {
 // @Description: 注册中间件
 // @param: h
 func registerMiddleware(h *server.Hertz) {
+	middleware.InitJwt()
 	// pprof
 	if conf.GetConf().Hertz.EnablePprof {
 		pprof.Register(h)

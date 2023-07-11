@@ -11,9 +11,9 @@ replace github.com/wegoteam/weflow => ../
 require (
 	github.com/apache/thrift v0.0.0-00010101000000-000000000000
 	github.com/cloudwego/hertz v0.6.4
-	github.com/go-redis/redis/v8 v8.11.0
 	github.com/hertz-contrib/cors v0.0.0-20230423034624-2bc83a8400f0
 	github.com/hertz-contrib/gzip v0.0.1
+	github.com/hertz-contrib/jwt v1.0.2
 	github.com/hertz-contrib/logger/accesslog v0.0.0-20230428050608-fc430385c0ec
 	github.com/hertz-contrib/logger/logrus v1.0.0
 	github.com/hertz-contrib/pprof v0.1.0
@@ -23,9 +23,6 @@ require (
 	github.com/swaggo/swag v1.16.1
 	github.com/wegoteam/wepkg v1.0.3
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	gopkg.in/validator.v2 v2.0.1
-	gopkg.in/yaml.v2 v2.4.0
-	gorm.io/driver/mysql v1.5.0
 	gorm.io/gorm v1.25.1
 )
 
@@ -48,13 +45,10 @@ require (
 	github.com/go-openapi/spec v0.20.9 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang-module/carbon/v2 v2.2.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/gookit/color v1.5.3 // indirect
-	github.com/gookit/goutil v0.6.8 // indirect
-	github.com/gookit/gsr v0.0.8 // indirect
-	github.com/gookit/slog v0.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -82,11 +76,9 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
-	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.mongodb.org/mongo-driver v1.11.6 // indirect
 	golang.org/x/arch v0.3.0 // indirect
@@ -100,4 +92,5 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/driver/mysql v1.5.0 // indirect
 )
