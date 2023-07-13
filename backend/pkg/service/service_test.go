@@ -53,7 +53,7 @@ func TestGetParamType(t *testing.T) {
 }
 
 func TestGetInstTaskParam(t *testing.T) {
-	instTaskParamMap := GetInstTaskParam("421397709668421")
+	instTaskParamMap := GetInstTaskParamMap("421397709668421")
 	hlog.Infof("instTaskParamMap是 %v", instTaskParamMap)
 }
 

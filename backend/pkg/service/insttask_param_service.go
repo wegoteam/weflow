@@ -1,16 +1,17 @@
 package service
 
 import (
+	"errors"
 	"github.com/bytedance/sonic"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/model"
-	"reflect"
 	"time"
 )
 
 // TransformInstTaskParam
 // @Description: 转换实例任务参数
-// @param instTaskParamMap
+// @param: instTaskParamMap
 // @return []model.InstTaskParam
 func TransformInstTaskParam(instTaskID string, instTaskParamMap map[string]interface{}, now time.Time) []model.InstTaskParam {
 	var instTaskParams = make([]model.InstTaskParam, 0)
@@ -40,16 +41,20 @@ func TransformInstTaskParam(instTaskID string, instTaskParamMap map[string]inter
 	return instTaskParams
 }
 
-// GetInstTaskParam
-// @Description: 转换实例任务参数
-// @param instTaskParamMap
+// GetInstTaskParamMap
+// @Description: 查询实例任务参数
+// @param: instTaskParamMap
 // @return []model.InstTaskParam
-func GetInstTaskParam(instTaskID string) map[string]interface{} {
+func GetInstTaskParamMap(instTaskID string) (map[string]interface{}, error) {
 	var instTaskParamMap = make(map[string]interface{})
 	var instTaskParams []model.InstTaskParam
-	MysqlDB.Model(&model.InstTaskParam{}).Where("inst_task_id = ?", instTaskID).Find(&instTaskParams)
+	err := MysqlDB.Model(&model.InstTaskParam{}).Where("inst_task_id = ?", instTaskID).Find(&instTaskParams).Error
+	if err != nil {
+		hlog.Errorf("查询实例任务[%s]参数失败", instTaskID, err)
+		return instTaskParamMap, errors.New("查询实例任务参数失败")
+	}
 	if instTaskParams == nil {
-		return instTaskParamMap
+		return instTaskParamMap, nil
 	}
 	for _, instTaskParam := range instTaskParams {
 		var obj interface{}
@@ -60,9 +65,46 @@ func GetInstTaskParam(instTaskID string) map[string]interface{} {
 		}
 		instTaskParamMap[instTaskParam.ParamID] = obj
 	}
-	return instTaskParamMap
+	return instTaskParamMap, nil
 }
 
+// GetInstTaskParams
+// @Description: 查询实例任务参数
+// @param: instTaskID 实例任务id
+// @return []entity.InstTaskParamResult
+// @return error
+func GetInstTaskParams(instTaskID string) ([]entity.InstTaskParamResult, error) {
+	var instTaskParams []model.InstTaskParam
+	err := MysqlDB.Model(&model.InstTaskParam{}).Where("inst_task_id = ?", instTaskID).Find(&instTaskParams).Error
+	if err != nil {
+		hlog.Errorf("查询实例任务[%s]参数失败", instTaskID, err)
+		return nil, errors.New("查询实例任务参数失败")
+	}
+	var instTaskParamResults = make([]entity.InstTaskParamResult, 0)
+	if instTaskParams == nil {
+		return instTaskParamResults, nil
+	}
+	for _, instTaskParam := range instTaskParams {
+		param := entity.InstTaskParamResult{
+			ID:            instTaskParam.ID,
+			InstTaskID:    instTaskParam.InstTaskID,
+			ParamID:       instTaskParam.ParamID,
+			ParamName:     instTaskParam.ParamName,
+			ParamValue:    instTaskParam.ParamValue,
+			CreateTime:    instTaskParam.CreateTime,
+			UpdateTime:    instTaskParam.UpdateTime,
+			ParamDataType: instTaskParam.ParamDataType,
+			ParamBinary:   instTaskParam.ParamBinary,
+		}
+		instTaskParamResults = append(instTaskParamResults, param)
+	}
+	return instTaskParamResults, nil
+}
+
+// GetParamType
+// @Description: 获取参数类型
+// @param: value
+// @return string
 func GetParamType(value interface{}) string {
 	if value == nil {
 		return "string"
@@ -102,49 +144,6 @@ func GetParamType(value interface{}) string {
 		return "bool"
 	case []byte:
 		return "[]byte"
-	default:
-		return "object"
-	}
-}
-
-func GetParamTypes(value interface{}) string {
-	if value == nil {
-		return "string"
-	}
-
-	switch reflect.TypeOf(value).Kind() {
-	case reflect.Float64:
-		return "float64"
-	case reflect.Float32:
-		return "float32"
-	case reflect.Int:
-		return "int"
-	case reflect.Uint:
-		return "uint"
-	case reflect.Int8:
-		return "int8"
-	case reflect.Uint8:
-		return "uint8"
-	case reflect.Int16:
-		return "int16"
-	case reflect.Uint16:
-		return "uint16"
-	case reflect.Int32:
-		return "int32"
-	case reflect.Uint32:
-		return "uint32"
-	case reflect.Int64:
-		return "int64"
-	case reflect.Uint64:
-		return "uint64"
-	case reflect.String:
-		return "string"
-	case reflect.Array:
-		return "array"
-	case reflect.Map:
-		return "map"
-	case reflect.Bool:
-		return "bool"
 	default:
 		return "object"
 	}

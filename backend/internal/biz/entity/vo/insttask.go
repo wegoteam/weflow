@@ -48,3 +48,16 @@ type InstTaskDeleteVO struct {
 	InstTaskID  string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'实例任务id不能为空'"` // 实例任务ID
 	OpinionDesc string `json:"opinionDesc" swaggertype:"string" example:""`                                // 操作意见
 }
+
+// InsttaskModelDetailQueryVO
+// @Description: 实例任务模板详情查询参数
+type InsttaskModelDetailQueryVO struct {
+	InstTaskID string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'实例任务id不能为空'"` // 实例任务ID
+}
+
+// InsttaskDetailQueryVO
+// @Description: 实例任务详情查询参数
+type InsttaskDetailQueryVO struct {
+	InstTaskID string `json:"instTaskID" swaggertype:"string" example:"" vd:"len($)>0; msg:'实例任务id不能为空'"` // 实例任务ID
+	UserTaskID string `json:"userTaskID" swaggertype:"string" example:"" `                                // 用户任务ID
+}

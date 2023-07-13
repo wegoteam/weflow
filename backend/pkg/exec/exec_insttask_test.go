@@ -126,7 +126,7 @@ func TestTransformInstTaskParam(t *testing.T) {
 	instTaskParam := service.TransformInstTaskParam(instTaskID, instTaskParamMap, time.Now())
 
 	MysqlDB.Debug().CreateInBatches(instTaskParam, len(instTaskParam))
-	taskParamMap := service.GetInstTaskParam(instTaskID)
+	taskParamMap, _ := service.GetInstTaskParamMap(instTaskID)
 	hlog.Infof("taskParamMap=%+v", taskParamMap)
 	var instTaskParam2 []model.InstTaskParam
 	MysqlDB.Debug().Where("inst_task_id = ?", instTaskID).Find(&instTaskParam2)

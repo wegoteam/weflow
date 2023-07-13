@@ -15,14 +15,18 @@ import (
 // @Description: 获取实例任务
 // @param: instTaskID 实例任务ID
 // @return *entity.InstTaskResult
-func GetInstTask(instTaskID string) *entity.InstTaskResult {
+func GetInstTask(instTaskID string) (*entity.InstTaskResult, error) {
 	if utils.IsStrBlank(instTaskID) {
-		panic("实例任务id不能为空")
+		return nil, errors.New("实例任务id不能为空")
 	}
 	var instTask = &model.InstTaskDetail{}
-	MysqlDB.Where("inst_task_id = ?", instTaskID).Find(instTask)
+	err := MysqlDB.Where("inst_task_id = ?", instTaskID).Find(instTask).Error
+	if err != nil {
+		hlog.Errorf("查询实例任务失败：%s", err.Error())
+		return nil, errors.New("查询实例任务失败")
+	}
 	if instTask == nil {
-		return nil
+		return nil, errors.New("实例任务不存在")
 	}
 	return &entity.InstTaskResult{
 		ID:             instTask.ID,
@@ -42,7 +46,62 @@ func GetInstTask(instTaskID string) *entity.InstTaskResult {
 		UpdateUserName: instTask.UpdateUserName,
 		StartTime:      instTask.StartTime,
 		EndTime:        instTask.EndTime,
+	}, nil
+}
+
+// GetInsttaskAllDetail
+// @Description: 查询实例任务详情（实例任务，节点任务，用户任务信息，流程任务参数）
+// @param: instTaskID 实例任务ID
+// @param: userTaskID 用户任务ID
+// @return *entity.InstTaskAllDetailResult
+// @return error
+func GetInsttaskAllDetail(instTaskID, userTaskID string) (*entity.InstTaskAllDetailResult, error) {
+	instTask, insttaskErr := GetInstTask(instTaskID)
+	if insttaskErr != nil {
+		hlog.Errorf("查询实例任务失败：%s", insttaskErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
 	}
+
+	nodeTasks, nodeTaskErr := GetInstNodeTasks(instTaskID)
+	if nodeTaskErr != nil {
+		hlog.Errorf("查询节点任务失败：%s", nodeTaskErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
+	}
+
+	userTasks, userTaskErr := GetInstUserTasks(instTaskID)
+	if userTaskErr != nil {
+		hlog.Errorf("查询用户任务失败：%s", userTaskErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
+	}
+
+	userOpinions, userOpinionErr := GetInstUserTaskOpinions(instTaskID)
+	if userOpinionErr != nil {
+		hlog.Errorf("查询用户任务意见失败：%s", userOpinionErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
+	}
+
+	taskFormpers, taskFormperErr := GetInstTaskFormPers(instTaskID)
+	if taskFormperErr != nil {
+		hlog.Errorf("查询节点任务表单权限失败：%s", taskFormperErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
+	}
+
+	taskParams, taskParamErr := GetInstTaskParams(instTaskID)
+	if taskParamErr != nil {
+		hlog.Errorf("查询节点任务参数失败：%s", taskParamErr.Error())
+		return nil, errors.New("查询实例任务详情失败")
+	}
+
+	var instTaskAllDetail = &entity.InstTaskAllDetailResult{
+		InstTask:             instTask,
+		InstNodeTasks:        nodeTasks,
+		InstUserTasks:        userTasks,
+		InstUserTaskOpinions: userOpinions,
+		InstNodeTaskFormpers: taskFormpers,
+		InstTaskParams:       taskParams,
+	}
+
+	return instTaskAllDetail, nil
 }
 
 // GetInitiatingInstTasks

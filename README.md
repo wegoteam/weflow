@@ -3,9 +3,12 @@
 
 ## 介绍
 
-工作流（golang版本的流程引擎、规则引擎、表单引擎）、表单编辑器、流程编辑器
+工作流（golang版本的流程引擎、规则引擎、表单引擎）、表单编辑器、流程编辑器。
+weflow 是一款成长中的项目/框架，借鉴了一些工作流框架（activiti,钉钉）的设计理念和思想。如果 weflow 有不足地方，或者你有更好的想法，欢迎提交 ISSUE 或者 PR。
+
 
 Workflow (a Golang-based flow engine, rule engine, form engine), form editor, process editor.
+weflow is a growing project/framework that borrows some design concepts and ideas from workflow frameworks (activiti, Nail). If weflow falls short, or if you have a better idea, feel free to submit an ISSUE or PR.
 
 ## 软件架构
 

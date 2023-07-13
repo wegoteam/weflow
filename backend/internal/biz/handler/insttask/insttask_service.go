@@ -1,6 +1,7 @@
 package insttask
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/internal/base"
 	"github.com/wegoteam/weflow/internal/biz/entity/bo"
 	"github.com/wegoteam/weflow/internal/consts"
@@ -122,4 +123,52 @@ func Delete(param *bo.InstTaskDeleteBO) *base.Response {
 		return base.Fail(consts.ERROR, err.Error())
 	}
 	return base.OK(true)
+}
+
+// GetInsttaskModelDetail
+// @Description: 查询实例任务模板详情
+// @param: instTaskID 实例任务ID
+// @return *base.Response
+func GetInsttaskModelDetail(instTaskID string) *base.Response {
+	instTask, err := weflowApi.GetInstTask(instTaskID)
+	if err != nil {
+		hlog.Errorf("获取实例任务模板详情 error: %v", err)
+		return base.Fail(consts.ERROR, "查询实例任务模板详情失败")
+	}
+	modelDetail, err := weflowApi.GetModelAndVersionInfo(instTask.ModelID, instTask.VersionID)
+	if err != nil {
+		hlog.Errorf("获取实例任务模板详情 error: %v", err)
+		return base.Fail(consts.ERROR, "查询实例任务模板详情失败")
+	}
+	modelResult := &bo.ModelAndVersionInfoResult{
+		ModelID:      modelDetail.ModelID,
+		ModelTitle:   modelDetail.ModelTitle,
+		ProcessDefID: modelDetail.ProcessDefID,
+		FormDefID:    modelDetail.FormDefID,
+		ModelGroupID: modelDetail.ModelGroupID,
+		IconURL:      modelDetail.IconURL,
+		Status:       modelDetail.Status,
+		Remark:       modelDetail.Remark,
+		CreateTime:   modelDetail.CreateTime,
+		CreateUser:   modelDetail.CreateUser,
+		UpdateTime:   modelDetail.UpdateTime,
+		UpdateUser:   modelDetail.UpdateUser,
+		FlowContent:  modelDetail.FlowContent,
+		FormContent:  modelDetail.FormContent,
+	}
+	return base.OK(modelResult)
+}
+
+// GetInsttaskAllDetail
+// @Description: 查询实例任务详情
+// @param: instTaskID 实例任务ID
+// @param: userTaskID 用户任务ID
+// @return *base.Response
+func GetInsttaskAllDetail(instTaskID, userTaskID string) *base.Response {
+	instTask, err := weflowApi.GetInsttaskAllDetail(instTaskID, userTaskID)
+	if err != nil {
+		hlog.Errorf("查询实例任务详情 error: %v", err)
+		return base.Fail(consts.ERROR, "查询实例任务详情失败")
+	}
+	return base.OK(instTask)
 }

@@ -6,6 +6,24 @@ import (
 	"github.com/wegoteam/weflow/pkg/service"
 )
 
+// GetInstTask
+// @Description: 获取实例任务
+// @param: instTaskID 实例任务ID
+// @return *entity.InstTaskResult
+func GetInstTask(instTaskID string) (*entity.InstTaskResult, error) {
+	return service.GetInstTask(instTaskID)
+}
+
+// GetInsttaskAllDetail
+// @Description: 查询实例任务详情（实例任务，节点任务，用户任务信息）
+// @param: instTaskID 实例任务ID
+// @param: userTaskID 用户任务ID
+// @return *entity.InstTaskAllDetailResult
+// @return error
+func GetInsttaskAllDetail(instTaskID, userTaskID string) (*entity.InstTaskAllDetailResult, error) {
+	return service.GetInsttaskAllDetail(instTaskID, userTaskID)
+}
+
 // PageInitiatingInstTasks
 // @Description: 已发列表；获取发起人的实例任务
 // @param: userID 发起人用户ID

@@ -24,6 +24,8 @@ func Register(h *server.Hertz) {
 	insttaskGroup.POST("/suspend", SuspendInstTask)
 	insttaskGroup.POST("/resume", ResumeInstTask)
 	insttaskGroup.POST("/del", DeleteInstTask)
+	insttaskGroup.GET("/model/detail", GetInsttaskModelDetail)
+	insttaskGroup.GET("/detail", GetInsttaskAllDetail)
 }
 
 // GetInitiateInstTaskList 获取发起的实例任务列表（已发起）
@@ -192,5 +194,37 @@ func DeleteInstTask(ctx context.Context, reqCtx *app.RequestContext) {
 		OpinionDesc: req.OpinionDesc,
 	}
 	res := insttaskService.Delete(param)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// GetInsttaskModelDetail 查询实例任务模板详情(模板信息，版本，流程定义，流程定义详情)
+// @Summary 查询实例任务模板详情(模板信息，版本，流程定义，流程定义详情)
+// @Tags 实例任务
+// @Description 查询实例任务模板详情(模板信息，版本，流程定义，流程定义详情)
+// @Accept application/json
+// @Param InsttaskModelDetailQueryVO query vo.InsttaskModelDetailQueryVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
+// @Router /insttask/model/detail [get]
+func GetInsttaskModelDetail(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.InsttaskModelDetailQueryVO
+	reqCtx.Bind(&req)
+	res := insttaskService.GetInsttaskModelDetail(req.InstTaskID)
+	reqCtx.JSON(hertzconsts.StatusOK, res)
+}
+
+// GetInsttaskAllDetail 查询实例任务详情（实例任务，节点任务，用户任务信息）
+// @Summary 查询实例任务详情（实例任务，节点任务，用户任务信息）
+// @Tags 实例任务
+// @Description 查询实例任务详情（实例任务，节点任务，用户任务信息）
+// @Accept application/json
+// @Param InsttaskDetailQueryVO query vo.InsttaskDetailQueryVO true "请求参数"
+// @Produce application/json
+// @Success 200 {object} base.Response{data=bo.ModelDetailResult} "返回结果"
+// @Router /insttask/detail [get]
+func GetInsttaskAllDetail(ctx context.Context, reqCtx *app.RequestContext) {
+	var req vo.InsttaskDetailQueryVO
+	reqCtx.Bind(&req)
+	res := insttaskService.GetInsttaskAllDetail(req.InstTaskID, req.UserTaskID)
 	reqCtx.JSON(hertzconsts.StatusOK, res)
 }

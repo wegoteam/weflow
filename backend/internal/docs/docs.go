@@ -93,6 +93,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/insttask/detail": {
+            "get": {
+                "description": "查询实例任务详情（实例任务，节点任务，用户任务信息）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "查询实例任务详情（实例任务，节点任务，用户任务信息）",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "实例任务ID",
+                        "name": "instTaskID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "用户任务ID",
+                        "name": "userTaskID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/insttask/initiated": {
             "post": {
                 "description": "获取发起的实例任务列表（已发起）",
@@ -130,6 +181,50 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/bo.InstTaskResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/insttask/model/detail": {
+            "get": {
+                "description": "查询实例任务模板详情(模板信息，版本，流程定义，流程定义详情)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "实例任务"
+                ],
+                "summary": "查询实例任务模板详情(模板信息，版本，流程定义，流程定义详情)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "",
+                        "description": "实例任务ID",
+                        "name": "instTaskID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/base.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/bo.ModelDetailResult"
                                         }
                                     }
                                 }

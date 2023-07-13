@@ -24,6 +24,17 @@ type InstTaskResult struct {
 	EndTime        time.Time `json:"endTime"`        // 结束时间
 }
 
+// InstTaskAllDetailResult
+// @Description: 实例任务返回结果
+type InstTaskAllDetailResult struct {
+	InstTask             *InstTaskResult             `json:"instTask"`             // 实例任务
+	InstNodeTasks        []InstNodeTaskResult        `json:"instNodeTasks"`        // 实例节点任务
+	InstNodeTaskFormpers []InstNodeTaskFormperResult `json:"instNodeTaskFormpers"` // 实例节点任务表单权限
+	InstUserTasks        []InstUserTaskResult        `json:"instUserTasks"`        // 实例用户任务
+	InstUserTaskOpinions []InstUserTaskOpinionResult `json:"instUserTaskOpinions"` // 实例用户任务意见
+	InstTaskParams       []InstTaskParamResult       `json:"instTaskParams"`       // 实例任务参数
+}
+
 // InstNodeAndUserTaskResult
 // @Description: 实例任务、节点任务、用户任务返回结果
 type InstNodeAndUserTaskResult struct {
@@ -83,31 +94,6 @@ type InstNodeAndUserTaskResult struct {
 	OpUserID     string    `json:"opUserID"`     // 操作用户id
 	OpUserName   string    `json:"opUserName"`   // 操作用户名称
 	Opinion      int32     `json:"opinion"`      // 任务处理意见【1：未发表；2：已阅；3：同意；4：不同意】
-	OpinionDesc  string    `json:"opinionDesc"`  // 处理意见描述
-}
-
-// InstUserTaskResult
-// @Description: 实例用户任务
-type InstUserTaskResult struct {
-	ID           int64     `json:"id"`           // 唯一id
-	InstTaskID   string    `json:"instTaskID"`   // 实例任务id
-	NodeTaskID   string    `json:"nodeTaskID"`   // 节点任务id
-	NodeID       string    `json:"nodeID"`       // 节点任务id
-	UserTaskID   string    `json:"userTaskID"`   // 处理人任务id
-	Type         int32     `json:"type"`         // 常用审批人【指定成员：1；发起人自己：2；发起人自选：3：角色：4；部门：5】主管（相对岗位）【直属主管：1；部门主管：2；连续多级主管：3；部门控件对应主管：4】其他【表单人员控件：1；部门控件：2；角色控件：3】
-	Strategy     int32     `json:"strategy"`     // 处理人策略【常用审批人：1；主管（相对岗位）：2；其他：3】
-	NodeUserName string    `json:"nodeUserName"` // 处理人名称
-	NodeUserID   string    `json:"nodeUserID"`   // 处理人id
-	Sort         int32     `json:"sort"`         // 处理人顺序;正序排序
-	Obj          string    `json:"obj"`          // 扩展字段，设计中可忽略
-	Relative     string    `json:"relative"`     // 相对发起人的直属主管，设计中可忽略
-	Status       int32     `json:"status"`       // 实例用户任务状态【1：处理中；2：完成（同意）；3：不通过（不同意）；4：回退；5：终止】
-	CreateTime   time.Time `json:"createTime"`   // 创建时间
-	UpdateTime   time.Time `json:"updateTime"`   // 更新时间
-	HandleTime   time.Time `json:"handleTime"`   // 处理时间
-	OpUserID     string    `json:"opUserID"`     // 操作用户id
-	OpUserName   string    `json:"opUserName"`   // 操作用户名称
-	Opinion      int32     `json:"opinion"`      // 任务处理意见【1：未发表；2：同意；3：不同意；4：xxx】
 	OpinionDesc  string    `json:"opinionDesc"`  // 处理意见描述
 }
 

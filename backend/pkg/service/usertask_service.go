@@ -10,6 +10,87 @@ import (
 	"gorm.io/gorm"
 )
 
+// GetInstUserTasks
+// @Description: 获取实例用户任务
+// @param: instTaskID 实例任务ID
+// @return []entity.InstUserTaskResult
+// @return error
+func GetInstUserTasks(instTaskID string) ([]entity.InstUserTaskResult, error) {
+	var userTasks = []model.InstUserTask{}
+	userTaskErr := MysqlDB.Where("inst_task_id = ?", instTaskID).Find(&userTasks).Error
+	if userTaskErr != nil {
+		hlog.Errorf("查询用户任务失败：%s", userTaskErr.Error())
+		return nil, errors.New("查询用户任务失败")
+	}
+	var instUserTask = make([]entity.InstUserTaskResult, 0)
+	if utils.IsEmptySlice(userTasks) {
+		return instUserTask, nil
+	}
+	for _, userTask := range userTasks {
+		param := entity.InstUserTaskResult{
+			ID:           userTask.ID,
+			InstTaskID:   userTask.InstTaskID,
+			NodeTaskID:   userTask.NodeTaskID,
+			NodeID:       userTask.NodeID,
+			UserTaskID:   userTask.UserTaskID,
+			Type:         userTask.Type,
+			Strategy:     userTask.Strategy,
+			NodeUserName: userTask.NodeUserName,
+			NodeUserID:   userTask.NodeUserID,
+			Sort:         userTask.Sort,
+			Obj:          userTask.Obj,
+			Relative:     userTask.Relative,
+			Status:       userTask.Status,
+			CreateTime:   userTask.CreateTime,
+			UpdateTime:   userTask.UpdateTime,
+			HandleTime:   userTask.HandleTime,
+			OpUserID:     userTask.OpUserID,
+			OpUserName:   userTask.OpUserName,
+			Opinion:      userTask.Opinion,
+			OpinionDesc:  userTask.OpinionDesc,
+		}
+		instUserTask = append(instUserTask, param)
+	}
+	return instUserTask, nil
+}
+
+// GetInstUserTaskOpinions
+// @Description: 获取实例用户任务意见
+// @param: instTaskID 实例任务ID
+// @return []entity.InstUserTaskOpinionResult
+// @return error
+func GetInstUserTaskOpinions(instTaskID string) ([]entity.InstUserTaskOpinionResult, error) {
+	var userOpinions = []model.InstUserTaskOpinion{}
+	userOpinionErr := MysqlDB.Where("inst_task_id = ?", instTaskID).Find(&userOpinions).Error
+	if userOpinionErr != nil {
+		hlog.Errorf("查询用户任务意见失败：%s", userOpinionErr.Error())
+		return nil, errors.New("查询用户任务意见失败")
+	}
+	var instUserTaskOpinion = make([]entity.InstUserTaskOpinionResult, 0)
+	if utils.IsEmptySlice(userOpinions) {
+		return instUserTaskOpinion, nil
+	}
+	for _, userOpinion := range userOpinions {
+		param := entity.InstUserTaskOpinionResult{
+			ID:          userOpinion.ID,
+			InstTaskID:  userOpinion.InstTaskID,
+			NodeTaskID:  userOpinion.NodeTaskID,
+			UserTaskID:  userOpinion.UserTaskID,
+			NodeID:      userOpinion.NodeID,
+			OpinionID:   userOpinion.OpinionID,
+			Opinion:     userOpinion.Opinion,
+			OpinionDesc: userOpinion.OpinionDesc,
+			OpUserID:    userOpinion.OpUserID,
+			OpUserName:  userOpinion.OpUserName,
+			CreateTime:  userOpinion.CreateTime,
+			UpdateTime:  userOpinion.UpdateTime,
+			OpinionTime: userOpinion.OpinionTime,
+		}
+		instUserTaskOpinion = append(instUserTaskOpinion, param)
+	}
+	return instUserTaskOpinion, nil
+}
+
 // GetInstNodeUserTask
 // @Description: 获取实例任务、节点任务、用户任务信息
 // @param: userTaskID 实例用户任务ID
