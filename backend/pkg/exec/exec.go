@@ -130,7 +130,7 @@ type UserTaskExecution struct {
 // @return *InstTaskExecution
 func NewInstTaskExecution(instTaskID string) (*InstTaskExecution, error) {
 	//实例任务
-	instTask := service.GetInstTask(instTaskID)
+	instTask, _ := service.GetInstTask(instTaskID)
 	if instTask == nil {
 		return nil, errors.New("实例任务不存在")
 	}
