@@ -2,7 +2,7 @@ package comm
 
 import (
 	"github.com/wegoteam/weflow/internal/base"
-	wepkgSnowflake "github.com/wegoteam/wepkg/snowflake"
+	wepkgSnowflake "github.com/wegoteam/wepkg/id/snowflake"
 )
 
 // GetSnowflake

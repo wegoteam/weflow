@@ -8,7 +8,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
 	"github.com/wegoteam/weflow/pkg/service"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 )
 
 // Agree
@@ -18,7 +18,7 @@ import (
 // @param: OpUserName 操作用户名称
 // @param: opinionDesc 意见描述
 // @param: params 参数
-// @return bool
+// @return error
 func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
 	//创建用户任务执行对象
 	userTaskExecution, err := NewUserTaskExecution(userTaskID)
@@ -45,7 +45,7 @@ func Agree(userTaskID, opUserID, opUserName, opinionDesc string, params map[stri
 // @param: OpUserName 操作用户名称
 // @param: opinionDesc 意见描述
 // @param: params 参数
-// @return bool
+// @return error
 func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[string]any) error {
 	//创建用户任务执行对象
 	userTaskExecution, err := NewUserTaskExecution(userTaskID)
@@ -70,7 +70,7 @@ func Save(userTaskID, opUserID, opUserName, opinionDesc string, params map[strin
 // @param: opUserID 操作用户ID
 // @param: OpUserName 操作用户名称
 // @param: opinionDesc 意见描述
-// @return bool
+// @return error
 func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
 	//创建用户任务执行对象
 	userTaskExecution, err := NewUserTaskExecution(userTaskID)
@@ -88,6 +88,56 @@ func Disagree(userTaskID, opUserID, opUserName, opinionDesc string) error {
 	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusDisagree
 	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionDisagree
 	return userTaskExecution.disagree(userTaskID)
+}
+
+// Rollback
+// @Description: 回退上节点
+// @param: userTaskID 用户任务ID
+// @param: opUserID 操作用户ID
+// @param: opUserName 操作用户名称
+// @param: opinionDesc 意见描述
+// @return error
+func Rollback(userTaskID, opUserID, opUserName, opinionDesc string) error {
+	userTaskExecution, err := NewUserTaskExecution(userTaskID)
+	if err != nil {
+		return err
+	}
+	//验证用户任务信息
+	verifyErr := userTaskExecution.verify(opUserID)
+	if verifyErr != nil {
+		return verifyErr
+	}
+	userTaskExecution.OpUserID = opUserID
+	userTaskExecution.OpUserName = opUserName
+	userTaskExecution.OpinionDesc = opinionDesc
+	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusRollback
+	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionRollback
+	return userTaskExecution.rollback(userTaskID)
+}
+
+// RollbackStartNode
+// @Description: 回退到开始节点
+// @param: userTaskID 用户任务ID
+// @param: opUserID 操作用户ID
+// @param: opUserName 操作用户名称
+// @param: opinionDesc 意见描述
+// @return error
+func RollbackStartNode(userTaskID, opUserID, opUserName, opinionDesc string) error {
+	userTaskExecution, err := NewUserTaskExecution(userTaskID)
+	if err != nil {
+		return err
+	}
+	//验证用户任务信息
+	verifyErr := userTaskExecution.verify(opUserID)
+	if verifyErr != nil {
+		return verifyErr
+	}
+	userTaskExecution.OpUserID = opUserID
+	userTaskExecution.OpUserName = opUserName
+	userTaskExecution.OpinionDesc = opinionDesc
+	userTaskExecution.UserTaskStatus = constant.InstanceUserTaskStatusRollback
+	userTaskExecution.Opinion = constant.InstanceUserTaskOpinionRollback
+	return userTaskExecution.rollback(userTaskID)
 }
 
 // agree
@@ -213,19 +263,39 @@ func (userTaskExecution *UserTaskExecution) disagree(userTaskID string) error {
 }
 
 // turn
-// @Description: 转办
+// @Description: 转办任务，将任务交接给他人办理，办理完成后继续下步骤
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) turn() error {
+func (userTaskExecution *UserTaskExecution) turn(userTaskID string) error {
+	execution := userTaskExecution.Execution
 
+	//修改当前用户任务
+	userTasks := execution.UserTasks
+	editUserTask := &entity.UserTaskBO{
+		ExecOpType:  constant.OperationTypeUpdate,
+		UserTaskID:  userTaskID,
+		Status:      constant.InstanceUserTaskStatusDisagree,
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		UpdateTime:  execution.Now,
+	}
+	*userTasks = append(*userTasks, *editUserTask)
+	//执行数据
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
+	//开启事务
+	tx := MysqlDB.Begin()
+
+	tx.Commit()
 	return nil
 }
 
 // delegate
-// @Description: 委托
+// @Description: 委托任务，将任务委托给他人，他人办理完成后再回到委托人
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) delegate() error {
+func (userTaskExecution *UserTaskExecution) delegate(userTaskID string) error {
 
 	return nil
 }
@@ -234,8 +304,23 @@ func (userTaskExecution *UserTaskExecution) delegate() error {
 // @Description: 回退上节点
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) rollback() error {
-
+func (userTaskExecution *UserTaskExecution) rollback(userTaskID string) error {
+	execution := userTaskExecution.Execution
+	//修改当前用户任务
+	userTasks := execution.UserTasks
+	editUserTask := &entity.UserTaskBO{
+		ExecOpType:  constant.OperationTypeUpdate,
+		UserTaskID:  userTaskID,
+		Status:      constant.InstanceUserTaskStatusRollback,
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		UpdateTime:  execution.Now,
+	}
+	*userTasks = append(*userTasks, *editUserTask)
+	//执行数据
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -243,8 +328,58 @@ func (userTaskExecution *UserTaskExecution) rollback() error {
 // @Description: 回退发起节点
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) rollbackStartNode() error {
+func (userTaskExecution *UserTaskExecution) rollbackStartNode(userTaskID string) error {
+	execution := userTaskExecution.Execution
+	//修改当前用户任务
+	editUserTask := &model.InstUserTask{
+		Status:      constant.InstanceUserTaskStatusRollback,
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		UpdateTime:  execution.Now,
+	}
 
+	//开启事务
+	tx := MysqlDB.Begin()
+	//保存用户任务评论
+	addInstUserTaskOpinion := &model.InstUserTaskOpinion{
+		InstTaskID:  execution.InstTaskID,
+		NodeTaskID:  userTaskExecution.NodeTaskID,
+		UserTaskID:  userTaskExecution.UserTaskID,
+		NodeID:      userTaskExecution.NodeID,
+		OpinionID:   snowflake.GetSnowflakeId(),
+		Opinion:     int32(userTaskExecution.Opinion),
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		OpUserID:    userTaskExecution.OpUserID,
+		OpUserName:  userTaskExecution.OpUserName,
+		CreateTime:  execution.Now,
+		UpdateTime:  execution.Now,
+		OpinionTime: execution.Now,
+	}
+	addInstUserTaskOpinionErr := tx.Create(addInstUserTaskOpinion).Error
+	if addInstUserTaskOpinionErr != nil {
+		hlog.Error("实例任务[%v]保存用户任务评论失败", execution.InstTaskID, addInstUserTaskOpinionErr)
+		tx.Rollback()
+		return addInstUserTaskOpinionErr
+	}
+	editInstUserTaskErr := tx.Where("inst_task_id = ? and user_task_id = ?", execution.InstTaskID, userTaskExecution.UserTaskID).Updates(editUserTask).Error
+	if editInstUserTaskErr != nil {
+		hlog.Error("实例任务[%v]更新实例用户任务失败", execution.InstTaskID, editInstUserTaskErr)
+		tx.Rollback()
+		return editInstUserTaskErr
+	}
+	//修改实例任务状态为终止
+	editInstTask := model.InstTaskDetail{
+		Status:         constant.InstanceTaskStatusRollback,
+		UpdateTime:     execution.Now,
+		UpdateUserID:   userTaskExecution.OpUserID,
+		UpdateUserName: userTaskExecution.OpUserName,
+	}
+	editInstTaskErr := tx.Where("inst_task_id = ?", execution.InstTaskID).Updates(editInstTask).Error
+	if editInstTaskErr != nil {
+		hlog.Error("实例任务[%v]修改实例任务失败", execution.InstTaskID, editInstTaskErr)
+		tx.Rollback()
+		return editInstTaskErr
+	}
+	tx.Commit()
 	return nil
 }
 
@@ -252,25 +387,40 @@ func (userTaskExecution *UserTaskExecution) rollbackStartNode() error {
 // @Description: 回退任意节点
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) rollbackAnyNode() error {
-
+func (userTaskExecution *UserTaskExecution) rollbackAnyNode(userTaskID, nodeID string) error {
+	execution := userTaskExecution.Execution
+	//修改当前用户任务
+	userTasks := execution.UserTasks
+	editUserTask := &entity.UserTaskBO{
+		ExecOpType:  constant.OperationTypeUpdate,
+		UserTaskID:  userTaskID,
+		Status:      constant.InstanceUserTaskStatusRollback,
+		OpinionDesc: userTaskExecution.OpinionDesc,
+		UpdateTime:  execution.Now,
+	}
+	*userTasks = append(*userTasks, *editUserTask)
+	//执行数据
+	err := userTaskExecution.execInstUserTaskData()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // revoke
-// @Description: 撤回
+// @Description: 撤回，处理人撤回
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) revoke() error {
+func (userTaskExecution *UserTaskExecution) revoke(userTaskID string) error {
 
 	return nil
 }
 
 // cancel
-// @Description: 取消
+// @Description: 撤销：发起人撤销
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) cancel() error {
+func (userTaskExecution *UserTaskExecution) cancel(userTaskID string) error {
 
 	return nil
 }
@@ -279,7 +429,7 @@ func (userTaskExecution *UserTaskExecution) cancel() error {
 // @Description: 催办
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) urge() error {
+func (userTaskExecution *UserTaskExecution) urge(userTaskID string) error {
 
 	return nil
 }
@@ -288,7 +438,7 @@ func (userTaskExecution *UserTaskExecution) urge() error {
 // @Description: 加签
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) addSign() error {
+func (userTaskExecution *UserTaskExecution) addSign(userTaskID string) error {
 
 	return nil
 }
@@ -297,7 +447,7 @@ func (userTaskExecution *UserTaskExecution) addSign() error {
 // @Description: 减签
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) reduceSign() error {
+func (userTaskExecution *UserTaskExecution) reduceSign(userTaskID string) error {
 
 	return nil
 }
@@ -306,7 +456,7 @@ func (userTaskExecution *UserTaskExecution) reduceSign() error {
 // @Description: 抄送
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) cc() error {
+func (userTaskExecution *UserTaskExecution) cc(userTaskID string) error {
 
 	return nil
 }
@@ -315,7 +465,7 @@ func (userTaskExecution *UserTaskExecution) cc() error {
 // @Description: 抄送回复
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) ccReply() error {
+func (userTaskExecution *UserTaskExecution) ccReply(userTaskID string) error {
 
 	return nil
 }
@@ -324,7 +474,7 @@ func (userTaskExecution *UserTaskExecution) ccReply() error {
 // @Description: 抄送撤回
 // @receiver userTaskExecution
 // @return bool
-func (userTaskExecution *UserTaskExecution) ccRevoke() error {
+func (userTaskExecution *UserTaskExecution) ccRevoke(userTaskID string) error {
 
 	return nil
 }

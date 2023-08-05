@@ -4,7 +4,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 	"time"
 )
 

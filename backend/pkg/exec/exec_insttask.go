@@ -8,7 +8,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/parser"
 	"github.com/wegoteam/weflow/pkg/service"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 	"time"
 )
 
@@ -221,7 +221,7 @@ func (instTaskExecution *InstTaskExecution) resume(instTaskID string) error {
 	if int(execution.InstTaskStatus) != constant.InstanceTaskStatusHangUp {
 		return errors.New("实例任务为挂起状态才允许恢复，请检查实例任务状态")
 	}
-	//终止操作执行的实例数据，进行数据处理
+	//恢复操作执行的实例数据，进行数据处理
 	err := instTaskExecution.execResumeInstData()
 	if err != nil {
 		return err

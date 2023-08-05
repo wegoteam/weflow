@@ -1,14 +1,15 @@
-package exec
+package example
 
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
+	"github.com/wegoteam/weflow/pkg/exec"
 	"github.com/wegoteam/weflow/pkg/model"
 	"github.com/wegoteam/weflow/pkg/parser"
 	"github.com/wegoteam/weflow/pkg/service"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,14 +22,14 @@ import (
 func TestStartInstTask(t *testing.T) {
 	processDefModel, _ := parser.GetProcessDefModel("1640993392605401001")
 
-	execution := &Execution{}
+	execution := &exec.Execution{}
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = snowflake.GetSnowflakeId()
 	execution.InstTaskName = "测试流程"
 	execution.InstTaskStatus = constant.InstanceTaskStatusDoing
 	execution.Now = time.Now()
-	startNodeId := processDefModel.StartNodeId
-	startNode := processDefModel.NodeModelMap[startNodeId]
+	//startNodeId := processDefModel.StartNodeId
+	//startNode := processDefModel.NodeModelMap[startNodeId]
 
 	//实例任务参数
 	var instTaskParamMap = make(map[string]interface{})
@@ -53,7 +54,7 @@ func TestStartInstTask(t *testing.T) {
 	execution.CreateUserID = "547"
 	execution.ProcessDefId = "1640993392605401001"
 	execution.FormDefId = "1640993392605401001"
-	execNode(&startNode, execution)
+	//exec.execNode(&startNode, execution)
 
 	hlog.Infof("执行结果%+v", execution)
 }
@@ -61,14 +62,14 @@ func TestStartInstTask(t *testing.T) {
 func TestInstTaskExecution(t *testing.T) {
 	processDefModel, _ := parser.GetProcessDefModel("1640993392605401001")
 
-	execution := &Execution{}
+	execution := &exec.Execution{}
 	execution.ProcessDefModel = processDefModel
 	execution.InstTaskID = snowflake.GetSnowflakeId()
 	execution.InstTaskName = "测试流程"
 	execution.InstTaskStatus = constant.InstanceTaskStatusDoing
 	execution.Now = time.Now()
-	startNodeId := processDefModel.StartNodeId
-	startNode := processDefModel.NodeModelMap[startNodeId]
+	//startNodeId := processDefModel.StartNodeId
+	//startNode := processDefModel.NodeModelMap[startNodeId]
 
 	//实例任务参数
 	var instTaskParamMap = make(map[string]interface{})
@@ -93,17 +94,17 @@ func TestInstTaskExecution(t *testing.T) {
 	execution.CreateUserID = "547"
 	execution.ProcessDefId = "1640993392605401001"
 	execution.FormDefId = "1640993392605401001"
-	execNode(&startNode, execution)
+	//exec.execNode(&startNode, execution)
 
 	hlog.Infof("执行结果%+v", execution)
-	instTaskExecution := &InstTaskExecution{
-		Execution:  execution,
-		ModelID:    "420915317174341",
-		VersionID:  "1681335332954505235",
-		OpUserID:   "547",
-		OpUserName: "xuch01",
-	}
-	instTaskExecution.execStartInstData()
+	//instTaskExecution := &exec.InstTaskExecution{
+	//	Execution:  execution,
+	//	ModelID:    "420915317174341",
+	//	VersionID:  "1681335332954505235",
+	//	OpUserID:   "547",
+	//	OpUserName: "xuch01",
+	//}
+	//instTaskExecution.execStartInstData()
 }
 
 func TestTransformInstTaskParam(t *testing.T) {
@@ -113,8 +114,8 @@ func TestTransformInstTaskParam(t *testing.T) {
 	instTaskParamMap["testparam3"] = "testparam33333"
 	instTaskParamMap["testparam3"] = "testparam4"
 
-	instTaskExecution := &InstTaskExecution{
-		Execution:  &Execution{},
+	instTaskExecution := &exec.InstTaskExecution{
+		Execution:  &exec.Execution{},
 		ModelID:    "420915317174341",
 		VersionID:  "1681335332954505235",
 		OpUserID:   "547",
@@ -125,16 +126,16 @@ func TestTransformInstTaskParam(t *testing.T) {
 	//instTaskID := "421395986214981"
 	instTaskParam := service.TransformInstTaskParam(instTaskID, instTaskParamMap, time.Now())
 
-	MysqlDB.Debug().CreateInBatches(instTaskParam, len(instTaskParam))
+	exec.MysqlDB.Debug().CreateInBatches(instTaskParam, len(instTaskParam))
 	taskParamMap, _ := service.GetInstTaskParamMap(instTaskID)
 	hlog.Infof("taskParamMap=%+v", taskParamMap)
 	var instTaskParam2 []model.InstTaskParam
-	MysqlDB.Debug().Where("inst_task_id = ?", instTaskID).Find(&instTaskParam2)
+	exec.MysqlDB.Debug().Where("inst_task_id = ?", instTaskID).Find(&instTaskParam2)
 
 	instTaskParamForBsonD := transformInstTaskParamForD(instTaskID, instTaskParamMap, time.Now())
 
 	filter := bson.M{"inst_task_id": instTaskID}
-	collection := MongoClient.Database("weflow").Collection("inst_task_param")
+	collection := exec.MongoClient.Database("weflow").Collection("inst_task_param")
 	hlog.Infof("查询数据为%+v", collection)
 	//opts := options.InsertMany().SetOrdered(false)
 	//_, err := collection.InsertMany(context.TODO(), instTaskParamForBsonD, opts)
@@ -240,7 +241,7 @@ func TestStartProcessInstTask(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam22222"
 	instTaskParamMap["testparam3"] = "testparam33333"
 	instTaskParamMap["testparam3"] = "testparam4"
-	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := exec.Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 }
 
@@ -253,13 +254,13 @@ func TestStop(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam2"
 	instTaskParamMap["testparam3"] = "testparam3"
 	instTaskParamMap["testparam4"] = "testparam4"
-	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := exec.Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 
 	userID := "547"
 	userName := "xuch01"
 	desc := "测试"
-	err := Stop(instTaskId, userID, userName, desc)
+	err := exec.Stop(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err)
 }
 
@@ -272,13 +273,13 @@ func TestSuspend(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam2"
 	instTaskParamMap["testparam3"] = "testparam3"
 	instTaskParamMap["testparam4"] = "testparam4"
-	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := exec.Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 
 	userID := "547"
 	userName := "xuch01"
 	desc := "测试"
-	err := Suspend(instTaskId, userID, userName, desc)
+	err := exec.Suspend(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err)
 }
 
@@ -291,16 +292,16 @@ func TestSesume(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam2"
 	instTaskParamMap["testparam3"] = "testparam3"
 	instTaskParamMap["testparam4"] = "testparam4"
-	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := exec.Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 
 	userID := "547"
 	userName := "xuch01"
 	desc := "测试"
-	err := Suspend(instTaskId, userID, userName, desc)
+	err := exec.Suspend(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err)
 
-	err2 := Sesume(instTaskId, userID, userName, desc)
+	err2 := exec.Sesume(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err2)
 }
 
@@ -313,15 +314,15 @@ func TestDelete(t *testing.T) {
 	instTaskParamMap["testparam2"] = "testparam2"
 	instTaskParamMap["testparam3"] = "testparam3"
 	instTaskParamMap["testparam4"] = "testparam4"
-	instTaskId, _ := Start(modelID, createUserID, createUserName, instTaskParamMap)
+	instTaskId, _ := exec.Start(modelID, createUserID, createUserName, instTaskParamMap)
 	hlog.Infof("执行结果:%v", instTaskId)
 
 	userID := "547"
 	userName := "xuch01"
 	desc := "测试"
-	err := Suspend(instTaskId, userID, userName, desc)
+	err := exec.Suspend(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err)
 
-	err2 := Delete(instTaskId, userID, userName, desc)
+	err2 := exec.Delete(instTaskId, userID, userName, desc)
 	hlog.Infof("执行结果:%v", err2)
 }

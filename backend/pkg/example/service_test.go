@@ -1,9 +1,10 @@
-package service
+package example
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/model"
+	"github.com/wegoteam/weflow/pkg/service"
 	"gorm.io/gorm"
 	"reflect"
 	"testing"
@@ -42,7 +43,7 @@ func TestGetParamType(t *testing.T) {
 	slice2 = append(slice2, *tsetParam)
 	instTaskParamMap["testparam8"] = slice2
 	for key, val := range instTaskParamMap {
-		paramType := GetParamType(val)
+		paramType := service.GetParamType(val)
 		t := reflect.TypeOf(val).String()
 
 		kind := reflect.ValueOf(val).Kind()
@@ -53,28 +54,28 @@ func TestGetParamType(t *testing.T) {
 }
 
 func TestGetInstTaskParam(t *testing.T) {
-	instTaskParamMap := GetInstTaskParamMap("421397709668421")
+	instTaskParamMap, _ := service.GetInstTaskParamMap("421397709668421")
 	hlog.Infof("instTaskParamMap是 %v", instTaskParamMap)
 }
 
 func TestGetModelVersion(t *testing.T) {
-	modelVersion := GetModelVersion("420915317174341", "1681335332954505235")
+	modelVersion := service.GetModelVersion("420915317174341", "1681335332954505235")
 	hlog.Infof("GetModelVersion= %v", modelVersion)
 
-	modelVersionList, _ := GetModelVersionList("433984855478341")
+	modelVersionList, _ := service.GetModelVersionList("433984855478341")
 	hlog.Infof("GetModelVersionList= %v", modelVersionList)
 
-	modelVersion2 := GetEnableModelVersion("420915317174341")
+	modelVersion2 := service.GetEnableModelVersion("420915317174341")
 	hlog.Infof("GetEnableModelVersion= %v", modelVersion2)
 }
 
 func TestGetInstNodeUserTask(t *testing.T) {
-	instNodeUserTask := GetInstNodeUserTask("424136865722437")
+	instNodeUserTask := service.GetInstNodeUserTask("424136865722437")
 	hlog.Infof("instNodeUserTask= %v", instNodeUserTask)
 }
 
 func TestGetExecNodeTaskMap(t *testing.T) {
-	execNodeTaskMap := GetExecNodeTaskMap("425247133954117")
+	execNodeTaskMap := service.GetExecNodeTaskMap("425247133954117")
 	hlog.Infof("execNodeTaskMap= %v", execNodeTaskMap)
 }
 
@@ -87,42 +88,42 @@ func TestGetTodoUserTask(t *testing.T) {
 		CreateTimeStart: "2020-8-5 13:14:15",
 		CreateTimeEnd:   "2024-8-5 13:14:15",
 	}
-	userTask := GetTodoUserTasks("547")
-	page, _ := PageTodoUserTasks(param)
+	userTask := service.GetTodoUserTasks("547")
+	page, _ := service.PageTodoUserTasks(param)
 	hlog.Infof("userTask= %v", userTask)
 	hlog.Infof("page= %v", page)
 }
 
 func TestGetDoneUserTask(t *testing.T) {
-	userTask, _ := GetDoneUserTasks("547")
+	userTask, _ := service.GetDoneUserTasks("547")
 	hlog.Infof("userTask= %v", userTask)
 }
 
 func TestGetInitiatingInstTask(t *testing.T) {
-	initiatingInstTasks := GetInitiatingInstTasks("547")
+	initiatingInstTasks := service.GetInitiatingInstTasks("547")
 	hlog.Infof("initiatingInstTasks= %v", initiatingInstTasks)
 }
 
 func TestGetDraftInstTask(t *testing.T) {
-	draftInstTask := GetDraftInstTask("547")
+	draftInstTask := service.GetDraftInstTask("547")
 	hlog.Infof("draftInstTask= %v", draftInstTask)
 }
 
 func TestGetModelList(t *testing.T) {
 	var existModel = model.ModelDetail{}
-	err := MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").First(&existModel).Error
+	err := service.MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").First(&existModel).Error
 	if err != nil && err == gorm.ErrRecordNotFound {
 		hlog.Errorf("查询模板失败,模版ID输入有误，重新生成新的模板 error: %v", err)
 	}
 
 	var existModel2 = []model.ModelDetail{}
-	MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").Find(&existModel2)
+	service.MysqlDB.Model(&model.ModelDetail{}).Where("model_id = ?", "1").Find(&existModel2)
 	hlog.Infof("existModel2= %v", existModel2)
 }
 
 func TestGetRoleTree(t *testing.T) {
 	param := &entity.RoleQueryBO{}
-	roleTree, err := GetRoleTree(param)
+	roleTree, err := service.GetRoleTree(param)
 	if err != nil {
 		hlog.Errorf("查询角色树失败 error: %v", err)
 	}
@@ -130,7 +131,7 @@ func TestGetRoleTree(t *testing.T) {
 }
 
 func TestGetAllRoleUserList(t *testing.T) {
-	roleUserList, err := GetAllRoleUserTree()
+	roleUserList, err := service.GetAllRoleUserTree()
 	if err != nil {
 		hlog.Errorf("查询角色用户列表失败 error: %v", err)
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
-	wepkgSnowflake "github.com/wegoteam/wepkg/snowflake"
+	wepkgSnowflake "github.com/wegoteam/wepkg/id/snowflake"
 	"gorm.io/gorm"
 	"time"
 )

@@ -7,7 +7,7 @@ import (
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/weflow/pkg/model"
 	"github.com/wegoteam/weflow/pkg/service"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 )
 
 // execStartInstData
@@ -259,7 +259,7 @@ func (instTaskExecution *InstTaskExecution) execSuspendInstData() error {
 }
 
 // execResumeInstData
-// @Description: 终止操作执行的实例数据，进行数据处理
+// @Description: 恢复操作执行的实例数据，进行数据处理
 // @receiver instTaskExecution
 func (instTaskExecution *InstTaskExecution) execResumeInstData() error {
 	//开启事务
@@ -283,7 +283,7 @@ func (instTaskExecution *InstTaskExecution) execResumeInstData() error {
 		tx.Rollback()
 		return addInstUserTaskOpinionErr
 	}
-	//修改实例任务状态为终止
+	//修改实例任务状态为进行中
 	editInstTask := model.InstTaskDetail{
 		Status:         constant.InstanceTaskStatusDoing,
 		UpdateTime:     execution.Now,

@@ -19,6 +19,8 @@ import (
 	"github.com/wegoteam/weflow/internal/biz/router"
 	"github.com/wegoteam/weflow/internal/docs"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"io"
+	"os"
 )
 
 // @title weflow
@@ -81,12 +83,15 @@ func registerMiddleware(h *server.Hertz) {
 	logger := hertzlogrus.NewLogger()
 	hlog.SetLogger(logger)
 	hlog.SetLevel(conf.LogLevel())
-	hlog.SetOutput(&lumberjack.Logger{
+	//同时写文件和控制台
+	fileAndStdoutWriter := io.MultiWriter(os.Stdout, &lumberjack.Logger{
 		Filename:   conf.GetConf().Hertz.LogFileName,
 		MaxSize:    conf.GetConf().Hertz.LogMaxSize,
 		MaxBackups: conf.GetConf().Hertz.LogMaxBackups,
 		MaxAge:     conf.GetConf().Hertz.LogMaxAge,
 	})
+
+	hlog.SetOutput(fileAndStdoutWriter)
 
 	// recovery
 	h.Use(recovery.Recovery())

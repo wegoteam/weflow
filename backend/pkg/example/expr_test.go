@@ -1,8 +1,9 @@
-package expr
+package example
 
 import (
 	"fmt"
 	"github.com/antonmedv/expr"
+	expr2 "github.com/wegoteam/weflow/pkg/expr"
 	"testing"
 )
 
@@ -65,5 +66,5 @@ func TestExpr3(t *testing.T) {
 }
 
 func TestExecExpr(t *testing.T) {
-	ExecExpr("greet >= name", map[string]interface{}{"greet": 1, "name": 2})
+	expr2.ExecExpr("greet >= name", map[string]interface{}{"greet": 1, "name": 2})
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"github.com/wegoteam/weflow/pkg/common/constant"
 	"github.com/wegoteam/weflow/pkg/common/entity"
-	"github.com/wegoteam/wepkg/snowflake"
+	"github.com/wegoteam/wepkg/id/snowflake"
 	"time"
 )
 

@@ -1,8 +1,9 @@
-package utils
+package example
 
 import (
 	"errors"
 	"fmt"
+	"github.com/wegoteam/weflow/pkg/common/utils"
 	"reflect"
 	"testing"
 )
@@ -20,7 +21,7 @@ type B struct {
 func TestBeanCopy(t *testing.T) {
 	a1 := &A{Int: 100}
 	a2 := &A{}
-	BeanCopy(a2, a1)
+	utils.BeanCopy(a2, a1)
 	fmt.Println(a1, a2)
 }
 

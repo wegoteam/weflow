@@ -54,21 +54,3 @@ snowflake:
   bitLength: 6
   #序列数位长，默认值6，取值范围 [3, 21]（要求：序列数位长+机器码位长不超过22）
   seqBitLength: 6
-
-
-#日志配置
-logger:
-  #日志输出格式，可选项：json、text
-  format: text
-  #日志级别，可选项：trace、debug、info、warn、error、panic、fatal
-  level: info
-  #日志输出位置，可选项：console、file；多个用逗号分隔
-  output: console,file
-  #日志文件名
-  fileName: "./log/weflow.log"
-  #日志文件最大大小，单位：MB
-  maxSize: 10
-  #日志文件最大保存时间，单位：天
-  maxAge: 30
-  #日志文件最大备份数量
-  maxBackups: 200

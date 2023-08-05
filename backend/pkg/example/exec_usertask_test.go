@@ -1,7 +1,8 @@
-package exec
+package example
 
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/wegoteam/weflow/pkg/exec"
 	"github.com/wegoteam/weflow/pkg/service"
 	"testing"
 )
@@ -23,7 +24,7 @@ func TestUserTaskExecution_agree(t *testing.T) {
 		return
 	}
 	var userTask = (*userTasks)[0]
-	err := Agree(userTask.UserTaskID, userID, userName, desc, instTaskParamMap)
+	err := exec.Agree(userTask.UserTaskID, userID, userName, desc, instTaskParamMap)
 	hlog.Info(err)
 }
 
@@ -44,7 +45,7 @@ func TestUserTaskExecution_disagree(t *testing.T) {
 		return
 	}
 	var userTask = (*userTasks)[0]
-	err := Disagree(userTask.UserTaskID, userID, userName, desc)
+	err := exec.Disagree(userTask.UserTaskID, userID, userName, desc)
 	hlog.Info(err)
 }
 
@@ -65,6 +66,6 @@ func TestSave(t *testing.T) {
 		return
 	}
 	var userTask = (*userTasks)[0]
-	err := Save(userTask.UserTaskID, userID, userName, desc, instTaskParamMap)
+	err := exec.Save(userTask.UserTaskID, userID, userName, desc, instTaskParamMap)
 	hlog.Info(err)
 }

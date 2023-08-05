@@ -3,7 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/wegoteam/wepkg/copy"
+	beanUtil "github.com/wegoteam/wepkg/bean"
 )
 
 // BeanCopy
@@ -12,7 +12,11 @@ import (
 // @param: src
 // @return err
 func BeanCopy(dst, src interface{}) (err error) {
-	return copy.New(src).To(dst)
+	beanCopyErr := beanUtil.BeanCopy(dst, src)
+	if len(beanCopyErr) > 0 {
+		return beanCopyErr[0]
+	}
+	return nil
 }
 
 // DeepCopy
