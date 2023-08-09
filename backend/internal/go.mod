@@ -21,7 +21,7 @@ require (
 	github.com/kr/pretty v0.3.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/swag v1.16.1
-	github.com/wegoteam/wepkg v1.0.5
+	github.com/wegoteam/wepkg v1.1.7
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/gorm v1.25.1
 )

@@ -5,14 +5,14 @@ go 1.18
 require (
 	github.com/antonmedv/expr v1.12.5
 	github.com/bytedance/go-tagexpr/v2 v2.9.2
-	github.com/bytedance/sonic v1.8.7
+	github.com/bytedance/sonic v1.9.2
 	github.com/cloudwego/hertz v0.6.1
 	github.com/elliotchance/pie/v2 v2.5.2
 	github.com/golang-module/carbon/v2 v2.2.3
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.0.3
 	github.com/stretchr/testify v1.8.3
-	github.com/wegoteam/wepkg v1.0.4
+	github.com/wegoteam/wepkg v1.1.7
 	go.mongodb.org/mongo-driver v1.11.6
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gen v0.3.21
@@ -35,7 +35,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
