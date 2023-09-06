@@ -1,0 +1,5 @@
+package expr
+
+const (
+	EqualExpr = ""
+)
