@@ -2,10 +2,10 @@ package expr
 
 import (
 	"github.com/antonmedv/expr"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/wegoteam/weflow/pkg/common/entity"
 	"github.com/wegoteam/weflow/pkg/common/utils"
 	"github.com/wegoteam/wepkg/io/json"
+	"github.com/wegoteam/wepkg/log/wlog"
 )
 
 // ExecExpr
@@ -20,19 +20,19 @@ func ExecExpr(exprData string, env map[string]interface{}) bool {
 	}
 	output, err := expr.Eval(exprData, env)
 	if err != nil {
-		hlog.Infof("执行条件表达式错误：%v", err)
+		wlog.Infof("执行条件表达式错误：%v", err)
 		return false
 	}
 	switch output.(type) {
 	case bool:
-		hlog.Infof("执行条件表达式返回结果：%v", output.(bool))
+		wlog.Infof("执行条件表达式返回结果：%v", output.(bool))
 		return output.(bool)
 	case int:
-		hlog.Infof("执行条件表达式返回结果：%v", output.(int))
+		wlog.Infof("执行条件表达式返回结果：%v", output.(int))
 	case string:
-		hlog.Infof("执行条件表达式返回结果：%v", output.(string))
+		wlog.Infof("执行条件表达式返回结果：%v", output.(string))
 	default:
-		hlog.Infof("执行条件表达式返回结果：%v", output)
+		wlog.Infof("执行条件表达式返回结果：%v", output)
 	}
 	return false
 }

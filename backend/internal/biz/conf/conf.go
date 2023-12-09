@@ -4,6 +4,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/kr/pretty"
 	wepgkConfig "github.com/wegoteam/wepkg/config"
+	"github.com/wegoteam/wepkg/log/wlog"
 	"sync"
 )
 
@@ -111,12 +112,12 @@ func initConf() {
 	var redis = &Redis{}
 	redisErr := config.Load(REDIS, redis)
 	if redisErr != nil {
-		hlog.Errorf("redis 加载失败 err=%v", redisErr)
+		wlog.Errorf("redis 加载失败 err=%v", redisErr)
 	}
 	var mongo = &Mongo{}
 	mongoErr := config.Load(MONGO, mongo)
 	if mongoErr != nil {
-		hlog.Errorf("mongo 加载失败 err=%v", mongoErr)
+		wlog.Errorf("mongo 加载失败 err=%v", mongoErr)
 	}
 
 	var swagger = &Swagger{}
@@ -136,24 +137,24 @@ func initConf() {
 // LogLevel
 // @Description: 获取日志级别
 // @return hlog.Level
-func LogLevel() hlog.Level {
+func LogLevel() wlog.Level {
 	level := GetConf().Hertz.LogLevel
 	switch level {
 	case "trace":
-		return hlog.LevelTrace
+		return wlog.LevelTrace
 	case "debug":
-		return hlog.LevelDebug
+		return wlog.LevelDebug
 	case "info":
-		return hlog.LevelInfo
+		return wlog.LevelInfo
 	case "notice":
-		return hlog.LevelNotice
+		return wlog.LevelNotice
 	case "warn":
-		return hlog.LevelWarn
+		return wlog.LevelWarn
 	case "error":
-		return hlog.LevelError
+		return wlog.LevelError
 	case "fatal":
-		return hlog.LevelFatal
+		return wlog.LevelFatal
 	default:
-		return hlog.LevelInfo
+		return wlog.LevelInfo
 	}
 }
